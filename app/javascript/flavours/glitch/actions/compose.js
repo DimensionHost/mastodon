@@ -221,7 +221,7 @@ export function submitCompose(overridePrivacy = null, successCallback = undefine
     }
 
     if (getState().getIn(['compose', 'advanced_options', 'do_not_federate'])) {
-      status = status + ' 👁️';
+      status = status + ' :dmo:';
     }
 
     dispatch(submitComposeRequest());
