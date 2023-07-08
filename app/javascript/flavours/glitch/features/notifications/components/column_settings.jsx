@@ -69,39 +69,6 @@ export default class ColumnSettings extends PureComponent {
           <ClearColumnButton onClick={onClear} />
         </div>
 
-        <div role='group' aria-labelledby='notifications-grouping'>
-          <span id='notifications-grouping' className='column-settings__section'>
-            <FormattedMessage id='notifications.column_settings.notification_grouping.category' defaultMessage='Notification Grouping' />
-          </span>
-
-          <div className='column-settings__row'>
-            <SettingToggle id='group-reactions' prefix='notifications' settings={settings} settingPath={['grouping', 'reaction']} onChange={onChange} label={groupReactions} />
-            <SettingToggle id='group-favourites' prefix='notifications' settings={settings} settingPath={['grouping', 'favourite']} onChange={onChange} label={groupFavorites} />
-            <SettingToggle id='group-boosts' prefix='notifications' settings={settings} settingPath={['grouping', 'reblog']} onChange={onChange} label={groupBoosts} />
-          </div>
-        </div>
-
-        <div role='group' aria-labelledby='notifications-unread-markers'>
-          <span id='notifications-unread-markers' className='column-settings__section'>
-            <FormattedMessage id='notifications.column_settings.unread_notifications.category' defaultMessage='Unread notifications' />
-          </span>
-
-          <div className='column-settings__row'>
-            <SettingToggle id='unread-notification-markers' prefix='notifications' settings={settings} settingPath={['showUnread']} onChange={onChange} label={unreadMarkersShowStr} />
-          </div>
-        </div>
-
-        <div role='group' aria-labelledby='notifications-filter-bar'>
-          <span id='notifications-filter-bar' className='column-settings__section'>
-            <FormattedMessage id='notifications.column_settings.filter_bar.category' defaultMessage='Quick filter bar' />
-          </span>
-
-          <div className='column-settings__row'>
-            <SettingToggle id='show-filter-bar' prefix='notifications' settings={settings} settingPath={['quickFilter', 'show']} onChange={onChange} label={filterBarShowStr} />
-            <SettingToggle id='show-filter-bar' prefix='notifications' settings={settings} settingPath={['quickFilter', 'advanced']} onChange={onChange} label={filterAdvancedStr} />
-          </div>
-        </div>
-
         <div role='group' aria-labelledby='notifications-follow'>
           <span id='notifications-follow' className='column-settings__section'><FormattedMessage id='notifications.column_settings.follow' defaultMessage='New followers:' /></span>
 
@@ -226,6 +193,40 @@ export default class ColumnSettings extends PureComponent {
             </div>
           </div>
         )}
+        
+        <div role='group' aria-labelledby='notifications-grouping'>
+          <span id='notifications-grouping' className='column-settings__section'>
+            <FormattedMessage id='notifications.column_settings.notification_grouping.category' defaultMessage='Notification Grouping' />
+          </span>
+
+          <div className='column-settings__row'>
+            <SettingToggle id='group-reactions' prefix='notifications' settings={settings} settingPath={['grouping', 'reaction']} onChange={onChange} label={groupReactions} />
+            <SettingToggle id='group-favourites' prefix='notifications' settings={settings} settingPath={['grouping', 'favourite']} onChange={onChange} label={groupFavorites} />
+            <SettingToggle id='group-boosts' prefix='notifications' settings={settings} settingPath={['grouping', 'reblog']} onChange={onChange} label={groupBoosts} />
+          </div>
+        </div>
+
+        <div role='group' aria-labelledby='notifications-unread-markers'>
+          <span id='notifications-unread-markers' className='column-settings__section'>
+            <FormattedMessage id='notifications.column_settings.unread_notifications.category' defaultMessage='Unread notifications' />
+          </span>
+
+          <div className='column-settings__row'>
+            <SettingToggle id='unread-notification-markers' prefix='notifications' settings={settings} settingPath={['showUnread']} onChange={onChange} label={unreadMarkersShowStr} />
+          </div>
+        </div>
+
+        <div role='group' aria-labelledby='notifications-filter-bar'>
+          <span id='notifications-filter-bar' className='column-settings__section'>
+            <FormattedMessage id='notifications.column_settings.filter_bar.category' defaultMessage='Quick filter bar' />
+          </span>
+
+          <div className='column-settings__row'>
+            <SettingToggle id='show-filter-bar' prefix='notifications' settings={settings} settingPath={['quickFilter', 'show']} onChange={onChange} label={filterBarShowStr} />
+            <SettingToggle id='show-filter-bar' prefix='notifications' settings={settings} settingPath={['quickFilter', 'advanced']} onChange={onChange} label={filterAdvancedStr} />
+          </div>
+        </div>
+        
       </div>
     );
   }
