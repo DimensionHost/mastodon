@@ -439,8 +439,9 @@ export const addReaction = (statusId, name, url) => (dispatch, getState) => {
 
   // encodeURIComponent is required for the Keycap Number Sign emoji, see:
   // <https://github.com/glitch-soc/mastodon/pull/1980#issuecomment-1345538932>
-  api(getState).post(`/api/v1/statuses/${statusId}/react/${encodeURIComponent(name)}`).then(() => {
+  api(getState).post(`/api/v1/statuses/${statusId}/react/${encodeURIComponent(name)}`).then(e => {
     dispatch(addReactionSuccess(statusId, name));
+    dispatch(importFetchedStatus(e.data));
   }).catch(err => {
     if (!alreadyAdded) {
       dispatch(addReactionFail(statusId, name, err));
@@ -471,8 +472,23 @@ export const addReactionFail = (statusId, name, error) => ({
 export const removeReaction = (statusId, name) => (dispatch, getState) => {
   dispatch(removeReactionRequest(statusId, name));
 
-  api(getState).post(`/api/v1/statuses/${statusId}/unreact/${encodeURIComponent(name)}`).then(() => {
+  api(getState).post(`/api/v1/statuses/${statusId}/unreact/${encodeURIComponent(name)}`).then(e => {
     dispatch(removeReactionSuccess(statusId, name));
+    if (e.data.reactions) {
+      for(let i in e.data.reactions) {
+        if (e.data.reactions[i].me) {
+          if (e.data.reactions[i].count <= 1) {
+            e.data.reactions[i].count -= 1;
+            e.data.reactions[i].me = false;
+          } else {
+            e.data.reactions[i].count -= 1;
+            e.data.reactions[i].me = false;
+          }
+        }
+      }
+    }
+    e.data.favourited = false;
+    dispatch(importFetchedStatus(e.data));
   }).catch(err => {
     dispatch(removeReactionFail(statusId, name, err));
   });

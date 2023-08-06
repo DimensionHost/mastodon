@@ -240,11 +240,11 @@ module AccountInteractions
   end
 
   def favourited?(status)
-    status.proper.favourites.where(account: self).exists?
+    status.proper.favourites.where(account: self).exists? || status.proper.status_reactions.where(account: self).exists?
   end
 
   def reacted?(status, name, custom_emoji = nil)
-    status.proper.status_reactions.where(account: self, name: name, custom_emoji: custom_emoji).exists?
+    status.proper.status_reactions.where(account: self, name: name, custom_emoji: custom_emoji).exists? || status.proper.favourites.where(account: self).exists?
   end
 
   def bookmarked?(status)
