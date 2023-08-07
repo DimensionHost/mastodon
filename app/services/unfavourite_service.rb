@@ -6,6 +6,12 @@ class UnfavouriteService < BaseService
   def call(account, status)
     favourite = Favourite.find_by!(account: account, status: status)
     favourite.destroy!
+    
+    # reaction = StatusReaction.find_by(account: account, status: status)
+    # if !reaction.nil?
+    #   reaction.destroy!
+    # end
+
     create_notification(favourite) if !status.account.local? && status.account.activitypub?
     favourite
   end

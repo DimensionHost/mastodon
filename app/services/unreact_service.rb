@@ -7,11 +7,16 @@ class UnreactService < BaseService
     name, domain = emoji.split('@')
     custom_emoji = CustomEmoji.find_by(shortcode: name, domain: domain)
     reaction = StatusReaction.find_by(account: account, status: status, name: name, custom_emoji: custom_emoji)
+    # favourite = Favourite.find_by!(account: account, status: status)
+
     return if reaction.nil?
 
+    # favourite.destroy!
     reaction.destroy!
 
     json = Oj.dump(serialize_payload(reaction, ActivityPub::UndoEmojiReactionSerializer))
+    json = json.gsub("MisskeyReaction", "_misskey_reaction")
+    
     if status.account.local?
       ActivityPub::RawDistributionWorker.perform_async(json, status.account.id)
     else
