@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class ActivityPub::EmojiReactionSerializer < ActivityPub::Serializer
-  attributes :id, :type, :actor, :content
+  attributes :id, :type, :actor, :content, :_misskey_reaction
   attribute :virtual_object, key: :object
   attribute :custom_emoji, key: :tag, unless: -> { object.custom_emoji.nil? }
 
@@ -10,7 +10,7 @@ class ActivityPub::EmojiReactionSerializer < ActivityPub::Serializer
   end
 
   def type
-    'EmojiReact'
+    'Like'
   end
 
   def actor
@@ -27,6 +27,10 @@ class ActivityPub::EmojiReactionSerializer < ActivityPub::Serializer
     else
       ":#{object.name}:"
     end
+  end
+
+  def _misskey_reaction
+    "#{content}"
   end
 
   alias reaction content

@@ -14,9 +14,14 @@ class ReactService < BaseService
     reaction = StatusReaction.find_by(account: account, status: status, name: name, custom_emoji: custom_emoji)
     return reaction unless reaction.nil?
 
-    reaction = StatusReaction.create!(account: account, status: status, name: name, custom_emoji: custom_emoji)
+    # react with favourite
+    # favourite = Favourite.create!(account: account, status: status)
 
+    reaction = StatusReaction.create!(account: account, status: status, name: name, custom_emoji: custom_emoji)
+    
     json = Oj.dump(serialize_payload(reaction, ActivityPub::EmojiReactionSerializer))
+    json = json.gsub("MisskeyReaction", "_misskey_reaction")
+    
     if status.account.local?
       NotifyService.new.call(status.account, :reaction, reaction)
       ActivityPub::RawDistributionWorker.perform_async(json, status.account.id)
