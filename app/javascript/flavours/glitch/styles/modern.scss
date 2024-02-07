@@ -11,6 +11,25 @@
   --shadow-med: 0 8px 60px -30px rgba(0, 0, 0, 10%);
 }
 
+:not(body, .scrollable)::-webkit-scrollbar {
+  width: 6px;
+  margin-block: 10px;
+}
+
+:not(body, .scrollable)::-webkit-scrollbar-track {
+  background: none;
+}
+
+:not(body, .scrollable)::-webkit-scrollbar-thumb {
+  border-radius: 100px;
+  transition: background-color 0.2s;
+}
+
+:not(body, .scrollable, :hover)::-webkit-scrollbar-thumb {
+  background: none;
+  padding-block: 10px;
+}
+
 .rtl textarea {
   text-align: right;
 }
@@ -70,84 +89,93 @@ a:focus-visible,
 .setting-text {
   padding-inline: 10px;
 }
-
 @media (prefers-reduced-motion: no-preference) {
-  .load-more,
-  .setting-toggle,
-  .column-header__back-button,
-  .column-back-button,
-  .trends__item,
-  .story,
-  .account__avatar,
-  .button,
-  .media-gallery__item,
-  .column-link,
-  select,
-  .status-card,
-  .audio-player,
-  .account {
-    transition: transform 0.4s cubic-bezier(0, 0, 0, 3) !important;
+  body:not(.reduce-motion) .load-more,
+  body:not(.reduce-motion) .setting-toggle,
+  body:not(.reduce-motion) .column-header__back-button,
+  body:not(.reduce-motion) .column-back-button,
+  body:not(.reduce-motion) .trends__item,
+  body:not(.reduce-motion) .story,
+  body:not(.reduce-motion) .account__avatar,
+  body:not(.reduce-motion) .button,
+  body:not(.reduce-motion) .media-gallery__item,
+  body:not(.reduce-motion) .column-link,
+  body:not(.reduce-motion) select,
+  body:not(.reduce-motion) .status-card,
+  body:not(.reduce-motion) .audio-player,
+  body:not(.reduce-motion) .account {
+    transition:
+      transform 0.4s cubic-bezier(0, 0, 0, 3),
+      background 0.2s,
+      opacity 0.2s !important;
   }
 
-  .load-more:active,
-  .setting-toggle:active,
-  .column-header__back-button:active,
-  .column-back-button:active,
-  .trends__item:active,
-  .story:active,
-  .account__avatar:active,
-  .button:active,
-  .media-gallery__item:active,
-  .column-link:active,
-  select:active,
-  .status-card:active,
-  .audio-player:active,
-  .account:active,
-  .load-more:focus-visible,
-  .setting-toggle:focus-visible,
-  .column-header__back-button:focus-visible,
-  .column-back-button:focus-visible,
-  .trends__item:focus-visible,
-  .story:focus-visible,
-  .account__avatar:focus-visible,
-  .button:focus-visible,
-  .media-gallery__item:focus-visible,
-  .column-link:focus-visible,
-  select:focus-visible,
-  .status-card:focus-visible,
-  .audio-player:focus-visible,
-  .account:focus-visible {
+  body:not(.reduce-motion) .load-more:active,
+  body:not(.reduce-motion) .setting-toggle:active,
+  body:not(.reduce-motion) .column-header__back-button:active,
+  body:not(.reduce-motion) .column-back-button:active,
+  body:not(.reduce-motion) .trends__item:active,
+  body:not(.reduce-motion) .story:active,
+  body:not(.reduce-motion) .account__avatar:active,
+  body:not(.reduce-motion) .button:active,
+  body:not(.reduce-motion) .media-gallery__item:active,
+  body:not(.reduce-motion) .column-link:active,
+  body:not(.reduce-motion) select:active,
+  body:not(.reduce-motion) .status-card:active,
+  body:not(.reduce-motion) .audio-player:active,
+  body:not(.reduce-motion) .account:active,
+  body:not(.reduce-motion) .load-more:focus-visible,
+  body:not(.reduce-motion) .setting-toggle:focus-visible,
+  body:not(.reduce-motion) .column-header__back-button:focus-visible,
+  body:not(.reduce-motion) .column-back-button:focus-visible,
+  body:not(.reduce-motion) .trends__item:focus-visible,
+  body:not(.reduce-motion) .story:focus-visible,
+  body:not(.reduce-motion) .account__avatar:focus-visible,
+  body:not(.reduce-motion) .button:focus-visible,
+  body:not(.reduce-motion) .media-gallery__item:focus-visible,
+  body:not(.reduce-motion) .column-link:focus-visible,
+  body:not(.reduce-motion) select:focus-visible,
+  body:not(.reduce-motion) .status-card:focus-visible,
+  body:not(.reduce-motion) .audio-player:focus-visible,
+  body:not(.reduce-motion) .account:focus-visible {
     transform: scale(0.99);
     transition: transform 0.4s cubic-bezier(0, 0, 0, 1) !important;
   }
 
-  .column-header__button,
-  .column-header__buttons > .column-header__back-button,
-  .react-toggle-track,
-  .icon-button,
-  .floating-action-button {
+  body:not(.reduce-motion) .column-header__button,
+  body:not(.reduce-motion)
+    .column-header__buttons
+    > .column-header__back-button,
+  body:not(.reduce-motion) .react-toggle-track,
+  body:not(.reduce-motion) .icon-button,
+  body:not(.reduce-motion) .floating-action-button {
     transition: transform 0.4s cubic-bezier(0, 0, 0, 4) !important;
   }
 
-  .column-header__button:active,
-  .column-header__buttons > .column-header__back-button:active,
-  .react-toggle-track:active,
-  .icon-button:active,
-  .floating-action-button:active {
+  body:not(.reduce-motion) .column-header__button:active,
+  body:not(.reduce-motion)
+    .column-header__buttons
+    > .column-header__back-button:active,
+  body:not(.reduce-motion) .react-toggle-track:active,
+  body:not(.reduce-motion) .icon-button:active,
+  body:not(.reduce-motion) .floating-action-button:active {
     transform: scale(0.95);
     transition: transform 0.4s cubic-bezier(0, 0, 0, 1) !important;
   }
 
-  .status__content__spoiler-link span {
+  body:not(.reduce-motion) .status__content__spoiler-link span {
     display: inline-block;
     transition: transform 0.4s cubic-bezier(0, 0, 0, 4) !important;
   }
 
-  .status__content__spoiler-link:active span {
+  body:not(.reduce-motion) .status__content__spoiler-link:active span {
     transition: transform 0.4s cubic-bezier(0, 0, 0, 1) !important;
     transform: translateY(1px);
   }
 
+  .reduce-motion * {
+    animation-duration: 0s !important;
+  }
   @keyframes bounce-in {
     0% {
       transform: scale(1.1);
@@ -169,7 +197,6 @@ a:focus-visible,
       opacity: 1;
     }
   }
-
   @keyframes bounce-in {
     0% {
       transform: scale(1.1);
@@ -191,7 +218,6 @@ a:focus-visible,
       opacity: 1;
     }
   }
-
   @keyframes bounce-in {
     0% {
       transform: scale(1.1);
@@ -213,7 +239,6 @@ a:focus-visible,
       opacity: 1;
     }
   }
-
   @keyframes bounce-in {
     0% {
       transform: scale(1.1);
@@ -235,209 +260,177 @@ a:focus-visible,
       opacity: 1;
     }
   }
-
   @keyframes slide-up {
     from {
       transform: translateY(20px);
     }
   }
-
   @keyframes slide-up {
     from {
       transform: translateY(20px);
     }
   }
-
   @keyframes slide-up {
     from {
       transform: translateY(20px);
     }
   }
-
   @keyframes slide-up {
     from {
       transform: translateY(20px);
     }
   }
-
   @keyframes slide-up-fade {
     from {
       transform: translateY(20px);
       filter: opacity(0);
     }
   }
-
   @keyframes slide-up-fade {
     from {
       transform: translateY(20px);
       filter: opacity(0);
     }
   }
-
   @keyframes slide-up-fade {
     from {
       transform: translateY(20px);
       filter: opacity(0);
     }
   }
-
   @keyframes slide-up-fade {
     from {
       transform: translateY(20px);
       filter: opacity(0);
     }
   }
-
   @keyframes slide-dow-fade {
     from {
       transform: translateY(-20px);
       filter: opacity(0);
     }
   }
-
   @keyframes slide-dow-fade {
     from {
       transform: translateY(-20px);
       filter: opacity(0);
     }
   }
-
   @keyframes slide-dow-fade {
     from {
       transform: translateY(-20px);
       filter: opacity(0);
     }
   }
-
   @keyframes slide-dow-fade {
     from {
       transform: translateY(-20px);
       filter: opacity(0);
     }
   }
-
   @keyframes slide-up-big {
     from {
       transform: translateY(50vh);
     }
   }
-
   @keyframes slide-up-big {
     from {
       transform: translateY(50vh);
     }
   }
-
   @keyframes slide-up-big {
     from {
       transform: translateY(50vh);
     }
   }
-
   @keyframes slide-up-big {
     from {
       transform: translateY(50vh);
     }
   }
-
   @keyframes fade-up {
     from {
       transform: translateY(10px);
       opacity: 0;
     }
   }
-
   @keyframes fade-up {
     from {
       transform: translateY(10px);
       opacity: 0;
     }
   }
-
   @keyframes fade-up {
     from {
       transform: translateY(10px);
       opacity: 0;
     }
   }
-
   @keyframes fade-up {
     from {
       transform: translateY(10px);
       opacity: 0;
     }
   }
-
   @keyframes scale-in {
     from {
       transform: scale(0.98);
       opacity: 0;
     }
   }
-
   @keyframes scale-in {
     from {
       transform: scale(0.98);
       opacity: 0;
     }
   }
-
   @keyframes scale-in {
     from {
       transform: scale(0.98);
       opacity: 0;
     }
   }
-
   @keyframes scale-in {
     from {
       transform: scale(0.98);
       opacity: 0;
     }
   }
-
   @keyframes fade-left {
     from {
       transform: translateX(20px) opacity(0);
     }
   }
-
   @keyframes fade-left {
     from {
       transform: translateX(20px) opacity(0);
     }
   }
-
   @keyframes fade-left {
     from {
       transform: translateX(20px) opacity(0);
     }
   }
-
   @keyframes fade-left {
     from {
       transform: translateX(20px) opacity(0);
     }
   }
-
   @keyframes rainbow {
     to {
       filter: hue-rotate(360deg);
     }
   }
-
   @keyframes rainbow {
     to {
       filter: hue-rotate(360deg);
     }
   }
-
   @keyframes rainbow {
     to {
       filter: hue-rotate(360deg);
     }
   }
-
   @keyframes rainbow {
     to {
       filter: hue-rotate(360deg);
@@ -459,8 +452,10 @@ a:focus-visible,
   border: 0 !important;
 }
 
-.dropdown-menu {
+.dropdown-menu,
+.dropdown-animation {
   border-radius: var(--radius);
+  animation: scale-in 0.2s cubic-bezier(0, 0, 0, 1.1);
 }
 
 .dropdown-menu__container__list {
@@ -517,8 +512,7 @@ a:focus-visible,
 .columns-area__panels {
   --top: 5px;
 }
-
-@media (width >=1175px) {
+@media (width >= 1175px) {
   .columns-area__panels {
     padding-inline: 10px;
     padding-top: var(--top);
@@ -527,20 +521,15 @@ a:focus-visible,
 
     --top: 20px;
   }
-
-  .columns-area__panels__pane {
-    height: unset !important;
-  }
-
-  .columns-area__panels__pane .columns-area__panels__pane__inner {
-    height: calc(100% + 20px) !important;
-  }
 }
-
-@media (width >=1320px) {
+@media (width >= 1320px) {
   .columns-area__panels {
     --top: 30px;
   }
+}
+
+#mastodon {
+  overflow: clip;
 }
 
 #mastodon .compose-panel {
@@ -550,10 +539,10 @@ a:focus-visible,
   padding-bottom: 20px;
   box-sizing: border-box;
   max-height: unset !important;
+  height: 100%;
 }
 
-#mastodon .search,
-.search-popout {
+#mastodon .search {
   margin-inline: 5px;
   border-radius: var(--radius);
 }
@@ -572,6 +561,15 @@ a:focus-visible,
   margin-inline: 5px;
 }
 
+.search__popout {
+  border-radius: var(--radius);
+  animation: scale-in 0.2s;
+  box-shadow: var(--shadow-low);
+  margin-top: 10px;
+  margin-inline: 4px;
+  width: calc(100% - 8px);
+}
+
 #mastodon .compose__action-bar-dropdown .icon-button {
   width: auto !important;
   height: auto !important;
@@ -580,6 +578,8 @@ a:focus-visible,
 
 #mastodon .compose-form {
   padding-top: 10px;
+  min-height: unset;
+  overflow: unset;
 }
 
 #mastodon .compose-form .reply-indicator {
@@ -599,17 +599,6 @@ a:focus-visible,
 
 #mastodon .compose-form .compose-form__buttons-wrapper {
   border-radius: 0 0 var(--radius) var(--radius) !important;
-  position: sticky;
-  bottom: 0;
-}
-
-#mastodon
-  .compose-form
-  .compose-form__buttons-wrapper
-  .compose-form__buttons
-  > * {
-  border-radius: var(--radius-round);
-  overflow: hidden;
 }
 
 #mastodon .compose-form .compose-form__publish-button-wrapper {
@@ -743,16 +732,28 @@ a:focus-visible,
     max-width 0.2s cubic-bezier(0, 0, 0, 1.1),
     margin 0.2s cubic-bezier(0, 0, 0, 1.1);
 }
-
-@media (width >=1175px) {
+@media (width >= 1175px) {
   .columns-area__panels__main {
     width: 0;
     flex-grow: 1;
   }
+}
+@media (width >= 1320px) {
+  .columns-area__panels__main {
+    max-width: var(--tl-width) !important;
+    padding: 0 15px;
+    margin: 0 10px;
+  }
+}
+@media (width >= 890px) {
+  .columns-area__panels__main {
+    display: grid;
+    grid-template-columns: 100%;
+  }
 
   .columns-area__panels__main .column,
   .columns-area__panels__main .columns-area {
-    overflow: visible !important;
+    overflow: clip !important;
     border-radius: var(--radius) var(--radius) 0 0 !important;
   }
 
@@ -762,49 +763,12 @@ a:focus-visible,
   }
 }
 
-@media (width >=1320px) {
-  .columns-area__panels__main {
-    max-width: var(--tl-width) !important;
-    padding: 0 15px;
-    margin: 0 10px;
-  }
-}
-
-@media (width >=890px) {
-  .columns-area__panels__main {
-    display: grid;
-    grid-template-columns: 100%;
-  }
-}
-
 .columns-area__panels__main > div {
-  border-radius: var(--radius) var(--radius) 0 0;
   grid-row: 1;
 }
 
-.columns-area__panels__main > div:last-child {
-  box-shadow: var(--shadow-med);
-}
-
-.columns-area__panels__main:not(.scrollable--flex) > .scrollable {
+.columns-area__panels__main :not(.scrollable--flex) > .scrollable {
   padding-bottom: 40vh !important;
-}
-
-.columns-area__panels__main .column-actions {
-  position: static;
-}
-
-.columns-area__panels__main .column-actions .column-actions__background {
-  border-bottom-left-radius: var(--radius);
-}
-
-#mastodon .scrollable {
-  border-radius: var(--radius) var(--radius) 0 0 !important;
-  border: 0;
-}
-
-#mastodon .scrollable:first-child {
-  overflow: clip;
 }
 
 #mastodon .column-header__wrapper ~ .scrollable {
@@ -817,7 +781,8 @@ a:focus-visible,
   contain: unset !important;
 }
 
-#mastodon .scrollable:not(.scrollable--flex, .activity-stream, .privacy-policy),
+#mastodon
+  .scrollable:not(.scrollable--flex, .activity-stream, .privacy-policy),
 #mastodon .activity-stream:not(.activity-stream, .privacy-policy) {
   padding: 10px;
 }
@@ -830,47 +795,226 @@ a:focus-visible,
   margin-top: 0 !important;
 }
 
-#mastodon .columns-area {
-  box-sizing: border-box;
-  padding-bottom: 0;
-  height: 100% !important;
+#mastodon .search-results__section__header {
+  margin: 0 -10px 10px;
+  color: unset;
+  background: none;
+  padding-inline: 20px;
+  font-weight: 600;
 }
 
-#mastodon .explore__search-results {
-  padding: 10px;
+#mastodon .search-results__section {
+  border: 0;
+  margin-bottom: 20px;
 }
 
-#mastodon .dismissable-banner {
-  border-inline: 0;
-  border-top: 0;
-  margin: -10px;
-  margin-bottom: 10px;
-  border-radius: 0;
-  padding: 15px;
+#mastodon .dismissable-banner,
+#mastodon .follow_requests-unlocked_explanation {
+  display: flex;
+  align-items: center;
+  border: 0 !important;
+  margin: -10px !important;
+  margin-bottom: 10px !important;
+  border-radius: 0 !important;
+  padding: 15px !important;
+  height: max-content;
   isolation: isolate;
   overflow: hidden;
 }
 
 .dismissable-banner__message {
-  padding: 10px;
-  padding-inline-end: 30px;
+  padding-block: 10px;
+  order: -1;
 }
 
-.dismissable-banner__action {
-  margin: 10px;
+#mastodon .dismissable-banner .dismissable-banner__action,
+#mastodon .follow_requests-unlocked_explanation .dismissable-banner__action {
+  position: static;
 }
 
-#mastodon .column > .dismissable-banner {
+#mastodon .dismissable-banner .scrollable:not(.scrollable--flex),
+#mastodon
+  .follow_requests-unlocked_explanation
+  .scrollable:not(.scrollable--flex) {
+  padding: 0 !important;
+  padding-bottom: 40vh !important;
+}
+
+#mastodon .dismissable-banner .scrollable:not(.scrollable--flex)::before,
+#mastodon
+  .follow_requests-unlocked_explanation
+  .scrollable:not(.scrollable--flex)::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: inherit;
+  z-index: -1;
+}
+
+#mastodon
+  .dismissable-banner
+  .scrollable:not(.scrollable--flex)
+  .account-timeline__header,
+#mastodon
+  .follow_requests-unlocked_explanation
+  .scrollable:not(.scrollable--flex)
+  .account-timeline__header,
+#mastodon
+  .dismissable-banner
+  .scrollable:not(.scrollable--flex)
+  .dismissable-banner,
+#mastodon
+  .follow_requests-unlocked_explanation
+  .scrollable:not(.scrollable--flex)
+  .dismissable-banner {
+  margin: 0 !important;
+}
+
+#mastodon .dismissable-banner .focusable,
+#mastodon .follow_requests-unlocked_explanation .focusable,
+#mastodon .dismissable-banner .entry,
+#mastodon .follow_requests-unlocked_explanation .entry,
+#mastodon .dismissable-banner .statuses-grid__item .detailed-status,
+#mastodon
+  .follow_requests-unlocked_explanation
+  .statuses-grid__item
+  .detailed-status,
+#mastodon .dismissable-banner .trends__item,
+#mastodon .follow_requests-unlocked_explanation .trends__item,
+#mastodon .dismissable-banner .story,
+#mastodon .follow_requests-unlocked_explanation .story,
+#mastodon .dismissable-banner .account-card,
+#mastodon .follow_requests-unlocked_explanation .account-card,
+#mastodon .dismissable-banner .scrollable :not(.focusable) > .account,
+#mastodon
+  .follow_requests-unlocked_explanation
+  .scrollable
+  :not(.focusable)
+  > .account,
+#mastodon .dismissable-banner .timeline-hint,
+#mastodon .follow_requests-unlocked_explanation .timeline-hint {
+  border-radius: 0;
+}
+
+#mastodon .dismissable-banner .focusable::before,
+#mastodon .follow_requests-unlocked_explanation .focusable::before,
+#mastodon .dismissable-banner .entry::before,
+#mastodon .follow_requests-unlocked_explanation .entry::before,
+#mastodon .dismissable-banner .statuses-grid__item .detailed-status::before,
+#mastodon
+  .follow_requests-unlocked_explanation
+  .statuses-grid__item
+  .detailed-status::before,
+#mastodon .dismissable-banner .trends__item::before,
+#mastodon .follow_requests-unlocked_explanation .trends__item::before,
+#mastodon .dismissable-banner .story::before,
+#mastodon .follow_requests-unlocked_explanation .story::before,
+#mastodon .dismissable-banner .account-card::before,
+#mastodon .follow_requests-unlocked_explanation .account-card::before,
+#mastodon .dismissable-banner .scrollable :not(.focusable) > .account::before,
+#mastodon
+  .follow_requests-unlocked_explanation
+  .scrollable
+  :not(.focusable)
+  > .account::before,
+#mastodon .dismissable-banner .timeline-hint::before,
+#mastodon .follow_requests-unlocked_explanation .timeline-hint::before {
+  border-radius: 0 !important;
+}
+
+#mastodon .dismissable-banner .focusable::after,
+#mastodon .follow_requests-unlocked_explanation .focusable::after,
+#mastodon .dismissable-banner .entry::after,
+#mastodon .follow_requests-unlocked_explanation .entry::after,
+#mastodon .dismissable-banner .statuses-grid__item .detailed-status::after,
+#mastodon
+  .follow_requests-unlocked_explanation
+  .statuses-grid__item
+  .detailed-status::after,
+#mastodon .dismissable-banner .trends__item::after,
+#mastodon .follow_requests-unlocked_explanation .trends__item::after,
+#mastodon .dismissable-banner .story::after,
+#mastodon .follow_requests-unlocked_explanation .story::after,
+#mastodon .dismissable-banner .account-card::after,
+#mastodon .follow_requests-unlocked_explanation .account-card::after,
+#mastodon .dismissable-banner .scrollable :not(.focusable) > .account::after,
+#mastodon
+  .follow_requests-unlocked_explanation
+  .scrollable
+  :not(.focusable)
+  > .account::after,
+#mastodon .dismissable-banner .timeline-hint::after,
+#mastodon .follow_requests-unlocked_explanation .timeline-hint::after {
+  inset-inline: 0 !important;
+}
+
+#mastodon .dismissable-banner [class*='explore__'] > *,
+#mastodon .follow_requests-unlocked_explanation [class*='explore__'] > * {
+  border-radius: var(--radius);
+}
+
+#mastodon .dismissable-banner .detailed-status__wrapper,
+#mastodon .follow_requests-unlocked_explanation .detailed-status__wrapper {
+  margin: 0 !important;
+}
+
+#mastodon .dismissable-banner .status__action-bar,
+#mastodon .follow_requests-unlocked_explanation .status__action-bar {
+  margin-bottom: 0;
+  gap: 0;
+  margin-inline-end: 0 !important;
+}
+
+#mastodon
+  .dismissable-banner
+  .status__action-bar
+  :not(i, .status__action-bar-spacer),
+#mastodon
+  .follow_requests-unlocked_explanation
+  .status__action-bar
+  :not(i, .status__action-bar-spacer) {
+  display: flex;
+  flex-grow: 9999;
+  justify-content: center !important;
+  max-width: 55px;
+  min-width: max-content;
+}
+
+#mastodon .dismissable-banner .status__action-bar > .icon-button:first-child,
+#mastodon
+  .follow_requests-unlocked_explanation
+  .status__action-bar
+  > .icon-button:first-child {
+  margin-inline-start: -8px !important;
+}
+
+#mastodon .dismissable-banner .status__action-bar,
+#mastodon .follow_requests-unlocked_explanation .status__action-bar,
+#mastodon .dismissable-banner .detailed-status__action-bar,
+#mastodon .follow_requests-unlocked_explanation .detailed-status__action-bar,
+#mastodon .dismissable-banner .picture-in-picture__footer,
+#mastodon .follow_requests-unlocked_explanation .picture-in-picture__footer {
+  flex-wrap: wrap;
+}
+@media (width <= 890px) {
+  #mastodon .dismissable-banner,
+  #mastodon .follow_requests-unlocked_explanation {
+    margin: 0 !important;
+  }
+}
+
+#mastodon .column:not(.scrollable--flex) > .dismissable-banner {
   border-radius: var(--radius) var(--radius) 0 0 !important;
   margin: 0;
 }
 
-#mastodon .column > .dismissable-banner ~ .scrollable {
+#mastodon .column:not(.scrollable--flex) > .dismissable-banner ~ .scrollable {
   border-radius: 0 !important;
 }
 
-#mastodon .scrollable > .dismissable-banner {
+#mastodon :not(.account__section-headline) + .scrollable > .dismissable-banner {
   margin: 0 !important;
+  margin-bottom: 0 !important;
 }
 
 #mastodon .empty-column-indicator {
@@ -902,7 +1046,7 @@ a:focus-visible,
   margin-bottom: 10px;
   background-color: inherit;
   border-radius: var(--radius) !important;
-  animation: slideUp backwards 0.4s cubic-bezier(0, 1, 1, 1);
+  animation: slide-up backwards 0.4s cubic-bezier(0, 1, 1, 1);
 }
 
 #mastodon .account-timeline__header .account__moved-note {
@@ -969,12 +1113,10 @@ a:focus-visible,
   flex-direction: column;
   background: inherit;
 }
-
-body:not(.flavour-glitch)
-  #mastodon
-  .account-timeline__header
-  .account__header__bar {
-  background: inherit !important;
+@media (width <= 890px) {
+  #mastodon .account-timeline__header .account__header__bar {
+    padding-inline: 15px;
+  }
 }
 
 #mastodon
@@ -983,10 +1125,11 @@ body:not(.flavour-glitch)
   .account__header__tabs {
   overflow: visible !important;
   position: relative;
+  align-items: flex-end;
   padding: 0;
-  padding-top: 10px;
   height: unset !important;
   margin-top: -55px !important;
+  isolation: isolate;
 }
 
 #mastodon
@@ -998,11 +1141,12 @@ body:not(.flavour-glitch)
   top: 0;
   left: -20px;
   right: -20px;
-  bottom: -40px;
+  bottom: -100px;
   backdrop-filter: blur(40px);
   filter: brightness(1.1);
   pointer-events: none;
   opacity: 0.7;
+  z-index: -1;
   clip-path: inset(55px 0 0 0 round var(--radius));
   mask: linear-gradient(transparent 55px, #000 50px, transparent);
   -webkit-mask: linear-gradient(transparent 55px, #000 50px, transparent);
@@ -1020,17 +1164,7 @@ body:not(.flavour-glitch)
   margin-inline-start: 0 !important;
   overflow: visible !important;
   position: relative;
-}
-
-.layout-single-column
-  #mastodon
-  .account-timeline__header
-  .account__header__bar
-  .avatar
-  .account-role {
-  position: absolute;
-  bottom: 0;
-  left: 100%;
+  margin-top: 20px;
 }
 
 #mastodon
@@ -1038,12 +1172,17 @@ body:not(.flavour-glitch)
   .account__header__bar
   .avatar
   .account-role {
-  border-radius: var(--radius-round);
+  position: absolute;
+  bottom: 0;
+  left: 110%;
+  border-radius: var(--radius);
 }
 
 #mastodon .account-timeline__header .account__header__bar .account__avatar {
   border: 0;
   box-shadow: var(--shadow);
+  background: none;
+  background-size: cover !important;
 }
 
 #mastodon .account-timeline__header .account__header__tabs__name {
@@ -1057,6 +1196,15 @@ body:not(.flavour-glitch)
   flex-wrap: wrap;
   white-space: unset;
   gap: 0 0.4em;
+  font-weight: 600;
+}
+
+#mastodon .account-timeline__header .account__header__badges {
+  margin-top: 10px;
+}
+
+#mastodon .account-timeline__header .account__header__badges span {
+  font-weight: 600;
 }
 
 #mastodon .account-timeline__header .account__header__bio {
@@ -1068,16 +1216,20 @@ body:not(.flavour-glitch)
   padding-inline: 0;
 }
 
+#mastodon .account-timeline__header .account__header__content {
+  padding-top: 0;
+}
+
 #mastodon .account-timeline__header .account__header__extra {
-  line-height: 1.5;
   margin-top: 1em;
 }
 
-#mastodon:not(.admin-account-bio) > div > .account__header__fields,
+#mastodon :not(.admin-account-bio) > div > .account__header__fields,
 #mastodon .account__header__account-note {
   display: flex;
   flex-wrap: wrap;
   gap: 2px;
+  margin-bottom: 20px;
   background: none;
   border-radius: var(--radius);
   overflow: hidden;
@@ -1086,7 +1238,8 @@ body:not(.flavour-glitch)
   border: 0;
 }
 
-#mastodon:not(.admin-account-bio)
+#mastodon
+  :not(.admin-account-bio)
   > div
   > .account__header__fields.account__header__fields:not(:first-child),
 #mastodon
@@ -1100,9 +1253,10 @@ body:not(.flavour-glitch)
   padding-bottom: 0 !important;
 }
 
-#mastodon:not(.admin-account-bio) > div > .account__header__fields dl,
+#mastodon :not(.admin-account-bio) > div > .account__header__fields dl,
 #mastodon .account__header__account-note dl,
-#mastodon:not(.admin-account-bio)
+#mastodon
+  :not(.admin-account-bio)
   > div
   > .account__header__fields.account__header__account-note.account__header__account-note,
 #mastodon
@@ -1116,12 +1270,14 @@ body:not(.flavour-glitch)
   flex-grow: 1;
 }
 
-#mastodon:not(.admin-account-bio)
+#mastodon
+  :not(.admin-account-bio)
   > div
   > .account__header__fields
   dl:not(.verified),
 #mastodon .account__header__account-note dl:not(.verified),
-#mastodon:not(.admin-account-bio)
+#mastodon
+  :not(.admin-account-bio)
   > div
   > .account__header__fields.account__header__account-note.account__header__account-note:not(
     .verified
@@ -1133,9 +1289,10 @@ body:not(.flavour-glitch)
   background-color: var(--elevated-color);
 }
 
-#mastodon:not(.admin-account-bio) > div > .account__header__fields dl dt,
+#mastodon :not(.admin-account-bio) > div > .account__header__fields dl dt,
 #mastodon .account__header__account-note dl dt,
-#mastodon:not(.admin-account-bio)
+#mastodon
+  :not(.admin-account-bio)
   > div
   > .account__header__fields.account__header__account-note.account__header__account-note
   dt,
@@ -1145,12 +1302,12 @@ body:not(.flavour-glitch)
   all: unset;
   color: unset;
   opacity: 0.9;
-  text-transform: capitalize;
 }
 
-#mastodon:not(.admin-account-bio) > div > .account__header__fields dl dd,
+#mastodon :not(.admin-account-bio) > div > .account__header__fields dl dd,
 #mastodon .account__header__account-note dl dd,
-#mastodon:not(.admin-account-bio)
+#mastodon
+  :not(.admin-account-bio)
   > div
   > .account__header__fields.account__header__account-note.account__header__account-note
   dd,
@@ -1163,7 +1320,8 @@ body:not(.flavour-glitch)
   text-align: unset;
 }
 
-#mastodon:not(.admin-account-bio)
+#mastodon
+  :not(.admin-account-bio)
   > div
   > .account__header__fields
   dl
@@ -1176,7 +1334,8 @@ body:not(.flavour-glitch)
   dd
   > span
   > a:first-child:last-child::after,
-#mastodon:not(.admin-account-bio)
+#mastodon
+  :not(.admin-account-bio)
   > div
   > .account__header__fields.account__header__account-note.account__header__account-note
   dd
@@ -1187,7 +1346,8 @@ body:not(.flavour-glitch)
   dd
   > span
   > a:first-child:last-child::after,
-#mastodon:not(.admin-account-bio)
+#mastodon
+  :not(.admin-account-bio)
   > div
   > .account__header__fields
   dl
@@ -1200,7 +1360,8 @@ body:not(.flavour-glitch)
   dd
   .h-card:first-child:last-child
   a::after,
-#mastodon:not(.admin-account-bio)
+#mastodon
+  :not(.admin-account-bio)
   > div
   > .account__header__fields.account__header__account-note.account__header__account-note
   dd
@@ -1219,7 +1380,8 @@ body:not(.flavour-glitch)
   transition: opacity 0.2s;
 }
 
-#mastodon:not(.admin-account-bio)
+#mastodon
+  :not(.admin-account-bio)
   > div
   > .account__header__fields
   dl
@@ -1232,7 +1394,8 @@ body:not(.flavour-glitch)
   dd
   > span
   > a:first-child:last-child:hover::after,
-#mastodon:not(.admin-account-bio)
+#mastodon
+  :not(.admin-account-bio)
   > div
   > .account__header__fields.account__header__account-note.account__header__account-note
   dd
@@ -1243,7 +1406,8 @@ body:not(.flavour-glitch)
   dd
   > span
   > a:first-child:last-child:hover::after,
-#mastodon:not(.admin-account-bio)
+#mastodon
+  :not(.admin-account-bio)
   > div
   > .account__header__fields
   dl
@@ -1256,7 +1420,8 @@ body:not(.flavour-glitch)
   dd
   .h-card:first-child:last-child
   a:hover::after,
-#mastodon:not(.admin-account-bio)
+#mastodon
+  :not(.admin-account-bio)
   > div
   > .account__header__fields.account__header__account-note.account__header__account-note
   dd
@@ -1267,7 +1432,8 @@ body:not(.flavour-glitch)
   dd
   .h-card:first-child:last-child
   a:hover::after,
-#mastodon:not(.admin-account-bio)
+#mastodon
+  :not(.admin-account-bio)
   > div
   > .account__header__fields
   dl
@@ -1280,7 +1446,8 @@ body:not(.flavour-glitch)
   dd
   > span
   > a:first-child:last-child:focus::after,
-#mastodon:not(.admin-account-bio)
+#mastodon
+  :not(.admin-account-bio)
   > div
   > .account__header__fields.account__header__account-note.account__header__account-note
   dd
@@ -1291,7 +1458,8 @@ body:not(.flavour-glitch)
   dd
   > span
   > a:first-child:last-child:focus::after,
-#mastodon:not(.admin-account-bio)
+#mastodon
+  :not(.admin-account-bio)
   > div
   > .account__header__fields
   dl
@@ -1304,7 +1472,8 @@ body:not(.flavour-glitch)
   dd
   .h-card:first-child:last-child
   a:focus::after,
-#mastodon:not(.admin-account-bio)
+#mastodon
+  :not(.admin-account-bio)
   > div
   > .account__header__fields.account__header__account-note.account__header__account-note
   dd
@@ -1318,13 +1487,15 @@ body:not(.flavour-glitch)
   opacity: 1;
 }
 
-#mastodon:not(.admin-account-bio)
+#mastodon
+  :not(.admin-account-bio)
   > div
   > .account__header__fields
   dl
   dd.verified,
 #mastodon .account__header__account-note dl dd.verified,
-#mastodon:not(.admin-account-bio)
+#mastodon
+  :not(.admin-account-bio)
   > div
   > .account__header__fields.account__header__account-note.account__header__account-note
   dd.verified,
@@ -1336,14 +1507,16 @@ body:not(.flavour-glitch)
   background: none;
 }
 
-#mastodon:not(.admin-account-bio)
+#mastodon
+  :not(.admin-account-bio)
   > div
   > .account__header__fields
   dl
   dd.verified
   a::before,
 #mastodon .account__header__account-note dl dd.verified a::before,
-#mastodon:not(.admin-account-bio)
+#mastodon
+  :not(.admin-account-bio)
   > div
   > .account__header__fields.account__header__account-note.account__header__account-note
   dd.verified
@@ -1352,14 +1525,16 @@ body:not(.flavour-glitch)
   .account__header__account-note.account__header__account-note.account__header__account-note
   dd.verified
   a::before,
-#mastodon:not(.admin-account-bio)
+#mastodon
+  :not(.admin-account-bio)
   > div
   > .account__header__fields
   dl
   dd.verified
   a::after,
 #mastodon .account__header__account-note dl dd.verified a::after,
-#mastodon:not(.admin-account-bio)
+#mastodon
+  :not(.admin-account-bio)
   > div
   > .account__header__fields.account__header__account-note.account__header__account-note
   dd.verified
@@ -1375,14 +1550,16 @@ body:not(.flavour-glitch)
   opacity: 0.2;
 }
 
-#mastodon:not(.admin-account-bio)
+#mastodon
+  :not(.admin-account-bio)
   > div
   > .account__header__fields
   dl
   dd.verified
   a::after,
 #mastodon .account__header__account-note dl dd.verified a::after,
-#mastodon:not(.admin-account-bio)
+#mastodon
+  :not(.admin-account-bio)
   > div
   > .account__header__fields.account__header__account-note.account__header__account-note
   dd.verified
@@ -1396,7 +1573,8 @@ body:not(.flavour-glitch)
   z-index: -2;
 }
 
-#mastodon:not(.admin-account-bio)
+#mastodon
+  :not(.admin-account-bio)
   > div
   > .account__header__fields.account__header__account-note.account__header__account-note,
 #mastodon
@@ -1413,7 +1591,8 @@ body:not(.flavour-glitch)
   width: unset;
 }
 
-#mastodon:not(.admin-account-bio)
+#mastodon
+  :not(.admin-account-bio)
   > div
   > .account__header__fields.account__header__account-note.account__header__account-note
   label,
@@ -1430,7 +1609,8 @@ body:not(.flavour-glitch)
   vertical-align: unset;
 }
 
-#mastodon:not(.admin-account-bio)
+#mastodon
+  :not(.admin-account-bio)
   > div
   > .account__header__fields.account__header__account-note.account__header__account-note:focus-within,
 #mastodon
@@ -1440,7 +1620,8 @@ body:not(.flavour-glitch)
   border: 1px solid;
 }
 
-#mastodon:not(.admin-account-bio)
+#mastodon
+  :not(.admin-account-bio)
   > div
   > .account__header__fields.account__header__account-note.account__header__account-note:not(
     :focus-within
@@ -1454,7 +1635,8 @@ body:not(.flavour-glitch)
   padding-bottom: 0.4em !important;
 }
 
-#mastodon:not(.admin-account-bio)
+#mastodon
+  :not(.admin-account-bio)
   > div
   > .account__header__fields.account__header__account-note.account__header__account-note
   textarea,
@@ -1464,6 +1646,7 @@ body:not(.flavour-glitch)
   width: 0;
   flex-grow: 1;
   border-radius: 0;
+  padding: 0;
   margin: -100px !important;
   padding: 100px !important;
   padding-inline-end: 0.7em !important;
@@ -1475,7 +1658,8 @@ body:not(.flavour-glitch)
   background: none;
 }
 
-#mastodon:not(.admin-account-bio)
+#mastodon
+  :not(.admin-account-bio)
   > div
   > .account__header__fields.account__header__account-note.account__header__account-note
   textarea::placeholder,
@@ -1485,7 +1669,8 @@ body:not(.flavour-glitch)
   font-weight: 600;
 }
 
-#mastodon:not(.admin-account-bio)
+#mastodon
+  :not(.admin-account-bio)
   > div
   > .account__header__fields.account__header__account-note.account__header__account-note
   label,
@@ -1497,55 +1682,77 @@ body:not(.flavour-glitch)
   padding-inline: 14px;
 }
 
-#mastodon .account__section-headline {
+#mastodon .account__section-headline:not(:first-child, :nth-child(2)) {
   background: none;
   position: relative;
   z-index: 2;
 }
 
-.with-modals #mastodon .account__section-headline {
+.with-modals
+  #mastodon
+  .account__section-headline:not(:first-child, :nth-child(2)) {
   border: 0 !important;
 }
 
-#mastodon .account__section-headline a,
-#mastodon .account__section-headline button {
+#mastodon .account__section-headline:not(:first-child, :nth-child(2)) a,
+#mastodon
+  .account__section-headline:not(:first-child, :nth-child(2))
+  button {
   background: none;
   border-radius: 0 !important;
 }
 
-#mastodon .account__section-headline a span,
-#mastodon .account__section-headline button span {
+#mastodon
+  .account__section-headline:not(:first-child, :nth-child(2))
+  a
+  span,
+#mastodon
+  .account__section-headline:not(:first-child, :nth-child(2))
+  button
+  span {
   font-weight: 400;
   opacity: 0.7;
   transition: opacity 0.2s;
 }
 
-#mastodon .account__section-headline a.active span,
-#mastodon .account__section-headline button.active span {
+#mastodon
+  .account__section-headline:not(:first-child, :nth-child(2))
+  a.active
+  span,
+#mastodon
+  .account__section-headline:not(:first-child, :nth-child(2))
+  button.active
+  span {
   font-weight: 700;
   opacity: 1;
 }
 
-#mastodon .account__section-headline a:hover span,
-#mastodon .account__section-headline button:hover span,
-#mastodon .account__section-headline a:active span,
-#mastodon .account__section-headline button:active span {
+#mastodon
+  .account__section-headline:not(:first-child, :nth-child(2))
+  a:hover
+  span,
+#mastodon
+  .account__section-headline:not(:first-child, :nth-child(2))
+  button:hover
+  span,
+#mastodon
+  .account__section-headline:not(:first-child, :nth-child(2))
+  a:active
+  span,
+#mastodon
+  .account__section-headline:not(:first-child, :nth-child(2))
+  button:active
+  span {
   opacity: 1 !important;
 }
 
-#mastodon .account__section-headline a::before,
-#mastodon .account__section-headline button::before {
+#mastodon
+  .account__section-headline:not(:first-child, :nth-child(2))
+  a::before,
+#mastodon
+  .account__section-headline:not(:first-child, :nth-child(2))
+  button::before {
   border-color: transparent transparent var(--border-color);
-}
-
-#mastodon .notification__filter-bar {
-  border: 0 !important;
-  margin-bottom: calc(0px - var(--radius));
-  padding-bottom: var(--radius);
-}
-
-#mastodon .notification__filter-bar + .scrollable {
-  overflow: clip;
 }
 
 #mastodon .account-gallery__container {
@@ -1607,15 +1814,15 @@ body:not(.flavour-glitch)
 .trends__item,
 .story,
 .account-card,
-.scrollable:not(.focusable) > .account,
+.scrollable :not(.focusable) > .account,
 .timeline-hint {
-  overflow: clip;
+  overflow: hidden;
   transition:
     background 0.2s,
     box-shadow 0.4s,
     margin 0.2s,
     border 0.2s;
-  animation: slideUp backwards 0.4s cubic-bezier(0, 1, 1, 1);
+  animation: slide-up backwards 0.4s cubic-bezier(0, 1, 1, 1);
   position: relative;
   border-radius: var(--radius);
 }
@@ -1626,7 +1833,7 @@ body:not(.flavour-glitch)
 .trends__item.trends__item,
 .story.trends__item,
 .account-card.trends__item,
-.scrollable:not(.focusable) > .account.trends__item,
+.scrollable :not(.focusable) > .account.trends__item,
 .timeline-hint.trends__item,
 .focusable.story,
 .entry.story,
@@ -1634,7 +1841,7 @@ body:not(.flavour-glitch)
 .trends__item.story,
 .story.story,
 .account-card.story,
-.scrollable:not(.focusable) > .account.story,
+.scrollable :not(.focusable) > .account.story,
 .timeline-hint.story,
 .focusable.account-card,
 .entry.account-card,
@@ -1642,9 +1849,9 @@ body:not(.flavour-glitch)
 .trends__item.account-card,
 .story.account-card,
 .account-card.account-card,
-.scrollable:not(.focusable) > .account.account-card,
+.scrollable :not(.focusable) > .account.account-card,
 .timeline-hint.account-card {
-  animation-name: slideUpFade;
+  animation-name: slide-up-fade;
 }
 
 .focusable.trends__item:nth-child(1),
@@ -1653,7 +1860,7 @@ body:not(.flavour-glitch)
 .trends__item.trends__item:nth-child(1),
 .story.trends__item:nth-child(1),
 .account-card.trends__item:nth-child(1),
-.scrollable:not(.focusable) > .account.trends__item:nth-child(1),
+.scrollable :not(.focusable) > .account.trends__item:nth-child(1),
 .timeline-hint.trends__item:nth-child(1),
 .focusable.story:nth-child(1),
 .entry.story:nth-child(1),
@@ -1661,7 +1868,7 @@ body:not(.flavour-glitch)
 .trends__item.story:nth-child(1),
 .story.story:nth-child(1),
 .account-card.story:nth-child(1),
-.scrollable:not(.focusable) > .account.story:nth-child(1),
+.scrollable :not(.focusable) > .account.story:nth-child(1),
 .timeline-hint.story:nth-child(1),
 .focusable.account-card:nth-child(1),
 .entry.account-card:nth-child(1),
@@ -1669,7 +1876,7 @@ body:not(.flavour-glitch)
 .trends__item.account-card:nth-child(1),
 .story.account-card:nth-child(1),
 .account-card.account-card:nth-child(1),
-.scrollable:not(.focusable) > .account.account-card:nth-child(1),
+.scrollable :not(.focusable) > .account.account-card:nth-child(1),
 .timeline-hint.account-card:nth-child(1) {
   animation-delay: 0.04s;
 }
@@ -1680,7 +1887,7 @@ body:not(.flavour-glitch)
 .trends__item.trends__item:nth-child(2),
 .story.trends__item:nth-child(2),
 .account-card.trends__item:nth-child(2),
-.scrollable:not(.focusable) > .account.trends__item:nth-child(2),
+.scrollable :not(.focusable) > .account.trends__item:nth-child(2),
 .timeline-hint.trends__item:nth-child(2),
 .focusable.story:nth-child(2),
 .entry.story:nth-child(2),
@@ -1688,7 +1895,7 @@ body:not(.flavour-glitch)
 .trends__item.story:nth-child(2),
 .story.story:nth-child(2),
 .account-card.story:nth-child(2),
-.scrollable:not(.focusable) > .account.story:nth-child(2),
+.scrollable :not(.focusable) > .account.story:nth-child(2),
 .timeline-hint.story:nth-child(2),
 .focusable.account-card:nth-child(2),
 .entry.account-card:nth-child(2),
@@ -1696,7 +1903,7 @@ body:not(.flavour-glitch)
 .trends__item.account-card:nth-child(2),
 .story.account-card:nth-child(2),
 .account-card.account-card:nth-child(2),
-.scrollable:not(.focusable) > .account.account-card:nth-child(2),
+.scrollable :not(.focusable) > .account.account-card:nth-child(2),
 .timeline-hint.account-card:nth-child(2) {
   animation-delay: 0.08s;
 }
@@ -1707,7 +1914,7 @@ body:not(.flavour-glitch)
 .trends__item.trends__item:nth-child(3),
 .story.trends__item:nth-child(3),
 .account-card.trends__item:nth-child(3),
-.scrollable:not(.focusable) > .account.trends__item:nth-child(3),
+.scrollable :not(.focusable) > .account.trends__item:nth-child(3),
 .timeline-hint.trends__item:nth-child(3),
 .focusable.story:nth-child(3),
 .entry.story:nth-child(3),
@@ -1715,7 +1922,7 @@ body:not(.flavour-glitch)
 .trends__item.story:nth-child(3),
 .story.story:nth-child(3),
 .account-card.story:nth-child(3),
-.scrollable:not(.focusable) > .account.story:nth-child(3),
+.scrollable :not(.focusable) > .account.story:nth-child(3),
 .timeline-hint.story:nth-child(3),
 .focusable.account-card:nth-child(3),
 .entry.account-card:nth-child(3),
@@ -1723,7 +1930,7 @@ body:not(.flavour-glitch)
 .trends__item.account-card:nth-child(3),
 .story.account-card:nth-child(3),
 .account-card.account-card:nth-child(3),
-.scrollable:not(.focusable) > .account.account-card:nth-child(3),
+.scrollable :not(.focusable) > .account.account-card:nth-child(3),
 .timeline-hint.account-card:nth-child(3) {
   animation-delay: 0.12s;
 }
@@ -1734,7 +1941,7 @@ body:not(.flavour-glitch)
 .trends__item.trends__item:nth-child(4),
 .story.trends__item:nth-child(4),
 .account-card.trends__item:nth-child(4),
-.scrollable:not(.focusable) > .account.trends__item:nth-child(4),
+.scrollable :not(.focusable) > .account.trends__item:nth-child(4),
 .timeline-hint.trends__item:nth-child(4),
 .focusable.story:nth-child(4),
 .entry.story:nth-child(4),
@@ -1742,7 +1949,7 @@ body:not(.flavour-glitch)
 .trends__item.story:nth-child(4),
 .story.story:nth-child(4),
 .account-card.story:nth-child(4),
-.scrollable:not(.focusable) > .account.story:nth-child(4),
+.scrollable :not(.focusable) > .account.story:nth-child(4),
 .timeline-hint.story:nth-child(4),
 .focusable.account-card:nth-child(4),
 .entry.account-card:nth-child(4),
@@ -1750,7 +1957,7 @@ body:not(.flavour-glitch)
 .trends__item.account-card:nth-child(4),
 .story.account-card:nth-child(4),
 .account-card.account-card:nth-child(4),
-.scrollable:not(.focusable) > .account.account-card:nth-child(4),
+.scrollable :not(.focusable) > .account.account-card:nth-child(4),
 .timeline-hint.account-card:nth-child(4) {
   animation-delay: 0.16s;
 }
@@ -1761,7 +1968,7 @@ body:not(.flavour-glitch)
 .trends__item.trends__item:nth-child(5),
 .story.trends__item:nth-child(5),
 .account-card.trends__item:nth-child(5),
-.scrollable:not(.focusable) > .account.trends__item:nth-child(5),
+.scrollable :not(.focusable) > .account.trends__item:nth-child(5),
 .timeline-hint.trends__item:nth-child(5),
 .focusable.story:nth-child(5),
 .entry.story:nth-child(5),
@@ -1769,7 +1976,7 @@ body:not(.flavour-glitch)
 .trends__item.story:nth-child(5),
 .story.story:nth-child(5),
 .account-card.story:nth-child(5),
-.scrollable:not(.focusable) > .account.story:nth-child(5),
+.scrollable :not(.focusable) > .account.story:nth-child(5),
 .timeline-hint.story:nth-child(5),
 .focusable.account-card:nth-child(5),
 .entry.account-card:nth-child(5),
@@ -1777,7 +1984,7 @@ body:not(.flavour-glitch)
 .trends__item.account-card:nth-child(5),
 .story.account-card:nth-child(5),
 .account-card.account-card:nth-child(5),
-.scrollable:not(.focusable) > .account.account-card:nth-child(5),
+.scrollable :not(.focusable) > .account.account-card:nth-child(5),
 .timeline-hint.account-card:nth-child(5) {
   animation-delay: 0.2s;
 }
@@ -1788,7 +1995,7 @@ body:not(.flavour-glitch)
 .trends__item.trends__item:nth-child(6),
 .story.trends__item:nth-child(6),
 .account-card.trends__item:nth-child(6),
-.scrollable:not(.focusable) > .account.trends__item:nth-child(6),
+.scrollable :not(.focusable) > .account.trends__item:nth-child(6),
 .timeline-hint.trends__item:nth-child(6),
 .focusable.story:nth-child(6),
 .entry.story:nth-child(6),
@@ -1796,7 +2003,7 @@ body:not(.flavour-glitch)
 .trends__item.story:nth-child(6),
 .story.story:nth-child(6),
 .account-card.story:nth-child(6),
-.scrollable:not(.focusable) > .account.story:nth-child(6),
+.scrollable :not(.focusable) > .account.story:nth-child(6),
 .timeline-hint.story:nth-child(6),
 .focusable.account-card:nth-child(6),
 .entry.account-card:nth-child(6),
@@ -1804,7 +2011,7 @@ body:not(.flavour-glitch)
 .trends__item.account-card:nth-child(6),
 .story.account-card:nth-child(6),
 .account-card.account-card:nth-child(6),
-.scrollable:not(.focusable) > .account.account-card:nth-child(6),
+.scrollable :not(.focusable) > .account.account-card:nth-child(6),
 .timeline-hint.account-card:nth-child(6) {
   animation-delay: 0.24s;
 }
@@ -1815,7 +2022,7 @@ body:not(.flavour-glitch)
 .trends__item.trends__item:nth-child(7),
 .story.trends__item:nth-child(7),
 .account-card.trends__item:nth-child(7),
-.scrollable:not(.focusable) > .account.trends__item:nth-child(7),
+.scrollable :not(.focusable) > .account.trends__item:nth-child(7),
 .timeline-hint.trends__item:nth-child(7),
 .focusable.story:nth-child(7),
 .entry.story:nth-child(7),
@@ -1823,7 +2030,7 @@ body:not(.flavour-glitch)
 .trends__item.story:nth-child(7),
 .story.story:nth-child(7),
 .account-card.story:nth-child(7),
-.scrollable:not(.focusable) > .account.story:nth-child(7),
+.scrollable :not(.focusable) > .account.story:nth-child(7),
 .timeline-hint.story:nth-child(7),
 .focusable.account-card:nth-child(7),
 .entry.account-card:nth-child(7),
@@ -1831,7 +2038,7 @@ body:not(.flavour-glitch)
 .trends__item.account-card:nth-child(7),
 .story.account-card:nth-child(7),
 .account-card.account-card:nth-child(7),
-.scrollable:not(.focusable) > .account.account-card:nth-child(7),
+.scrollable :not(.focusable) > .account.account-card:nth-child(7),
 .timeline-hint.account-card:nth-child(7) {
   animation-delay: 0.28s;
 }
@@ -1842,7 +2049,7 @@ body:not(.flavour-glitch)
 .trends__item.trends__item:nth-child(8),
 .story.trends__item:nth-child(8),
 .account-card.trends__item:nth-child(8),
-.scrollable:not(.focusable) > .account.trends__item:nth-child(8),
+.scrollable :not(.focusable) > .account.trends__item:nth-child(8),
 .timeline-hint.trends__item:nth-child(8),
 .focusable.story:nth-child(8),
 .entry.story:nth-child(8),
@@ -1850,7 +2057,7 @@ body:not(.flavour-glitch)
 .trends__item.story:nth-child(8),
 .story.story:nth-child(8),
 .account-card.story:nth-child(8),
-.scrollable:not(.focusable) > .account.story:nth-child(8),
+.scrollable :not(.focusable) > .account.story:nth-child(8),
 .timeline-hint.story:nth-child(8),
 .focusable.account-card:nth-child(8),
 .entry.account-card:nth-child(8),
@@ -1858,7 +2065,7 @@ body:not(.flavour-glitch)
 .trends__item.account-card:nth-child(8),
 .story.account-card:nth-child(8),
 .account-card.account-card:nth-child(8),
-.scrollable:not(.focusable) > .account.account-card:nth-child(8),
+.scrollable :not(.focusable) > .account.account-card:nth-child(8),
 .timeline-hint.account-card:nth-child(8) {
   animation-delay: 0.32s;
 }
@@ -1869,7 +2076,7 @@ body:not(.flavour-glitch)
 .trends__item.trends__item:nth-child(9),
 .story.trends__item:nth-child(9),
 .account-card.trends__item:nth-child(9),
-.scrollable:not(.focusable) > .account.trends__item:nth-child(9),
+.scrollable :not(.focusable) > .account.trends__item:nth-child(9),
 .timeline-hint.trends__item:nth-child(9),
 .focusable.story:nth-child(9),
 .entry.story:nth-child(9),
@@ -1877,7 +2084,7 @@ body:not(.flavour-glitch)
 .trends__item.story:nth-child(9),
 .story.story:nth-child(9),
 .account-card.story:nth-child(9),
-.scrollable:not(.focusable) > .account.story:nth-child(9),
+.scrollable :not(.focusable) > .account.story:nth-child(9),
 .timeline-hint.story:nth-child(9),
 .focusable.account-card:nth-child(9),
 .entry.account-card:nth-child(9),
@@ -1885,7 +2092,7 @@ body:not(.flavour-glitch)
 .trends__item.account-card:nth-child(9),
 .story.account-card:nth-child(9),
 .account-card.account-card:nth-child(9),
-.scrollable:not(.focusable) > .account.account-card:nth-child(9),
+.scrollable :not(.focusable) > .account.account-card:nth-child(9),
 .timeline-hint.account-card:nth-child(9) {
   animation-delay: 0.36s;
 }
@@ -1896,7 +2103,7 @@ body:not(.flavour-glitch)
 .trends__item.trends__item:nth-child(10),
 .story.trends__item:nth-child(10),
 .account-card.trends__item:nth-child(10),
-.scrollable:not(.focusable) > .account.trends__item:nth-child(10),
+.scrollable :not(.focusable) > .account.trends__item:nth-child(10),
 .timeline-hint.trends__item:nth-child(10),
 .focusable.story:nth-child(10),
 .entry.story:nth-child(10),
@@ -1904,7 +2111,7 @@ body:not(.flavour-glitch)
 .trends__item.story:nth-child(10),
 .story.story:nth-child(10),
 .account-card.story:nth-child(10),
-.scrollable:not(.focusable) > .account.story:nth-child(10),
+.scrollable :not(.focusable) > .account.story:nth-child(10),
 .timeline-hint.story:nth-child(10),
 .focusable.account-card:nth-child(10),
 .entry.account-card:nth-child(10),
@@ -1912,7 +2119,7 @@ body:not(.flavour-glitch)
 .trends__item.account-card:nth-child(10),
 .story.account-card:nth-child(10),
 .account-card.account-card:nth-child(10),
-.scrollable:not(.focusable) > .account.account-card:nth-child(10),
+.scrollable :not(.focusable) > .account.account-card:nth-child(10),
 .timeline-hint.account-card:nth-child(10) {
   animation-delay: 0.4s;
 }
@@ -1923,7 +2130,7 @@ body:not(.flavour-glitch)
 .trends__item.trends__item:nth-child(11),
 .story.trends__item:nth-child(11),
 .account-card.trends__item:nth-child(11),
-.scrollable:not(.focusable) > .account.trends__item:nth-child(11),
+.scrollable :not(.focusable) > .account.trends__item:nth-child(11),
 .timeline-hint.trends__item:nth-child(11),
 .focusable.story:nth-child(11),
 .entry.story:nth-child(11),
@@ -1931,7 +2138,7 @@ body:not(.flavour-glitch)
 .trends__item.story:nth-child(11),
 .story.story:nth-child(11),
 .account-card.story:nth-child(11),
-.scrollable:not(.focusable) > .account.story:nth-child(11),
+.scrollable :not(.focusable) > .account.story:nth-child(11),
 .timeline-hint.story:nth-child(11),
 .focusable.account-card:nth-child(11),
 .entry.account-card:nth-child(11),
@@ -1939,7 +2146,7 @@ body:not(.flavour-glitch)
 .trends__item.account-card:nth-child(11),
 .story.account-card:nth-child(11),
 .account-card.account-card:nth-child(11),
-.scrollable:not(.focusable) > .account.account-card:nth-child(11),
+.scrollable :not(.focusable) > .account.account-card:nth-child(11),
 .timeline-hint.account-card:nth-child(11) {
   animation-delay: 0.44s;
 }
@@ -1950,7 +2157,7 @@ body:not(.flavour-glitch)
 .trends__item.focusable,
 .story.focusable,
 .account-card.focusable,
-.scrollable:not(.focusable) > .account.focusable,
+.scrollable :not(.focusable) > .account.focusable,
 .timeline-hint.focusable {
   background: none;
 }
@@ -1961,7 +2168,7 @@ body:not(.flavour-glitch)
 .trends__item.entry,
 .story.entry,
 .account-card.entry,
-.scrollable:not(.focusable) > .account.entry,
+.scrollable :not(.focusable) > .account.entry,
 .timeline-hint.entry {
   margin-bottom: 10px;
 }
@@ -1972,7 +2179,7 @@ body:not(.flavour-glitch)
 .trends__item:not(.detailed-status__wrapper)::before,
 .story:not(.detailed-status__wrapper)::before,
 .account-card:not(.detailed-status__wrapper)::before,
-.scrollable:not(.focusable) > .account:not(.detailed-status__wrapper)::before,
+.scrollable :not(.focusable) > .account:not(.detailed-status__wrapper)::before,
 .timeline-hint:not(.detailed-status__wrapper)::before {
   content: '';
   position: absolute;
@@ -1991,7 +2198,8 @@ body:not(.flavour-glitch)
 .trends__item:not(.detailed-status__wrapper).unread::before,
 .story:not(.detailed-status__wrapper).unread::before,
 .account-card:not(.detailed-status__wrapper).unread::before,
-.scrollable:not(.focusable)
+.scrollable
+  :not(.focusable)
   > .account:not(.detailed-status__wrapper).unread::before,
 .timeline-hint:not(.detailed-status__wrapper).unread::before {
   border-start-start-radius: 0 !important;
@@ -2005,7 +2213,8 @@ body:not(.flavour-glitch)
 .trends__item:not(.detailed-status__wrapper):hover::before,
 .story:not(.detailed-status__wrapper):hover::before,
 .account-card:not(.detailed-status__wrapper):hover::before,
-.scrollable:not(.focusable)
+.scrollable
+  :not(.focusable)
   > .account:not(.detailed-status__wrapper):hover::before,
 .timeline-hint:not(.detailed-status__wrapper):hover::before,
 .focusable:not(.detailed-status__wrapper):focus-within::before,
@@ -2015,7 +2224,8 @@ body:not(.flavour-glitch)
 .trends__item:not(.detailed-status__wrapper):focus-within::before,
 .story:not(.detailed-status__wrapper):focus-within::before,
 .account-card:not(.detailed-status__wrapper):focus-within::before,
-.scrollable:not(.focusable)
+.scrollable
+  :not(.focusable)
   > .account:not(.detailed-status__wrapper):focus-within::before,
 .timeline-hint:not(.detailed-status__wrapper):focus-within::before {
   background-color: var(--hover-color);
@@ -2028,23 +2238,33 @@ body:not(.flavour-glitch)
 .trends__item:not(.detailed-status__wrapper, .status__wrapper),
 .story:not(.detailed-status__wrapper, .status__wrapper),
 .account-card:not(.detailed-status__wrapper, .status__wrapper),
-.scrollable:not(.focusable)
+.scrollable
+  :not(.focusable)
   > .account:not(.detailed-status__wrapper, .status__wrapper),
 .timeline-hint:not(.detailed-status__wrapper, .status__wrapper) {
   border-radius: var(--radius);
   border: 0;
 }
 
-.focusable:not(.detailed-status__wrapper, .status__wrapper)::after,
-.entry:not(.detailed-status__wrapper, .status__wrapper)::after,
+.focusable:not(.detailed-status__wrapper, .status__wrapper, :last-child:not(:only-child)
+  )::after,
+.entry:not(.detailed-status__wrapper, .status__wrapper, :last-child:not(:only-child)
+  )::after,
 .statuses-grid__item
-  .detailed-status:not(.detailed-status__wrapper, .status__wrapper)::after,
-.trends__item:not(.detailed-status__wrapper, .status__wrapper)::after,
-.story:not(.detailed-status__wrapper, .status__wrapper)::after,
-.account-card:not(.detailed-status__wrapper, .status__wrapper)::after,
-.scrollable:not(.focusable)
-  > .account:not(.detailed-status__wrapper, .status__wrapper)::after,
-.timeline-hint:not(.detailed-status__wrapper, .status__wrapper)::after {
+  .detailed-status:not(.detailed-status__wrapper, .status__wrapper, :last-child:not(:only-child)
+  )::after,
+.trends__item:not(.detailed-status__wrapper, .status__wrapper, :last-child:not(:only-child)
+  )::after,
+.story:not(.detailed-status__wrapper, .status__wrapper, :last-child:not(:only-child)
+  )::after,
+.account-card:not(.detailed-status__wrapper, .status__wrapper, :last-child:not(:only-child)
+  )::after,
+.scrollable
+  :not(.focusable)
+  > .account:not(.detailed-status__wrapper, .status__wrapper, :last-child:not(:only-child)
+  )::after,
+.timeline-hint:not(.detailed-status__wrapper, .status__wrapper, :last-child:not(:only-child)
+  )::after {
   content: '';
   position: absolute;
   bottom: 0;
@@ -2121,7 +2341,7 @@ body:not(.flavour-glitch)
 .trends__item.trends__item,
 .story.trends__item,
 .account-card.trends__item,
-.scrollable:not(.focusable) > .account.trends__item,
+.scrollable :not(.focusable) > .account.trends__item,
 .timeline-hint.trends__item,
 .focusable.story,
 .entry.story,
@@ -2129,7 +2349,7 @@ body:not(.flavour-glitch)
 .trends__item.story,
 .story.story,
 .account-card.story,
-.scrollable:not(.focusable) > .account.story,
+.scrollable :not(.focusable) > .account.story,
 .timeline-hint.story {
   padding: 10px;
   flex-grow: 1;
@@ -2141,7 +2361,7 @@ body:not(.flavour-glitch)
 .trends__item.story,
 .story.story,
 .account-card.story,
-.scrollable:not(.focusable) > .account.story,
+.scrollable :not(.focusable) > .account.story,
 .timeline-hint.story {
   padding: 15px;
 }
@@ -2152,7 +2372,7 @@ body:not(.flavour-glitch)
 .trends__item.story .story__details,
 .story.story .story__details,
 .account-card.story .story__details,
-.scrollable:not(.focusable) > .account.story .story__details,
+.scrollable :not(.focusable) > .account.story .story__details,
 .timeline-hint.story .story__details {
   padding-inline-start: 0 !important;
 }
@@ -2163,7 +2383,7 @@ body:not(.flavour-glitch)
 .trends__item.story .story__thumbnail,
 .story.story .story__thumbnail,
 .account-card.story .story__thumbnail,
-.scrollable:not(.focusable) > .account.story .story__thumbnail,
+.scrollable :not(.focusable) > .account.story .story__thumbnail,
 .timeline-hint.story .story__thumbnail {
   margin-inline-end: 0;
   border-radius: var(--radius);
@@ -2176,7 +2396,7 @@ body:not(.flavour-glitch)
 .trends__item.account-card.account-card.account-card,
 .story.account-card.account-card.account-card,
 .account-card.account-card.account-card.account-card,
-.scrollable:not(.focusable) > .account.account-card.account-card.account-card,
+.scrollable :not(.focusable) > .account.account-card.account-card.account-card,
 .timeline-hint.account-card.account-card.account-card {
   display: flex;
   flex-direction: column;
@@ -2199,6 +2419,16 @@ body:not(.flavour-glitch)
   padding: 15px 10px;
 }
 
+.layout-multiple-columns .explore__suggestions,
+.layout-multiple-columns .directory__list {
+  display: block !important;
+}
+
+.layout-multiple-columns .explore__suggestions > *,
+.layout-multiple-columns .directory__list > * {
+  margin: 10px !important;
+}
+
 .focusable.account-card.account-card.account-card .account-card__header,
 .entry.account-card.account-card.account-card .account-card__header,
 .statuses-grid__item
@@ -2207,7 +2437,8 @@ body:not(.flavour-glitch)
 .trends__item.account-card.account-card.account-card .account-card__header,
 .story.account-card.account-card.account-card .account-card__header,
 .account-card.account-card.account-card.account-card .account-card__header,
-.scrollable:not(.focusable)
+.scrollable
+  :not(.focusable)
   > .account.account-card.account-card.account-card
   .account-card__header,
 .timeline-hint.account-card.account-card.account-card .account-card__header {
@@ -2222,7 +2453,8 @@ body:not(.flavour-glitch)
 .trends__item.account-card.account-card.account-card .account-card__title,
 .story.account-card.account-card.account-card .account-card__title,
 .account-card.account-card.account-card.account-card .account-card__title,
-.scrollable:not(.focusable)
+.scrollable
+  :not(.focusable)
   > .account.account-card.account-card.account-card
   .account-card__title,
 .timeline-hint.account-card.account-card.account-card .account-card__title {
@@ -2240,7 +2472,8 @@ body:not(.flavour-glitch)
 .story.account-card.account-card.account-card .account-card__title__avatar,
 .account-card.account-card.account-card.account-card
   .account-card__title__avatar,
-.scrollable:not(.focusable)
+.scrollable
+  :not(.focusable)
   > .account.account-card.account-card.account-card
   .account-card__title__avatar,
 .timeline-hint.account-card.account-card.account-card
@@ -2257,7 +2490,8 @@ body:not(.flavour-glitch)
 .trends__item.account-card.account-card.account-card .display-name,
 .story.account-card.account-card.account-card .display-name,
 .account-card.account-card.account-card.account-card .display-name,
-.scrollable:not(.focusable)
+.scrollable
+  :not(.focusable)
   > .account.account-card.account-card.account-card
   .display-name,
 .timeline-hint.account-card.account-card.account-card .display-name {
@@ -2272,7 +2506,8 @@ body:not(.flavour-glitch)
 .trends__item.account-card.account-card.account-card .display-name__account,
 .story.account-card.account-card.account-card .display-name__account,
 .account-card.account-card.account-card.account-card .display-name__account,
-.scrollable:not(.focusable)
+.scrollable
+  :not(.focusable)
   > .account.account-card.account-card.account-card
   .display-name__account,
 .timeline-hint.account-card.account-card.account-card .display-name__account {
@@ -2298,7 +2533,8 @@ body:not(.flavour-glitch)
 .account-card.account-card.account-card.account-card
   .account-card__title__avatar
   .account__avatar,
-.scrollable:not(.focusable)
+.scrollable
+  :not(.focusable)
   > .account.account-card.account-card.account-card
   .account-card__title__avatar
   .account__avatar,
@@ -2315,7 +2551,8 @@ body:not(.flavour-glitch)
 .story.account-card.account-card.account-card .account-card__title__avatar,
 .account-card.account-card.account-card.account-card
   .account-card__title__avatar,
-.scrollable:not(.focusable)
+.scrollable
+  :not(.focusable)
   > .account.account-card.account-card.account-card
   .account-card__title__avatar,
 .timeline-hint.account-card.account-card.account-card
@@ -2350,7 +2587,8 @@ body:not(.flavour-glitch)
   .account-card__title__avatar
   .account__avatar
   img,
-.scrollable:not(.focusable)
+.scrollable
+  :not(.focusable)
   > .account.account-card.account-card.account-card
   .account-card__title__avatar
   .account__avatar
@@ -2374,7 +2612,8 @@ body:not(.flavour-glitch)
 .account-card.account-card.account-card.account-card
   .account-card__title__avatar
   img,
-.scrollable:not(.focusable)
+.scrollable
+  :not(.focusable)
   > .account.account-card.account-card.account-card
   .account-card__title__avatar
   img,
@@ -2393,7 +2632,8 @@ body:not(.flavour-glitch)
 .trends__item.account-card.account-card.account-card .account-card__title,
 .story.account-card.account-card.account-card .account-card__title,
 .account-card.account-card.account-card.account-card .account-card__title,
-.scrollable:not(.focusable)
+.scrollable
+  :not(.focusable)
   > .account.account-card.account-card.account-card
   .account-card__title,
 .timeline-hint.account-card.account-card.account-card .account-card__title {
@@ -2409,7 +2649,8 @@ body:not(.flavour-glitch)
 .trends__item.account-card.account-card.account-card .display-name bdi,
 .story.account-card.account-card.account-card .display-name bdi,
 .account-card.account-card.account-card.account-card .display-name bdi,
-.scrollable:not(.focusable)
+.scrollable
+  :not(.focusable)
   > .account.account-card.account-card.account-card
   .display-name
   bdi,
@@ -2427,7 +2668,8 @@ body:not(.flavour-glitch)
 .trends__item.account-card.account-card.account-card .account-card__bio,
 .story.account-card.account-card.account-card .account-card__bio,
 .account-card.account-card.account-card.account-card .account-card__bio,
-.scrollable:not(.focusable)
+.scrollable
+  :not(.focusable)
   > .account.account-card.account-card.account-card
   .account-card__bio,
 .timeline-hint.account-card.account-card.account-card .account-card__bio {
@@ -2449,7 +2691,8 @@ body:not(.flavour-glitch)
 .trends__item.account-card.account-card.account-card .account-card__bio::after,
 .story.account-card.account-card.account-card .account-card__bio::after,
 .account-card.account-card.account-card.account-card .account-card__bio::after,
-.scrollable:not(.focusable)
+.scrollable
+  :not(.focusable)
   > .account.account-card.account-card.account-card
   .account-card__bio::after,
 .timeline-hint.account-card.account-card.account-card
@@ -2466,7 +2709,8 @@ body:not(.flavour-glitch)
 .trends__item.account-card.account-card.account-card .account-card__bio p,
 .story.account-card.account-card.account-card .account-card__bio p,
 .account-card.account-card.account-card.account-card .account-card__bio p,
-.scrollable:not(.focusable)
+.scrollable
+  :not(.focusable)
   > .account.account-card.account-card.account-card
   .account-card__bio
   p,
@@ -2493,7 +2737,8 @@ body:not(.flavour-glitch)
 .account-card.account-card.account-card.account-card
   .account-card__bio
   p:not(:first-child)::before,
-.scrollable:not(.focusable)
+.scrollable
+  :not(.focusable)
   > .account.account-card.account-card.account-card
   .account-card__bio
   p:not(:first-child)::before,
@@ -2512,7 +2757,8 @@ body:not(.flavour-glitch)
 .trends__item.account-card.account-card.account-card .account-card__bio br,
 .story.account-card.account-card.account-card .account-card__bio br,
 .account-card.account-card.account-card.account-card .account-card__bio br,
-.scrollable:not(.focusable)
+.scrollable
+  :not(.focusable)
   > .account.account-card.account-card.account-card
   .account-card__bio
   br,
@@ -2528,7 +2774,8 @@ body:not(.flavour-glitch)
 .trends__item.account-card.account-card.account-card .account-card__actions,
 .story.account-card.account-card.account-card .account-card__actions,
 .account-card.account-card.account-card.account-card .account-card__actions,
-.scrollable:not(.focusable)
+.scrollable
+  :not(.focusable)
   > .account.account-card.account-card.account-card
   .account-card__actions,
 .timeline-hint.account-card.account-card.account-card .account-card__actions {
@@ -2555,7 +2802,8 @@ body:not(.flavour-glitch)
 .account-card.account-card.account-card.account-card
   .account-card__actions
   .account-card__counters,
-.scrollable:not(.focusable)
+.scrollable
+  :not(.focusable)
   > .account.account-card.account-card.account-card
   .account-card__actions
   .account-card__counters,
@@ -2586,7 +2834,8 @@ body:not(.flavour-glitch)
 .account-card.account-card.account-card.account-card
   .account-card__actions
   .account-card__counters__item,
-.scrollable:not(.focusable)
+.scrollable
+  :not(.focusable)
   > .account.account-card.account-card.account-card
   .account-card__actions
   .account-card__counters__item,
@@ -2623,7 +2872,8 @@ body:not(.flavour-glitch)
   .account-card__actions
   .account-card__counters__item
   > small,
-.scrollable:not(.focusable)
+.scrollable
+  :not(.focusable)
   > .account.account-card.account-card.account-card
   .account-card__actions
   .account-card__counters__item
@@ -2656,7 +2906,8 @@ body:not(.flavour-glitch)
 .account-card.account-card.account-card.account-card
   .account-card__actions
   .account-card__actions__button,
-.scrollable:not(.focusable)
+.scrollable
+  :not(.focusable)
   > .account.account-card.account-card.account-card
   .account-card__actions
   .account-card__actions__button,
@@ -2697,7 +2948,8 @@ body:not(.flavour-glitch)
   .account-card__actions
   .account-card__actions__button
   button,
-.scrollable:not(.focusable)
+.scrollable
+  :not(.focusable)
   > .account.account-card.account-card.account-card
   .account-card__actions
   .account-card__actions__button
@@ -2731,7 +2983,8 @@ body:not(.flavour-glitch)
   .account-card__actions
   .account-card__actions__button
   a,
-.scrollable:not(.focusable)
+.scrollable
+  :not(.focusable)
   > .account.account-card.account-card.account-card
   .account-card__actions
   .account-card__actions__button
@@ -2766,7 +3019,8 @@ body:not(.flavour-glitch)
 .account-card.account-card.account-card.account-card
   .account-card__actions
   .account-card__actions__button:empty,
-.scrollable:not(.focusable)
+.scrollable
+  :not(.focusable)
   > .account.account-card.account-card.account-card
   .account-card__actions
   .account-card__actions__button:empty,
@@ -2783,7 +3037,8 @@ body:not(.flavour-glitch)
 .trends__item.account-card.account-card.account-card::after,
 .story.account-card.account-card.account-card::after,
 .account-card.account-card.account-card.account-card::after,
-.scrollable:not(.focusable)
+.scrollable
+  :not(.focusable)
   > .account.account-card.account-card.account-card::after,
 .timeline-hint.account-card.account-card.account-card::after {
   content: unset !important;
@@ -2795,7 +3050,7 @@ body:not(.flavour-glitch)
 .trends__item.empty-column-indicator,
 .story.empty-column-indicator,
 .account-card.empty-column-indicator,
-.scrollable:not(.focusable) > .account.empty-column-indicator,
+.scrollable :not(.focusable) > .account.empty-column-indicator,
 .timeline-hint.empty-column-indicator {
   display: block;
 }
@@ -2806,7 +3061,7 @@ body:not(.flavour-glitch)
 .trends__item.timeline-hint,
 .story.timeline-hint,
 .account-card.timeline-hint,
-.scrollable:not(.focusable) > .account.timeline-hint,
+.scrollable :not(.focusable) > .account.timeline-hint,
 .timeline-hint.timeline-hint {
   display: block;
 }
@@ -2817,19 +3072,11 @@ body:not(.flavour-glitch)
 .trends__item.timeline-hint a::before,
 .story.timeline-hint a::before,
 .account-card.timeline-hint a::before,
-.scrollable:not(.focusable) > .account.timeline-hint a::before,
+.scrollable :not(.focusable) > .account.timeline-hint a::before,
 .timeline-hint.timeline-hint a::before {
   content: '';
   position: absolute;
   inset: 0;
-}
-
-#mastodon .status__wrapper-direct .status__prepend {
-  display: none;
-}
-
-#mastodon .status__wrapper-direct .status__relative-time {
-  color: #8c8dff !important;
 }
 
 #mastodon .status,
@@ -2841,6 +3088,14 @@ body:not(.flavour-glitch)
 #mastodon .scrollable .account::before {
   inset: -10px;
   border-radius: var(--radius);
+}
+
+#mastodon .status.light {
+  overflow: hidden !important;
+}
+
+#mastodon .status.light .boost-modal__status-header {
+  display: flow-root !important;
 }
 
 #mastodon .account__relationship:empty {
@@ -2855,6 +3110,7 @@ body:not(.flavour-glitch)
   display: flex;
   flex-grow: 1;
   gap: 0.3em;
+  align-items: center;
 }
 
 #mastodon .status__prepend > span > a {
@@ -2864,6 +3120,27 @@ body:not(.flavour-glitch)
 
 #mastodon .notification .status {
   padding-top: 0;
+}
+
+#mastodon .notification .status .status__info {
+  margin-top: 10px !important;
+}
+
+#mastodon .notification .status .status__content ~ .media-gallery,
+#mastodon .notification .status .status__content ~ [style*='aspect-ratio:'] {
+  height: 60px;
+  width: 100px;
+  margin: 0 !important;
+  opacity: 0.5;
+}
+
+#mastodon
+  .notification
+  .status
+  .status__content
+  ~ [style*='aspect-ratio:']
+  .video-player__controls {
+  display: none;
 }
 
 #mastodon .status__prepend,
@@ -2886,27 +3163,29 @@ body:not(.flavour-glitch)
 #mastodon .notification__message a {
   white-space: nowrap;
   font-weight: 700;
+  text-overflow: ellipsis;
+  overflow: hidden !important;
 }
 
 #mastodon .status__prepend bdi,
 #mastodon .notification__message bdi {
   text-overflow: ellipsis;
   overflow: hidden;
+  max-width: 100%;
 }
 
-#mastodon .status__prepend > span,
+#mastodon .status__prepend {
+  margin-bottom: -15px !important;
+}
+
 #mastodon .notification__message > span,
-#mastodon .status__prepend > span > span,
 #mastodon .notification__message > span > span {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0 0.4em;
   line-height: 1.4;
-}
-
-#mastodon .status__prepend {
-  margin-bottom: -10px !important;
+  max-width: 100%;
 }
 
 #mastodon .notification-favourite .notification__message,
@@ -3064,11 +3343,6 @@ body:not(.flavour-glitch)
   z-index: 2;
 }
 
-#mastodon .status__info > span:first-child {
-  width: 0;
-  flex-grow: 1;
-}
-
 #mastodon .status__info .display-name {
   color: unset !important;
 }
@@ -3106,10 +3380,10 @@ body:not(.flavour-glitch)
 }
 
 #mastodon .status__content {
-  margin-block: 10px 0;
   padding-top: 2px;
   text-align: unset !important;
   line-height: 1.5;
+  margin-top: 10px;
 }
 
 #mastodon .status__content.status__content--with-spoiler {
@@ -3126,10 +3400,6 @@ body:not(.flavour-glitch)
   margin-bottom: 0;
 }
 
-#mastodon .status__content .status__content__text > br:first-child {
-  display: none !important;
-}
-
 #mastodon .status__content p:empty {
   max-height: 0;
 }
@@ -3138,11 +3408,22 @@ body:not(.flavour-glitch)
   height: 2em;
   min-width: 2em;
   width: auto;
-  transition: transform 0.2s cubic-bezier(0, 0, 0, 1);
 }
 
-#mastodon .status__content .custom-emoji:hover {
-  transform: scale(1.2);
+.custom-emoji {
+  transition: transform 0.4s cubic-bezier(0, 0.7, 0, 1);
+}
+
+.custom-emoji:hover {
+  transform: scale(1.3);
+}
+
+#mastodon .status__content ~ [style*='aspect-ratio'] {
+  max-height: 80vh;
+}
+
+#mastodon .status > .status__content .status__content__text:empty {
+  margin-top: -5px !important;
 }
 
 #mastodon .status__content__spoiler-link {
@@ -3177,6 +3458,110 @@ body:not(.flavour-glitch)
   opacity: 1;
 }
 
+#mastodon .detailed-status__wrapper-direct .status__prepend,
+#mastodon .status-direct .status__prepend,
+#mastodon .status__wrapper-direct .status__prepend,
+#mastodon .conversation .status__prepend {
+  position: absolute;
+  font-size: 0;
+}
+
+#mastodon .detailed-status__wrapper-direct .status__content,
+#mastodon .status-direct .status__content,
+#mastodon .status__wrapper-direct .status__content,
+#mastodon .conversation .status__content {
+  position: relative !important;
+  background: var(--elevated-color);
+  padding: 8px 12px;
+  padding: 0.7em 0.9em !important;
+  border-radius: var(--radius-round);
+  border-top-left-radius: 6px;
+  box-sizing: border-box;
+  margin-top: 5px !important;
+  margin-bottom: 0;
+  overflow: hidden !important;
+  max-width: max-content;
+}
+
+#mastodon .detailed-status__wrapper-direct .status__content .media-gallery,
+#mastodon .status-direct .status__content .media-gallery,
+#mastodon .status__wrapper-direct .status__content .media-gallery,
+#mastodon .conversation .status__content .media-gallery {
+  width: 999px;
+  max-width: 100% !important;
+}
+
+.detailed-status__wrapper-direct .status__content {
+  font-size: 17px;
+}
+
+#mastodon .detailed-status__wrapper-direct .fa-at,
+#mastodon .detailed-status__wrapper-direct .status__visibility-icon {
+  font-family: inherit;
+  font-weight: 600;
+  color: var(--accent, #8c8dff);
+  width: auto !important;
+}
+
+#mastodon .detailed-status__wrapper-direct .fa-at::before,
+#mastodon .detailed-status__wrapper-direct .status__visibility-icon::before {
+  font-family: FontAwesome, sans-serif !important;
+}
+
+#mastodon .detailed-status__wrapper-direct .fa-at::after,
+#mastodon .detailed-status__wrapper-direct .status__visibility-icon::after {
+  content: attr(title);
+  margin-left: 0.4em;
+}
+
+#mastodon .status-direct .fa-at,
+#mastodon .status-direct .status__visibility-icon {
+  color: var(--accent, #8c8dff);
+}
+
+#mastodon .status-direct .status__info .status__relative-time {
+  height: auto;
+  color: var(--accent, #8c8dff);
+}
+
+#mastodon .status-direct.status--in-thread .status__info {
+  align-items: center;
+  gap: 10px;
+}
+
+#mastodon .status-direct.status--in-thread .status__info > span {
+  width: 0;
+  flex-grow: 1;
+}
+
+#mastodon .status-direct.status--in-thread .status__info > span,
+#mastodon .status-direct.status--in-thread .status__display-name {
+  overflow: visible !important;
+}
+
+#mastodon .status-direct.status--in-thread .status__display-name {
+  overflow: hidden;
+  width: 0;
+  flex-grow: 1;
+}
+
+#mastodon .status-direct.status--in-thread .status__avatar {
+  height: auto;
+  margin-bottom: -100px;
+}
+
+#mastodon .status-direct.status--in-thread .status__avatar .account__avatar {
+  position: absolute;
+  top: 0 !important;
+  height: 46px !important;
+  width: 46px !important;
+}
+
+#mastodon .status-direct.status--in-thread .display-name * {
+  display: inline;
+  margin-right: 0.2em;
+}
+
 #mastodon .media-gallery,
 #mastodon .video-player,
 #mastodon .status-card.horizontal.interactive,
@@ -3187,9 +3572,12 @@ body:not(.flavour-glitch)
   border-radius: var(--radius);
   margin-top: 10px !important;
   margin-bottom: 10px !important;
-  animation: scaleIn 0.4s;
+  animation: scale-in 0.4s;
   max-width: unset !important;
-  max-height: 80vh !important;
+}
+
+#mastodon .status .media-gallery__item {
+  max-height: 80vh;
 }
 
 .status-card {
@@ -3209,12 +3597,21 @@ body:not(.flavour-glitch)
   border-radius: 0;
   width: 90px;
   min-height: 100%;
-  aspect-ratio: unset !important;
 }
 
 .status-card .status-card__image img {
   border-radius: 0;
   height: 100%;
+}
+
+.status-card.compact:not(.interactive) .status-card__image {
+  position: relative;
+  aspect-ratio: unset !important;
+}
+
+.status-card.compact:not(.interactive) .status-card__image img {
+  position: absolute;
+  inset: 0;
 }
 
 .status-card__host {
@@ -3246,6 +3643,49 @@ body:not(.flavour-glitch)
 
 .audio-player .video-player__seek {
   margin: var(--radius);
+}
+
+#mastodon .hashtag-bar {
+  margin-top: 10px;
+}
+
+#mastodon .hashtag-bar a,
+#mastodon .hashtag-bar button {
+  font-size: 0.9em;
+  padding: 0.2em 0.6em;
+  opacity: 0.9;
+  color: var(--accent, #8c8dff);
+  transition: opacity 0.2s;
+}
+
+#mastodon .hashtag-bar a {
+  position: relative;
+  border-radius: var(--radius);
+  background: var(--elevated-color);
+}
+
+#mastodon .hashtag-bar a::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--elevated-color);
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+#mastodon .hashtag-bar a:hover,
+#mastodon .hashtag-bar a:focus {
+  opacity: 1;
+}
+
+#mastodon .hashtag-bar a:hover::after,
+#mastodon .hashtag-bar a:focus::after {
+  opacity: 1;
+}
+
+#mastodon .hashtag-bar button {
+  padding-block: 0;
 }
 
 #mastodon .detailed-status__wrapper {
@@ -3355,12 +3795,16 @@ body:not(.flavour-glitch)
   justify-content: unset;
 }
 
-#mastodon .status__action-bar:not(i),
-#mastodon .detailed-status__action-bar:not(i),
-#mastodon .picture-in-picture__footer:not(i) {
-  height: unset !important;
-  width: unset !important;
+#mastodon .status__action-bar :not(i),
+#mastodon .detailed-status__action-bar :not(i),
+#mastodon .picture-in-picture__footer :not(i) {
   pointer-events: all;
+}
+
+#mastodon .status__action-bar > div,
+#mastodon .detailed-status__action-bar > div,
+#mastodon .picture-in-picture__footer > div {
+  all: unset;
 }
 
 #mastodon .status__action-bar .icon-button,
@@ -3380,23 +3824,6 @@ body:not(.flavour-glitch)
 #mastodon .detailed-status__action-bar .icon-button:last-child,
 #mastodon .picture-in-picture__footer .icon-button:last-child {
   margin: 0 !important;
-}
-
-#mastodon .status__action-bar .icon-button i,
-#mastodon .detailed-status__action-bar .icon-button i,
-#mastodon .picture-in-picture__footer .icon-button i {
-  min-width: 22px;
-}
-
-#mastodon .status__action-bar .icon-button[aria-label]::after,
-#mastodon .detailed-status__action-bar .icon-button[aria-label]::after,
-#mastodon .picture-in-picture__footer .icon-button[aria-label]::after {
-  all: unset;
-  font-size: 12px;
-  margin-inline-start: 0.5em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 #mastodon .status__action-bar .icon-button .icon-button__counter,
@@ -3432,15 +3859,7 @@ body:not(.flavour-glitch)
 #mastodon .picture-in-picture__footer.picture-in-picture__footer > div {
   display: flex;
   justify-content: center;
-}
-
-#mastodon .status__action-bar.detailed-status__action-bar > div:not(i),
-#mastodon .detailed-status__action-bar.detailed-status__action-bar > div:not(i),
-#mastodon .picture-in-picture__footer.detailed-status__action-bar > div:not(i),
-#mastodon .status__action-bar.picture-in-picture__footer > div:not(i),
-#mastodon .detailed-status__action-bar.picture-in-picture__footer > div:not(i),
-#mastodon .picture-in-picture__footer.picture-in-picture__footer > div:not(i) {
-  display: flex;
+  flex-grow: 1;
 }
 
 #mastodon .status__action-bar.picture-in-picture__footer .icon-button::after,
@@ -3453,9 +3872,8 @@ body:not(.flavour-glitch)
   content: unset !important;
 }
 
-.layout-single-column #mastodon .tabs-bar__wrapper,
-.layout-single-column #mastodon .column-back-button--slim .column-back-button {
-  z-index: 101;
+.layout-single-column .tabs-bar__wrapper,
+.layout-single-column .column-back-button--slim .column-back-button {
   grid-column: 2;
   border: 0 !important;
   transition:
@@ -3476,12 +3894,66 @@ body:not(.flavour-glitch)
   border-top-right-radius: 0 !important;
 }
 
-@media (width >=890px) {
-  .layout-single-column #mastodon .tabs-bar__wrapper,
-  .layout-single-column
-    #mastodon
-    .column-back-button--slim
-    .column-back-button {
+.layout-single-column .tabs-bar__wrapper .announcements,
+.layout-single-column
+  .column-back-button--slim
+  .column-back-button
+  .announcements,
+.layout-single-column
+  .tabs-bar__wrapper
+  .column-header__collapsible:not(.collapsed),
+.layout-single-column
+  .column-back-button--slim
+  .column-back-button
+  .column-header__collapsible:not(.collapsed) {
+  flex-direction: column-reverse;
+  align-items: flex-start;
+  border: 0;
+  animation: slide-dow-fade 0.3s backwards cubic-bezier(0, 1, 0, 1.2);
+}
+
+.layout-single-column .tabs-bar__wrapper .column-header__collapsible,
+.layout-single-column
+  .column-back-button--slim
+  .column-back-button
+  .column-header__collapsible {
+  transition: none;
+}
+
+.layout-single-column .tabs-bar__wrapper .collapsed,
+.layout-single-column .column-back-button--slim .column-back-button .collapsed {
+  display: none;
+}
+
+.layout-single-column .tabs-bar__wrapper .announcements__container,
+.layout-single-column
+  .column-back-button--slim
+  .column-back-button
+  .announcements__container {
+  width: 100% !important;
+}
+
+.layout-single-column .tabs-bar__wrapper .announcements__mastodon,
+.layout-single-column
+  .column-back-button--slim
+  .column-back-button
+  .announcements__mastodon {
+  display: block;
+  z-index: -1;
+  position: relative;
+}
+
+.layout-single-column .tabs-bar__wrapper .announcements__pagination,
+.layout-single-column
+  .column-back-button--slim
+  .column-back-button
+  .announcements__pagination {
+  bottom: unset;
+  padding-block: 0;
+}
+@media (width >= 890px) {
+  .layout-single-column .tabs-bar__wrapper,
+  .layout-single-column .column-back-button--slim .column-back-button {
     width: 285px;
     top: 0 !important;
     top: var(--top) !important;
@@ -3493,17 +3965,15 @@ body:not(.flavour-glitch)
     box-shadow: 0 12px 12px -12px rgba(0, 0, 0, 10%);
   }
 
-  .layout-single-column #mastodon .tabs-bar__wrapper:not(.column-back-button),
+  .layout-single-column .tabs-bar__wrapper:not(.column-back-button),
   .layout-single-column
-    #mastodon
     .column-back-button--slim
     .column-back-button:not(.column-back-button) {
     padding-top: 0;
   }
 
-  .layout-single-column #mastodon .tabs-bar__wrapper .column-header__wrapper,
+  .layout-single-column .tabs-bar__wrapper .column-header__wrapper,
   .layout-single-column
-    #mastodon
     .column-back-button--slim
     .column-back-button
     .column-header__wrapper {
@@ -3514,18 +3984,16 @@ body:not(.flavour-glitch)
     overflow: hidden;
   }
 
-  .layout-single-column #mastodon .tabs-bar__wrapper .column-back-button,
+  .layout-single-column .tabs-bar__wrapper .column-back-button,
   .layout-single-column
-    #mastodon
     .column-back-button--slim
     .column-back-button
     .column-back-button {
     background: none;
   }
 
-  .layout-single-column #mastodon .tabs-bar__wrapper .column-header,
+  .layout-single-column .tabs-bar__wrapper .column-header,
   .layout-single-column
-    #mastodon
     .column-back-button--slim
     .column-back-button
     .column-header {
@@ -3534,9 +4002,8 @@ body:not(.flavour-glitch)
     border: 0;
   }
 
-  .layout-single-column #mastodon .tabs-bar__wrapper .column-header > button,
+  .layout-single-column .tabs-bar__wrapper .column-header > button,
   .layout-single-column
-    #mastodon
     .column-back-button--slim
     .column-back-button
     .column-header
@@ -3544,13 +4011,8 @@ body:not(.flavour-glitch)
     z-index: 2;
   }
 
+  .layout-single-column .tabs-bar__wrapper .column-header__buttons button,
   .layout-single-column
-    #mastodon
-    .tabs-bar__wrapper
-    .column-header__buttons
-    button,
-  .layout-single-column
-    #mastodon
     .column-back-button--slim
     .column-back-button
     .column-header__buttons
@@ -3568,55 +4030,11 @@ body:not(.flavour-glitch)
   }
 
   .layout-single-column
-    #mastodon
-    .tabs-bar__wrapper
-    .column-header__buttons
-    button
-    .icon-with-badge,
-  .layout-single-column
-    #mastodon
-    .column-back-button--slim
-    .column-back-button
-    .column-header__buttons
-    button
-    .icon-with-badge {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .layout-single-column
-    #mastodon
-    .tabs-bar__wrapper
-    .column-header__buttons
-    button
-    .icon-with-badge
-    .icon-with-badge__badge,
-  .layout-single-column
-    #mastodon
-    .column-back-button--slim
-    .column-back-button
-    .column-header__buttons
-    button
-    .icon-with-badge
-    .icon-with-badge__badge {
-    right: -2px;
-    left: unset;
-    top: unset;
-    bottom: 0;
-    border-radius: var(--radius-round);
-  }
-
-  .layout-single-column
-    #mastodon
     .tabs-bar__wrapper
     .column-header__buttons
     button
     .column-header__icon,
   .layout-single-column
-    #mastodon
     .column-back-button--slim
     .column-back-button
     .column-header__buttons
@@ -3626,12 +4044,10 @@ body:not(.flavour-glitch)
   }
 
   .layout-single-column
-    #mastodon
     .tabs-bar__wrapper
     .column-header__buttons
     button:not(.active),
   .layout-single-column
-    #mastodon
     .column-back-button--slim
     .column-back-button
     .column-header__buttons
@@ -3640,12 +4056,10 @@ body:not(.flavour-glitch)
   }
 
   .layout-single-column
-    #mastodon
     .tabs-bar__wrapper
     .column-header__buttons
     button::before,
   .layout-single-column
-    #mastodon
     .column-back-button--slim
     .column-back-button
     .column-header__buttons
@@ -3663,12 +4077,10 @@ body:not(.flavour-glitch)
   }
 
   .layout-single-column
-    #mastodon
     .tabs-bar__wrapper
     .column-header__buttons
     button::after,
   .layout-single-column
-    #mastodon
     .column-back-button--slim
     .column-back-button
     .column-header__buttons
@@ -3680,113 +4092,45 @@ body:not(.flavour-glitch)
   }
 
   .layout-single-column
-    #mastodon
     .tabs-bar__wrapper
     .column-header__buttons
     button.active::before,
   .layout-single-column
-    #mastodon
     .column-back-button--slim
     .column-back-button
     .column-header__buttons
     button.active::before {
     inset: -10px -300px;
   }
-
-  .layout-single-column #mastodon .tabs-bar__wrapper .announcements,
-  .layout-single-column
-    #mastodon
-    .column-back-button--slim
-    .column-back-button
-    .announcements,
-  .layout-single-column
-    #mastodon
-    .tabs-bar__wrapper
-    .column-header__collapsible:not(.collapsed),
-  .layout-single-column
-    #mastodon
-    .column-back-button--slim
-    .column-back-button
-    .column-header__collapsible:not(.collapsed) {
-    flex-direction: column-reverse;
-    align-items: flex-start;
-    animation: slideDowFade 0.3s backwards cubic-bezier(0, 1, 0, 1.2);
-  }
-
-  .layout-single-column
-    #mastodon
-    .tabs-bar__wrapper
-    .column-header__collapsible,
-  .layout-single-column
-    #mastodon
-    .column-back-button--slim
-    .column-back-button
-    .column-header__collapsible {
-    transition: none;
-  }
-
-  .layout-single-column #mastodon .tabs-bar__wrapper .collapsed,
-  .layout-single-column
-    #mastodon
-    .column-back-button--slim
-    .column-back-button
-    .collapsed {
-    display: none;
-  }
-
-  .layout-single-column #mastodon .tabs-bar__wrapper .announcements__container,
-  .layout-single-column
-    #mastodon
-    .column-back-button--slim
-    .column-back-button
-    .announcements__container {
-    width: 100% !important;
-  }
 }
-
-@media (width >=890px) and (width >=1320px) {
-  .layout-single-column #mastodon .tabs-bar__wrapper,
-  .layout-single-column
-    #mastodon
-    .column-back-button--slim
-    .column-back-button {
+@media (width >= 890px) and (width >= 1320px) {
+  .layout-single-column .tabs-bar__wrapper,
+  .layout-single-column .column-back-button--slim .column-back-button {
     margin-inline-start: 25px;
   }
 }
-
-@media (width >=890px) and (width <=1174px) {
-  .layout-single-column #mastodon .tabs-bar__wrapper,
-  .layout-single-column
-    #mastodon
-    .column-back-button--slim
-    .column-back-button {
+@media (width >= 890px) and (width <= 1174px) {
+  .layout-single-column .tabs-bar__wrapper,
+  .layout-single-column .column-back-button--slim .column-back-button {
     width: 265px;
     margin-top: -60px !important;
     top: 10px !important;
     margin-inline-start: 10px;
   }
 }
-
-@media (width >=890px) {
-  .layout-single-column #mastodon .column-back-button--slim {
+@media (width >= 890px) {
+  .layout-single-column .column-back-button--slim {
     margin-left: auto !important;
     order: -1;
   }
 
-  .layout-single-column
-    #mastodon
-    .column-back-button--slim
-    > .column-back-button {
+  .layout-single-column .column-back-button--slim > .column-back-button {
     margin-top: 0 !important;
     top: unset !important;
   }
 }
-
-@media (width >=890px) and (width <=1174px) {
-  .layout-single-column
-    #mastodon
-    .column-back-button--slim
-    > .column-back-button {
+@media (width >= 890px) and (width <= 1174px) {
+  .layout-single-column .column-back-button--slim > .column-back-button {
     margin-top: -55px !important;
     top: unset !important;
   }
@@ -3868,15 +4212,20 @@ body:not(.flavour-glitch)
 #mastodon .navigation-panel hr {
   margin-inline: 15px;
 }
-
-@media (width >=1175px) {
+@media (width >= 1175px) {
   #mastodon .navigation-panel {
     padding-top: calc(var(--radius) + 10px);
     margin-top: calc(50px - var(--radius));
   }
 
-  #mastodon .navigation-panel .navigation-panel__logo {
-    display: none;
+  #mastodon .navigation-panel .navigation-panel__logo .column-link,
+  #mastodon .navigation-panel .navigation-panel__logo hr {
+    display: none !important;
+  }
+
+  #mastodon .navigation-panel .switch-to-advanced {
+    border-radius: var(--radius);
+    margin-top: 0;
   }
 
   #mastodon .navigation-panel [href='/settings/preferences'] {
@@ -3884,15 +4233,34 @@ body:not(.flavour-glitch)
   }
 }
 
-@media (width >=890px) {
+.column-link {
+  border: 0;
+}
+
+.icon-with-badge__badge {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.3em !important;
+  width: 2em;
+  height: 2em;
+  min-width: max-content;
+  border-radius: 2em;
+  font-weight: 600;
+  font-size: 0.6em !important;
+  top: -10px;
+  box-sizing: border-box;
+}
+@media (width >= 890px) {
   .column-link {
-    flex-grow: 100 !important;
     display: flex !important;
+    flex-grow: 100 !important;
     align-items: center !important;
     align-content: center;
     max-height: 3.3em;
     min-height: 2.7em !important;
     padding-block: 0;
+    border-radius: 100px;
     position: relative;
     box-sizing: border-box;
     opacity: 0.9;
@@ -3902,7 +4270,7 @@ body:not(.flavour-glitch)
 
   .column-link .column-link__icon,
   .column-header > button .column-header__icon {
-    margin-inline-end: 1em !important;
+    margin-inline-end: 0.7em !important;
     font-size: 16px !important;
   }
 
@@ -3940,8 +4308,7 @@ body:not(.flavour-glitch)
     opacity: 0.2;
   }
 }
-
-@media (width >=890px) {
+@media (width >= 890px) {
   #mastodon .getting-started__trends {
     display: unset !important;
   }
@@ -4056,7 +4423,7 @@ body:not(.flavour-glitch)
 }
 
 .about .about__section__body {
-  animation: slideDowFade 0.3s 0.1s backwards cubic-bezier(0, 1, 0, 1.2);
+  animation: slide-dow-fade 0.3s 0.1s backwards cubic-bezier(0, 1, 0, 1.2);
 }
 
 .about .about__section {
@@ -4132,8 +4499,7 @@ body:not(.flavour-glitch)
   padding-bottom: 60px;
   background: inherit;
 }
-
-@media (width >=890px) and (width <=1174px) {
+@media (width >= 890px) and (width <= 1174px) {
   .layout-single-column #mastodon .ui__header {
     background: none !important;
     border: 0;
@@ -4162,8 +4528,7 @@ body:not(.flavour-glitch)
     padding-bottom: 10px;
   }
 }
-
-@media (width <=889px) {
+@media (width <= 889px) {
   #mastodon .scrollable:not(.scrollable--flex) {
     padding: 0 !important;
     padding-bottom: 40vh !important;
@@ -4177,7 +4542,8 @@ body:not(.flavour-glitch)
     z-index: -1;
   }
 
-  #mastodon .scrollable:not(.scrollable--flex) .account-timeline__header {
+  #mastodon .scrollable:not(.scrollable--flex) .account-timeline__header,
+  #mastodon .scrollable:not(.scrollable--flex) .dismissable-banner {
     margin: 0 !important;
   }
 
@@ -4187,7 +4553,7 @@ body:not(.flavour-glitch)
   #mastodon .trends__item,
   #mastodon .story,
   #mastodon .account-card,
-  #mastodon .scrollable:not(.focusable) > .account,
+  #mastodon .scrollable :not(.focusable) > .account,
   #mastodon .timeline-hint {
     border-radius: 0;
   }
@@ -4198,7 +4564,7 @@ body:not(.flavour-glitch)
   #mastodon .trends__item::before,
   #mastodon .story::before,
   #mastodon .account-card::before,
-  #mastodon .scrollable:not(.focusable) > .account::before,
+  #mastodon .scrollable :not(.focusable) > .account::before,
   #mastodon .timeline-hint::before {
     border-radius: 0 !important;
   }
@@ -4209,13 +4575,13 @@ body:not(.flavour-glitch)
   #mastodon .trends__item::after,
   #mastodon .story::after,
   #mastodon .account-card::after,
-  #mastodon .scrollable:not(.focusable) > .account::after,
+  #mastodon .scrollable :not(.focusable) > .account::after,
   #mastodon .timeline-hint::after {
     inset-inline: 0 !important;
   }
 
   #mastodon [class*='explore__'] > * {
-    border-radius: var(--radius) !important;
+    border-radius: var(--radius);
   }
 
   #mastodon .detailed-status__wrapper {
@@ -4228,12 +4594,16 @@ body:not(.flavour-glitch)
     margin-inline-end: 0 !important;
   }
 
-  #mastodon .status__action-bar:not(i, .status__action-bar-spacer) {
+  #mastodon .status__action-bar :not(i, .status__action-bar-spacer) {
     display: flex;
-    flex-grow: 9999 !important;
+    flex-grow: 9999;
     justify-content: center !important;
     max-width: 55px;
     min-width: max-content;
+  }
+
+  #mastodon .status__action-bar > .icon-button:first-child {
+    margin-inline-start: -8px !important;
   }
 
   #mastodon .status__action-bar,
@@ -4242,25 +4612,23 @@ body:not(.flavour-glitch)
     flex-wrap: wrap;
   }
 
-  #mastodon .columns-area--mobile > .column > div > div {
-    animation: fadeUp 0.4s;
-  }
-
   #mastodon .columns-area--mobile > .column > .column-header__wrapper {
     display: none;
   }
 
+  #mastodon .column-header {
+    border-inline: 0;
+  }
+
   .ui__header {
-    z-index: 101;
     border-bottom: 0;
-    flex-wrap: wrap;
     min-height: 55px;
     height: auto;
     position: relative;
-    padding-block: 10px;
     box-sizing: border-box;
     gap: 10px;
     border: 0 !important;
+    overflow: visible;
   }
 
   .ui__header::after {
@@ -4293,21 +4661,18 @@ body:not(.flavour-glitch)
   }
 
   .ui__header .ui__header__links {
+    min-width: max-content;
+    position: sticky;
+    inset-inline-end: 50px;
     background: inherit;
+  }
+
+  :has(body) .ui__header .ui__header__links {
+    right: 0;
   }
 
   .ui__header [href='/search'] {
-    margin-inline-end: 55px;
-  }
-
-  .ui__header [href^='/@'],
-  .ui__header a.permalink[href] {
-    position: fixed;
-    inset-inline-end: 1px;
-    width: 53px;
-    display: flex;
-    justify-content: center;
-    background: inherit;
+    margin-inline-end: 5px;
   }
 
   .ui__header [href='/publish'] {
@@ -4315,6 +4680,7 @@ body:not(.flavour-glitch)
     bottom: 15px;
     inset-inline-end: 15px;
     border-radius: 100px !important;
+    border-radius: var(--radius) !important;
     height: 60px;
     width: 60px;
     font-size: 0;
@@ -4324,8 +4690,12 @@ body:not(.flavour-glitch)
     -khtml-user-drag: none;
     -moz-user-drag: none;
     -o-user-drag: none;
-    -user-drag: none;
-    animation: scaleIn 0.2s cubic-bezier(0, 0, 0, 1.1);
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    touch-action: manipulation;
+    animation: scale-in 0.2s cubic-bezier(0, 0, 0, 1.1);
+    visibility: visible;
   }
 
   .ui__header [href='/publish']::before {
@@ -4339,18 +4709,623 @@ body:not(.flavour-glitch)
     justify-content: center;
     align-items: center;
     font-size: 24px;
+    background: transparent;
+    border-radius: inherit;
+    transition: transform 0.4s cubic-bezier(0, 0, 0, 1) !important;
   }
 
   .ui__header [href='/publish']:active {
-    animation: rainbow 4s infinite linear !important;
+    animation: rainbow 8s infinite linear !important;
+  }
+
+  .ui__header [href='/publish']:active::before {
+    background: #ee82ee;
+    transform: scale(0.9);
+    transition:
+      background 1s,
+      transform 0.4s cubic-bezier(0, 0.5, 0, 1) !important;
+  }
+
+  body:not(:has(.column-link.active))
+    .ui__header
+    [href='/publish']:not(:focus) {
+    transform: scale(0.97) !important;
+    opacity: 0 !important;
+    pointer-events: none;
+  }
+
+  .ui__header [href^='/@'],
+  .ui__header a.permalink[href] {
+    position: fixed;
+    inset-inline-end: 1px;
+    width: 53px;
+    display: flex;
+    justify-content: center;
+    background: inherit;
+  }
+
+  :has(body) .ui__header [href^='/@'],
+  :has(body) .ui__header a.permalink[href] {
+    position: static !important;
+    width: unset;
   }
 
   #mastodon .tabs-bar__wrapper {
     top: 0;
+    background: none;
+    z-index: 200;
   }
 
   #mastodon .column-back-button.column-back-button {
     border-radius: 0 !important;
+  }
+
+  #mastodon:has(*) [href='/publish'] {
+    bottom: 70px !important;
+  }
+
+  #mastodon:has(*) .columns-area__panels {
+    flex-direction: column;
+  }
+
+  #mastodon:has(*) .columns-area__panels__main {
+    width: 100%;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
+  }
+
+  #mastodon:has(*) .tabs-bar__wrapper {
+    transition: none !important;
+  }
+
+  #mastodon:has(*):has(.column-header__buttons:empty) .tabs-bar__wrapper {
+    margin-top: -50px;
+    margin-bottom: 2px;
+    height: 48px;
+  }
+
+  #mastodon:has(*) .columns-area__panels__pane--navigational {
+    display: contents;
+  }
+
+  #mastodon:has(*)
+    .columns-area__panels__pane--navigational
+    .columns-area__panels__pane__inner {
+    position: relative !important;
+    inset: unset !important;
+    order: -1;
+    width: unset;
+    height: auto;
+    white-space: nowrap;
+  }
+
+  #mastodon:has(*) .columns-area__panels__pane--navigational .navigation-panel {
+    flex-direction: row;
+    margin: 0;
+    padding: 0;
+    padding: 0 8px;
+    height: 5em;
+    gap: 10px;
+    border-block: 1px solid;
+    overflow: scroll hidden;
+    align-items: center;
+  }
+
+  #mastodon:has(*)
+    .columns-area__panels__pane--navigational
+    .navigation-panel::-webkit-scrollbar {
+    display: none;
+  }
+
+  #mastodon:has(*) .columns-area__panels__pane--navigational hr {
+    display: none;
+  }
+
+  #mastodon:has(*)
+    .columns-area__panels__pane--navigational
+    .trends__item__name
+    > span,
+  #mastodon:has(*)
+    .columns-area__panels__pane--navigational
+    .trends__item__sparkline {
+    display: none;
+  }
+
+  #mastodon:has(*)
+    .columns-area__panels__pane--navigational
+    .navigation-panel__legal,
+  #mastodon:has(*) .columns-area__panels__pane--navigational h4,
+  #mastodon:has(*) .columns-area__panels__pane--navigational .trends__item,
+  #mastodon:has(*)
+    .columns-area__panels__pane--navigational
+    .trends__item__name {
+    all: unset;
+    display: contents !important;
+  }
+
+  #mastodon:has(*)
+    .columns-area__panels__pane--navigational
+    .navigation-panel__legal::before,
+  #mastodon:has(*) .columns-area__panels__pane--navigational h4::before,
+  #mastodon:has(*)
+    .columns-area__panels__pane--navigational
+    .trends__item::before,
+  #mastodon:has(*)
+    .columns-area__panels__pane--navigational
+    .trends__item__name::before,
+  #mastodon:has(*)
+    .columns-area__panels__pane--navigational
+    .navigation-panel__legal::after,
+  #mastodon:has(*) .columns-area__panels__pane--navigational h4::after,
+  #mastodon:has(*)
+    .columns-area__panels__pane--navigational
+    .trends__item::after,
+  #mastodon:has(*)
+    .columns-area__panels__pane--navigational
+    .trends__item__name::after {
+    content: unset;
+  }
+
+  #mastodon:has(*) .columns-area__panels__pane--navigational h4 a span::after {
+    content: ':' !important;
+  }
+
+  #mastodon:has(*)
+    .columns-area__panels__pane--navigational:has(.getting-started__trends):has(
+      .navigation-panel__sign-in-banner
+    )
+    .flex-spacer {
+    border-right: 1px solid var(--border-color);
+    height: 50%;
+    margin: 10px;
+  }
+
+  #mastodon:has(*)
+    .columns-area__panels__pane--navigational:has(.getting-started__trends):has(
+      .navigation-panel__sign-in-banner
+    )
+    .getting-started__trends {
+    all: unset;
+    display: contents !important;
+  }
+
+  #mastodon:has(*)
+    .columns-area__panels__pane--navigational:has(.getting-started__trends)
+    .trends__item:last-child
+    a {
+    position: relative;
+    z-index: 3;
+  }
+
+  #mastodon:has(*) .columns-area__panels__pane--navigational a,
+  #mastodon:has(*) .columns-area__panels__pane--navigational h4 > span {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius);
+    padding: 0.8em 1em;
+    font-weight: 600;
+    font-size: 1.1em;
+    text-align: center;
+    min-width: max-content;
+    transition: padding 0.2s;
+  }
+
+  #mastodon:has(*) .columns-area__panels__pane--navigational a::before,
+  #mastodon:has(*) .columns-area__panels__pane--navigational h4 > span::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: currentcolor;
+    opacity: 0;
+    border-radius: inherit;
+    transition:
+      inset 0.4s cubic-bezier(0, 0, 0, 1.2),
+      opacity 0.2s;
+  }
+
+  #mastodon:has(*) .columns-area__panels__pane--navigational a i,
+  #mastodon:has(*) .columns-area__panels__pane--navigational h4 > span i {
+    font-size: 1em;
+    width: auto;
+    margin-right: 0;
+  }
+
+  #mastodon:has(*) .columns-area__panels__pane--navigational a.active,
+  #mastodon:has(*) .columns-area__panels__pane--navigational h4 > span.active {
+    padding-inline: 1.2em;
+    position: relative;
+  }
+
+  #mastodon:has(*) .columns-area__panels__pane--navigational a.active::before,
+  #mastodon:has(*)
+    .columns-area__panels__pane--navigational
+    h4
+    > span.active::before {
+    inset: 0 !important;
+    opacity: 0.1;
+  }
+
+  #mastodon:has(*)
+    .columns-area__panels__pane--navigational
+    a
+    > span:not(:first-child),
+  #mastodon:has(*)
+    .columns-area__panels__pane--navigational
+    h4
+    > span
+    > span:not(:first-child) {
+    margin-left: 0.7em;
+  }
+
+  #mastodon:has(*) .columns-area__panels__pane--navigational span {
+    display: unset;
+  }
+
+  #mastodon:not(:has(.navigation-panel__sign-in-banner))
+    .columns-area__panels__main {
+    margin-top: 2px !important;
+  }
+
+  #mastodon:not(:has(.navigation-panel__sign-in-banner)) .ui__header {
+    z-index: 199;
+  }
+
+  #mastodon:not(:has(.navigation-panel__sign-in-banner)) .ui__header::before,
+  #mastodon:not(:has(.navigation-panel__sign-in-banner)) .ui__header::after {
+    content: '';
+    position: fixed;
+    bottom: 0;
+    inset-inline: 0;
+    background: inherit;
+    z-index: 200;
+    height: 60px;
+    filter: brightness(1.2);
+    visibility: visible;
+  }
+
+  #mastodon:not(:has(.navigation-panel__sign-in-banner)) .navigation-panel {
+    padding-inline: 14px;
+    border-top: none;
+    margin-top: -10px;
+  }
+
+  #mastodon:not(:has(.navigation-panel__sign-in-banner)) .navigation-panel a {
+    font-size: 1em;
+  }
+
+  #mastodon:not(:has(.navigation-panel__sign-in-banner))
+    .navigation-panel::after {
+    content: '';
+    display: block;
+    position: sticky;
+    right: -20px;
+    min-width: 150px;
+    height: 100%;
+    margin-left: -50px;
+    background: inherit;
+    mask: linear-gradient(to right, transparent, #000);
+    -webkit-mask: linear-gradient(to right, transparent, #000);
+    pointer-events: none;
+  }
+
+  #mastodon:not(:has(.navigation-panel__sign-in-banner)) .column {
+    min-height: 100vh;
+  }
+
+  #mastodon:not(:has(.navigation-panel__sign-in-banner)) .column-link {
+    margin-inline: -0.2em;
+    padding-inline: 0.7em;
+  }
+
+  #mastodon:not(:has(.navigation-panel__sign-in-banner))
+    .column-link[href='/home'] {
+    position: fixed !important;
+    display: flex;
+    flex-direction: column;
+    bottom: 4px;
+    z-index: 200;
+    font-size: 1.7em;
+    margin: 0 !important;
+    height: 50px;
+    align-items: center;
+    justify-content: center;
+    width: 19%;
+    left: 0%;
+    transform: translateX(10%);
+    box-sizing: border-box;
+    padding: 1px !important;
+  }
+
+  #mastodon:not(:has(.navigation-panel__sign-in-banner))
+    .column-link[href='/home']::before {
+    inset-inline: 6px;
+  }
+
+  #mastodon:not(:has(.navigation-panel__sign-in-banner))
+    .column-link[href='/home']
+    span {
+    margin: 0;
+    font-size: 0;
+    line-height: 1;
+    opacity: 0;
+    transition:
+      font-size 0.4s,
+      margin 0.7s,
+      opacity 0.2s;
+  }
+
+  #mastodon:not(:has(.navigation-panel__sign-in-banner))
+    .column-link[href='/home']
+    i {
+    transform: scale(0.9);
+    transition: transform 0.1s;
+  }
+
+  #mastodon:not(:has(.navigation-panel__sign-in-banner))
+    .column-link[href='/notifications'] {
+    position: fixed !important;
+    display: flex;
+    flex-direction: column;
+    bottom: 4px;
+    z-index: 200;
+    font-size: 1.7em;
+    margin: 0 !important;
+    height: 50px;
+    align-items: center;
+    justify-content: center;
+    width: 19%;
+    left: 19.25%;
+    transform: translateX(10%);
+    box-sizing: border-box;
+    padding: 1px !important;
+  }
+
+  #mastodon:not(:has(.navigation-panel__sign-in-banner))
+    .column-link[href='/notifications']::before {
+    inset-inline: 6px;
+  }
+
+  #mastodon:not(:has(.navigation-panel__sign-in-banner))
+    .column-link[href='/notifications']
+    span {
+    margin: 0;
+    font-size: 0;
+    line-height: 1;
+    opacity: 0;
+    transition:
+      font-size 0.4s,
+      margin 0.7s,
+      opacity 0.2s;
+  }
+
+  #mastodon:not(:has(.navigation-panel__sign-in-banner))
+    .column-link[href='/notifications']
+    i {
+    transform: scale(0.9);
+    transition: transform 0.1s;
+  }
+
+  #mastodon:not(:has(.navigation-panel__sign-in-banner))
+    .column-link[href='/explore'] {
+    position: fixed !important;
+    display: flex;
+    flex-direction: column;
+    bottom: 4px;
+    z-index: 200;
+    font-size: 1.7em;
+    margin: 0 !important;
+    height: 50px;
+    align-items: center;
+    justify-content: center;
+    width: 19%;
+    left: 38.5%;
+    transform: translateX(10%);
+    box-sizing: border-box;
+    padding: 1px !important;
+  }
+
+  #mastodon:not(:has(.navigation-panel__sign-in-banner))
+    .column-link[href='/explore']::before {
+    inset-inline: 6px;
+  }
+
+  #mastodon:not(:has(.navigation-panel__sign-in-banner))
+    .column-link[href='/explore']
+    span {
+    margin: 0;
+    font-size: 0;
+    line-height: 1;
+    opacity: 0;
+    transition:
+      font-size 0.4s,
+      margin 0.7s,
+      opacity 0.2s;
+  }
+
+  #mastodon:not(:has(.navigation-panel__sign-in-banner))
+    .column-link[href='/explore']
+    i {
+    transform: scale(0.9);
+    transition: transform 0.1s;
+  }
+
+  #mastodon:not(:has(.navigation-panel__sign-in-banner))
+    .column-link[href='/public/local'] {
+    position: fixed !important;
+    display: flex;
+    flex-direction: column;
+    bottom: 4px;
+    z-index: 200;
+    font-size: 1.7em;
+    margin: 0 !important;
+    height: 50px;
+    align-items: center;
+    justify-content: center;
+    width: 19%;
+    left: 57.75%;
+    transform: translateX(10%);
+    box-sizing: border-box;
+    padding: 1px !important;
+  }
+
+  #mastodon:not(:has(.navigation-panel__sign-in-banner))
+    .column-link[href='/public/local']::before {
+    inset-inline: 6px;
+  }
+
+  #mastodon:not(:has(.navigation-panel__sign-in-banner))
+    .column-link[href='/public/local']
+    span {
+    margin: 0;
+    font-size: 0;
+    line-height: 1;
+    opacity: 0;
+    transition:
+      font-size 0.4s,
+      margin 0.7s,
+      opacity 0.2s;
+  }
+
+  #mastodon:not(:has(.navigation-panel__sign-in-banner))
+    .column-link[href='/public/local']
+    i {
+    transform: scale(0.9);
+    transition: transform 0.1s;
+  }
+
+  #mastodon:not(:has(.navigation-panel__sign-in-banner))
+    .column-link[href='/lists'] {
+    position: fixed !important;
+    display: flex;
+    flex-direction: column;
+    bottom: 4px;
+    z-index: 200;
+    font-size: 1.7em;
+    margin: 0 !important;
+    height: 50px;
+    align-items: center;
+    justify-content: center;
+    width: 19%;
+    left: 77%;
+    transform: translateX(10%);
+    box-sizing: border-box;
+    padding: 1px !important;
+  }
+
+  #mastodon:not(:has(.navigation-panel__sign-in-banner))
+    .column-link[href='/lists']::before {
+    inset-inline: 6px;
+  }
+
+  #mastodon:not(:has(.navigation-panel__sign-in-banner))
+    .column-link[href='/lists']
+    span {
+    margin: 0;
+    font-size: 0;
+    line-height: 1;
+    opacity: 0;
+    transition:
+      font-size 0.4s,
+      margin 0.7s,
+      opacity 0.2s;
+  }
+
+  #mastodon:not(:has(.navigation-panel__sign-in-banner))
+    .column-link[href='/lists']
+    i {
+    transform: scale(0.9);
+    transition: transform 0.1s;
+  }
+
+  #mastodon:not(:has(.navigation-panel__sign-in-banner)):has(
+      .column-link.active:not([href='/home'], [href='/notifications'], [href='/explore'], [href='/public/local'], [href='/lists'], [href^='/lists']))
+    .columns-area__panels__pane__inner {
+    position: sticky !important;
+    top: 10px !important;
+    z-index: 200;
+  }
+
+  #mastodon:not(:has(.navigation-panel__sign-in-banner)):has(
+      .column-link.active:not([href='/home'], [href='/notifications'], [href='/explore'], [href='/public/local'], [href='/lists'], [href^='/lists']))
+    .tabs-bar__wrapper {
+    position: static;
+    height: auto;
+    z-index: unset;
+    margin: 0;
+    top: 0;
+    inset-inline: 0;
+    visibility: hidden;
+  }
+
+  #mastodon:not(:has(.navigation-panel__sign-in-banner)):has(
+      .column-link.active:not([href='/home'], [href='/notifications'], [href='/explore'], [href='/public/local'], [href='/lists'], [href^='/lists']))
+    .tabs-bar__wrapper
+    #tabs-bar__portal,
+  #mastodon:not(:has(.navigation-panel__sign-in-banner)):has(
+      .column-link.active:not([href='/home'], [href='/notifications'], [href='/explore'], [href='/public/local'], [href='/lists'], [href^='/lists']))
+    .tabs-bar__wrapper
+    .column-header__wrapper,
+  #mastodon:not(:has(.navigation-panel__sign-in-banner)):has(
+      .column-link.active:not([href='/home'], [href='/notifications'], [href='/explore'], [href='/public/local'], [href='/lists'], [href^='/lists']))
+    .tabs-bar__wrapper
+    .column-header {
+    height: 100%;
+  }
+
+  #mastodon:not(:has(.navigation-panel__sign-in-banner)):has(
+      .column-link.active:not([href='/home'], [href='/notifications'], [href='/explore'], [href='/public/local'], [href='/lists'], [href^='/lists']))
+    .tabs-bar__wrapper
+    .column-header__buttons {
+    visibility: visible;
+    height: auto;
+    width: 100%;
+  }
+
+  #mastodon:not(:has(.navigation-panel__sign-in-banner)):has(
+      .column-link.active:not([href='/home'], [href='/notifications'], [href='/explore'], [href='/public/local'], [href='/lists'], [href^='/lists']))
+    .tabs-bar__wrapper
+    .column-header__buttons
+    button {
+    height: 50px;
+    width: 100% !important;
+    text-align: left;
+    transform: none;
+  }
+
+  #mastodon:not(:has(.navigation-panel__sign-in-banner)):has(
+      .column-link.active:not([href='/home'], [href='/notifications'], [href='/explore'], [href='/public/local'], [href='/lists'], [href^='/lists']))
+    .tabs-bar__wrapper
+    .column-header__buttons
+    button::after {
+    content: attr(title);
+    margin-left: 1em;
+    font-weight: 600;
+    font-size: 0.9em;
+  }
+
+  #mastodon:not(:has(.navigation-panel__sign-in-banner)):has(
+      .column-link.active:not([href='/home'], [href='/notifications'], [href='/explore'], [href='/public/local'], [href='/lists'], [href^='/lists']))
+    .tabs-bar__wrapper
+    .column-header__back-button,
+  #mastodon:not(:has(.navigation-panel__sign-in-banner)):has(
+      .column-link.active:not([href='/home'], [href='/notifications'], [href='/explore'], [href='/public/local'], [href='/lists'], [href^='/lists']))
+    .tabs-bar__wrapper
+    .column-header
+    > button {
+    display: none;
+  }
+
+  #mastodon:not(:has(.navigation-panel__sign-in-banner)):has(
+      .column-link.active:not([href='/home'], [href='/notifications'], [href='/explore'], [href='/public/local'], [href='/lists'], [href^='/lists']))
+    .tabs-bar__wrapper
+    .column-header__collapsible {
+    visibility: visible;
+  }
+
+  #mastodon .explore__search-header,
+  #mastodon .search input {
+    background: var(--elevated-color);
   }
 
   #mastodon .columns-area__panels {
@@ -4364,6 +5339,8 @@ body:not(.flavour-glitch)
     max-width: unset;
     border-start-end-radius: var(--radius);
     overflow: clip !important;
+    flex-grow: 1;
+    margin-top: 1px;
   }
 
   #mastodon .columns-area__panels__main > .columns-area--mobile {
@@ -4378,6 +5355,16 @@ body:not(.flavour-glitch)
   #mastodon .columns-area__panels__main .account__header__image,
   #mastodon .columns-area__panels__main > div {
     border-radius: 0 !important;
+  }
+
+  #mastodon .column {
+    flex-grow: 1;
+    overflow: clip;
+  }
+
+  #mastodon .dismissable-banner {
+    margin: 0;
+    padding-left: 4px;
   }
 
   #mastodon .status {
@@ -4397,13 +5384,8 @@ body:not(.flavour-glitch)
     background-size: cover !important;
   }
 
-  #mastodon .status .media-gallery,
-  #mastodon .status .video-player,
-  #mastodon .status .status-card.horizontal.interactive,
-  #mastodon .status .status-card,
-  #mastodon .status .audio-player,
-  #mastodon .status .picture-in-picture-placeholder {
-    margin-bottom: 0 !important;
+  #mastodon .status::before {
+    content: unset;
   }
 
   #mastodon .status__action-bar {
@@ -4413,7 +5395,6 @@ body:not(.flavour-glitch)
   #mastodon .status__action-bar .icon-button {
     margin: 0 !important;
     justify-content: center;
-    padding-top: 0.7em !important;
   }
 
   #mastodon .icon-button::after {
@@ -4427,15 +5408,6 @@ body:not(.flavour-glitch)
     border: 0;
     margin-inline-start: 1px;
     padding-bottom: 90px;
-  }
-
-  #mastodon .notification__filter-bar + .scrollable {
-    border-radius: var(--radius) var(--radius) 0 0 !important;
-  }
-
-  #mastodon .modal-root__modal .status.light {
-    overflow: hidden !important;
-    padding-inline-start: 70px !important;
   }
 
   #mastodon .columns-area {
@@ -4453,15 +5425,12 @@ body:not(.flavour-glitch)
     overflow: visible !important;
   }
 
-  #mastodon .columns-area__panels__main .compose-form {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-
-  #mastodon .columns-area__panels__main .compose-form__autosuggest-wrapper {
-    overflow: hidden;
+  #mastodon .compose-form::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--elevated-color);
+    z-index: -1;
   }
 
   #mastodon .about.about.about {
@@ -4486,13 +5455,6 @@ body:not(.flavour-glitch)
   #mastodon .about.about.about .about__section {
     margin-bottom: 0;
     border-bottom: 1px solid;
-  }
-
-  .search-popout {
-    max-width: unset !important;
-    width: calc(100vw - 70px) !important;
-    position: fixed;
-    left: 15px;
   }
 }
 
@@ -4650,7 +5612,7 @@ body:not(.flavour-glitch)
 
 .admin-wrapper form > h4 {
   margin-top: 2em !important;
-  border-bottom: 0;
+  border-bottom: 0 !important;
   margin-bottom: 0 !important;
 }
 
@@ -4677,7 +5639,7 @@ body:not(.flavour-glitch)
   margin-bottom: 1em !important;
 }
 
-.admin-wrapper .fields-row__column {
+.admin-wrapper .fields-row > .fields-row__column {
   max-width: unset;
   width: 300px;
   border-radius: 0 !important;
@@ -4687,19 +5649,24 @@ body:not(.flavour-glitch)
   margin: 0 !important;
 }
 
-.admin-wrapper .fields-row__column .fields-group {
+.admin-wrapper .fields-row > .fields-row__column .fields-group {
   border-radius: 0 !important;
   margin: 0 !important;
 }
 
-.admin-wrapper .fields-row__column .fields-group > .with_block_label {
+.admin-wrapper
+  .fields-row
+  > .fields-row__column
+  .fields-group
+  > .with_block_label {
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 
 .admin-wrapper
-  .fields-row__column
+  .fields-row
+  > .fields-row__column
   .fields-group
   > .with_block_label
   > .label_input {
@@ -4707,7 +5674,8 @@ body:not(.flavour-glitch)
 }
 
 .admin-wrapper
-  .fields-row__column
+  .fields-row
+  > .fields-row__column
   .fields-group
   > .with_block_label
   > .label_input
@@ -4715,18 +5683,21 @@ body:not(.flavour-glitch)
   min-height: 100%;
 }
 
-.admin-wrapper .fields-row__column > :last-child {
+.admin-wrapper .fields-row > .fields-row__column > :last-child {
   flex-grow: 1;
   align-items: flex-start;
   border: 0;
 }
 
-.admin-wrapper .fields-row__column > :not(:first-child, :last-child) {
+.admin-wrapper
+  .fields-row
+  > .fields-row__column
+  > :not(:first-child, :last-child) {
   padding-block: 0.5em !important;
   margin-block: -3px;
 }
 
-.admin-wrapper:not(.fields-row__column) > .fields-group,
+.admin-wrapper :not(.fields-row__column) > .fields-group,
 .admin-wrapper .fields-row > *,
 .admin-wrapper .label_input > ul,
 .admin-wrapper .label_input__wrapper > ul,
@@ -4740,7 +5711,7 @@ body:not(.flavour-glitch)
   gap: 2px;
 }
 
-.admin-wrapper:not(.fields-row__column) > .fields-group > *,
+.admin-wrapper :not(.fields-row__column) > .fields-group > *,
 .admin-wrapper .fields-row > * > *,
 .admin-wrapper .label_input > ul > *,
 .admin-wrapper .label_input__wrapper > ul > *,
@@ -4753,12 +5724,16 @@ body:not(.flavour-glitch)
   border-radius: 0 !important;
 }
 
-.admin-wrapper:not(.fields-row__column)
+.admin-wrapper
+  :not(.fields-row__column)
   > .fields-group
   > *:not(p, h6, .input-copy)::after,
 .admin-wrapper .fields-row > * > *:not(p, h6, .input-copy)::after,
 .admin-wrapper .label_input > ul > *:not(p, h6, .input-copy)::after,
-.admin-wrapper .label_input__wrapper > ul > *:not(p, h6, .input-copy)::after,
+.admin-wrapper
+  .label_input__wrapper
+  > ul
+  > *:not(p, h6, .input-copy)::after,
 .admin-wrapper .radio_buttons > ul > *:not(p, h6, .input-copy)::after,
 .admin-wrapper
   .with_block_label.radio_buttons
@@ -4773,24 +5748,35 @@ body:not(.flavour-glitch)
   transition: opacity 0.2s;
 }
 
-.admin-wrapper:not(.fields-row__column)
+.admin-wrapper
+  :not(.fields-row__column)
   > .fields-group
   > *:not(p, h6, .input-copy):hover::after,
 .admin-wrapper .fields-row > * > *:not(p, h6, .input-copy):hover::after,
-.admin-wrapper .label_input > ul > *:not(p, h6, .input-copy):hover::after,
+.admin-wrapper
+  .label_input
+  > ul
+  > *:not(p, h6, .input-copy):hover::after,
 .admin-wrapper
   .label_input__wrapper
   > ul
   > *:not(p, h6, .input-copy):hover::after,
-.admin-wrapper .radio_buttons > ul > *:not(p, h6, .input-copy):hover::after,
+.admin-wrapper
+  .radio_buttons
+  > ul
+  > *:not(p, h6, .input-copy):hover::after,
 .admin-wrapper
   .with_block_label.radio_buttons
   .label_input
   > *:not(p, h6, .input-copy):hover::after,
-.admin-wrapper:not(.fields-row__column)
+.admin-wrapper
+  :not(.fields-row__column)
   > .fields-group
   > *:not(p, h6, .input-copy):focus-within::after,
-.admin-wrapper .fields-row > * > *:not(p, h6, .input-copy):focus-within::after,
+.admin-wrapper
+  .fields-row
+  > *
+  > *:not(p, h6, .input-copy):focus-within::after,
 .admin-wrapper
   .label_input
   > ul
@@ -4810,7 +5796,7 @@ body:not(.flavour-glitch)
   opacity: 1;
 }
 
-.admin-wrapper:not(.fields-row__column) > .fields-group .input-copy__wrapper,
+.admin-wrapper :not(.fields-row__column) > .fields-group .input-copy__wrapper,
 .admin-wrapper .fields-row > * .input-copy__wrapper,
 .admin-wrapper .label_input > ul .input-copy__wrapper,
 .admin-wrapper .label_input__wrapper > ul .input-copy__wrapper,
@@ -4823,19 +5809,19 @@ body:not(.flavour-glitch)
   border-radius: var(--radius);
 }
 
-.admin-wrapper:not(.fields-row__column) > .fields-group > .input,
+.admin-wrapper :not(.fields-row__column) > .fields-group > .input,
 .admin-wrapper .fields-row > * > .input,
 .admin-wrapper .label_input > ul > .input,
 .admin-wrapper .label_input__wrapper > ul > .input,
 .admin-wrapper .radio_buttons > ul > .input,
 .admin-wrapper .with_block_label.radio_buttons .label_input > .input,
-.admin-wrapper:not(.fields-row__column) > .fields-group .checkbox,
+.admin-wrapper :not(.fields-row__column) > .fields-group .checkbox,
 .admin-wrapper .fields-row > * .checkbox,
 .admin-wrapper .label_input > ul .checkbox,
 .admin-wrapper .label_input__wrapper > ul .checkbox,
 .admin-wrapper .radio_buttons > ul .checkbox,
 .admin-wrapper .with_block_label.radio_buttons .label_input .checkbox,
-.admin-wrapper:not(.fields-row__column) > .fields-group .radio,
+.admin-wrapper :not(.fields-row__column) > .fields-group .radio,
 .admin-wrapper .fields-row > * .radio,
 .admin-wrapper .label_input > ul .radio,
 .admin-wrapper .label_input__wrapper > ul .radio,
@@ -4844,7 +5830,8 @@ body:not(.flavour-glitch)
   flex-grow: 1;
 }
 
-.admin-wrapper:not(.fields-row__column)
+.admin-wrapper
+  :not(.fields-row__column)
   > .fields-group
   > .input:not(:last-child),
 .admin-wrapper .fields-row > * > .input:not(:last-child),
@@ -4855,7 +5842,8 @@ body:not(.flavour-glitch)
   .with_block_label.radio_buttons
   .label_input
   > .input:not(:last-child),
-.admin-wrapper:not(.fields-row__column)
+.admin-wrapper
+  :not(.fields-row__column)
   > .fields-group
   .checkbox:not(:last-child),
 .admin-wrapper .fields-row > * .checkbox:not(:last-child),
@@ -4866,7 +5854,10 @@ body:not(.flavour-glitch)
   .with_block_label.radio_buttons
   .label_input
   .checkbox:not(:last-child),
-.admin-wrapper:not(.fields-row__column) > .fields-group .radio:not(:last-child),
+.admin-wrapper
+  :not(.fields-row__column)
+  > .fields-group
+  .radio:not(:last-child),
 .admin-wrapper .fields-row > * .radio:not(:last-child),
 .admin-wrapper .label_input > ul .radio:not(:last-child),
 .admin-wrapper .label_input__wrapper > ul .radio:not(:last-child),
@@ -4879,7 +5870,7 @@ body:not(.flavour-glitch)
   margin-bottom: 0;
 }
 
-.admin-wrapper:not(.fields-row__column) > .fields-group > .input.radio .hint,
+.admin-wrapper :not(.fields-row__column) > .fields-group > .input.radio .hint,
 .admin-wrapper .fields-row > * > .input.radio .hint,
 .admin-wrapper .label_input > ul > .input.radio .hint,
 .admin-wrapper .label_input__wrapper > ul > .input.radio .hint,
@@ -4889,7 +5880,7 @@ body:not(.flavour-glitch)
   .label_input
   > .input.radio
   .hint,
-.admin-wrapper:not(.fields-row__column) > .fields-group .checkbox.radio .hint,
+.admin-wrapper :not(.fields-row__column) > .fields-group .checkbox.radio .hint,
 .admin-wrapper .fields-row > * .checkbox.radio .hint,
 .admin-wrapper .label_input > ul .checkbox.radio .hint,
 .admin-wrapper .label_input__wrapper > ul .checkbox.radio .hint,
@@ -4899,13 +5890,17 @@ body:not(.flavour-glitch)
   .label_input
   .checkbox.radio
   .hint,
-.admin-wrapper:not(.fields-row__column) > .fields-group .radio.radio .hint,
+.admin-wrapper :not(.fields-row__column) > .fields-group .radio.radio .hint,
 .admin-wrapper .fields-row > * .radio.radio .hint,
 .admin-wrapper .label_input > ul .radio.radio .hint,
 .admin-wrapper .label_input__wrapper > ul .radio.radio .hint,
 .admin-wrapper .radio_buttons > ul .radio.radio .hint,
 .admin-wrapper .with_block_label.radio_buttons .label_input .radio.radio .hint,
-.admin-wrapper:not(.fields-row__column) > .fields-group > .input.checkbox .hint,
+.admin-wrapper
+  :not(.fields-row__column)
+  > .fields-group
+  > .input.checkbox
+  .hint,
 .admin-wrapper .fields-row > * > .input.checkbox .hint,
 .admin-wrapper .label_input > ul > .input.checkbox .hint,
 .admin-wrapper .label_input__wrapper > ul > .input.checkbox .hint,
@@ -4915,7 +5910,8 @@ body:not(.flavour-glitch)
   .label_input
   > .input.checkbox
   .hint,
-.admin-wrapper:not(.fields-row__column)
+.admin-wrapper
+  :not(.fields-row__column)
   > .fields-group
   .checkbox.checkbox
   .hint,
@@ -4928,7 +5924,7 @@ body:not(.flavour-glitch)
   .label_input
   .checkbox.checkbox
   .hint,
-.admin-wrapper:not(.fields-row__column) > .fields-group .radio.checkbox .hint,
+.admin-wrapper :not(.fields-row__column) > .fields-group .radio.checkbox .hint,
 .admin-wrapper .fields-row > * .radio.checkbox .hint,
 .admin-wrapper .label_input > ul .radio.checkbox .hint,
 .admin-wrapper .label_input__wrapper > ul .radio.checkbox .hint,
@@ -4938,7 +5934,7 @@ body:not(.flavour-glitch)
   .label_input
   .radio.checkbox
   .hint,
-.admin-wrapper:not(.fields-row__column) > .fields-group > .input.radio label,
+.admin-wrapper :not(.fields-row__column) > .fields-group > .input.radio label,
 .admin-wrapper .fields-row > * > .input.radio label,
 .admin-wrapper .label_input > ul > .input.radio label,
 .admin-wrapper .label_input__wrapper > ul > .input.radio label,
@@ -4948,7 +5944,7 @@ body:not(.flavour-glitch)
   .label_input
   > .input.radio
   label,
-.admin-wrapper:not(.fields-row__column) > .fields-group .checkbox.radio label,
+.admin-wrapper :not(.fields-row__column) > .fields-group .checkbox.radio label,
 .admin-wrapper .fields-row > * .checkbox.radio label,
 .admin-wrapper .label_input > ul .checkbox.radio label,
 .admin-wrapper .label_input__wrapper > ul .checkbox.radio label,
@@ -4958,13 +5954,17 @@ body:not(.flavour-glitch)
   .label_input
   .checkbox.radio
   label,
-.admin-wrapper:not(.fields-row__column) > .fields-group .radio.radio label,
+.admin-wrapper :not(.fields-row__column) > .fields-group .radio.radio label,
 .admin-wrapper .fields-row > * .radio.radio label,
 .admin-wrapper .label_input > ul .radio.radio label,
 .admin-wrapper .label_input__wrapper > ul .radio.radio label,
 .admin-wrapper .radio_buttons > ul .radio.radio label,
 .admin-wrapper .with_block_label.radio_buttons .label_input .radio.radio label,
-.admin-wrapper:not(.fields-row__column) > .fields-group > .input.checkbox label,
+.admin-wrapper
+  :not(.fields-row__column)
+  > .fields-group
+  > .input.checkbox
+  label,
 .admin-wrapper .fields-row > * > .input.checkbox label,
 .admin-wrapper .label_input > ul > .input.checkbox label,
 .admin-wrapper .label_input__wrapper > ul > .input.checkbox label,
@@ -4974,7 +5974,8 @@ body:not(.flavour-glitch)
   .label_input
   > .input.checkbox
   label,
-.admin-wrapper:not(.fields-row__column)
+.admin-wrapper
+  :not(.fields-row__column)
   > .fields-group
   .checkbox.checkbox
   label,
@@ -4987,7 +5988,7 @@ body:not(.flavour-glitch)
   .label_input
   .checkbox.checkbox
   label,
-.admin-wrapper:not(.fields-row__column) > .fields-group .radio.checkbox label,
+.admin-wrapper :not(.fields-row__column) > .fields-group .radio.checkbox label,
 .admin-wrapper .fields-row > * .radio.checkbox label,
 .admin-wrapper .label_input > ul .radio.checkbox label,
 .admin-wrapper .label_input__wrapper > ul .radio.checkbox label,
@@ -5000,7 +6001,7 @@ body:not(.flavour-glitch)
   margin-bottom: 0 !important;
 }
 
-.admin-wrapper:not(.fields-row__column) > .fields-group > .input .label_input,
+.admin-wrapper :not(.fields-row__column) > .fields-group > .input .label_input,
 .admin-wrapper .fields-row > * > .input .label_input,
 .admin-wrapper .label_input > ul > .input .label_input,
 .admin-wrapper .label_input__wrapper > ul > .input .label_input,
@@ -5010,7 +6011,7 @@ body:not(.flavour-glitch)
   .label_input
   > .input
   .label_input,
-.admin-wrapper:not(.fields-row__column) > .fields-group .checkbox .label_input,
+.admin-wrapper :not(.fields-row__column) > .fields-group .checkbox .label_input,
 .admin-wrapper .fields-row > * .checkbox .label_input,
 .admin-wrapper .label_input > ul .checkbox .label_input,
 .admin-wrapper .label_input__wrapper > ul .checkbox .label_input,
@@ -5020,7 +6021,7 @@ body:not(.flavour-glitch)
   .label_input
   .checkbox
   .label_input,
-.admin-wrapper:not(.fields-row__column) > .fields-group .radio .label_input,
+.admin-wrapper :not(.fields-row__column) > .fields-group .radio .label_input,
 .admin-wrapper .fields-row > * .radio .label_input,
 .admin-wrapper .label_input > ul .radio .label_input,
 .admin-wrapper .label_input__wrapper > ul .radio .label_input,
@@ -5033,7 +6034,8 @@ body:not(.flavour-glitch)
   flex-direction: column;
 }
 
-.admin-wrapper:not(.fields-row__column)
+.admin-wrapper
+  :not(.fields-row__column)
   > .fields-group
   > .input
   .label_input
@@ -5048,7 +6050,8 @@ body:not(.flavour-glitch)
   > .input
   .label_input
   > label,
-.admin-wrapper:not(.fields-row__column)
+.admin-wrapper
+  :not(.fields-row__column)
   > .fields-group
   .checkbox
   .label_input
@@ -5063,7 +6066,8 @@ body:not(.flavour-glitch)
   .checkbox
   .label_input
   > label,
-.admin-wrapper:not(.fields-row__column)
+.admin-wrapper
+  :not(.fields-row__column)
   > .fields-group
   .radio
   .label_input
@@ -5082,7 +6086,8 @@ body:not(.flavour-glitch)
   padding-top: 0.1em;
 }
 
-.admin-wrapper:not(.fields-row__column)
+.admin-wrapper
+  :not(.fields-row__column)
   > .fields-group
   > .input
   .label_input__wrapper
@@ -5112,7 +6117,8 @@ body:not(.flavour-glitch)
   > .input
   .label_input__wrapper
   > :not(.checkbox),
-.admin-wrapper:not(.fields-row__column)
+.admin-wrapper
+  :not(.fields-row__column)
   > .fields-group
   .checkbox
   .label_input__wrapper
@@ -5147,7 +6153,8 @@ body:not(.flavour-glitch)
   .checkbox
   .label_input__wrapper
   > :not(.checkbox),
-.admin-wrapper:not(.fields-row__column)
+.admin-wrapper
+  :not(.fields-row__column)
   > .fields-group
   .radio
   .label_input__wrapper
@@ -5175,19 +6182,19 @@ body:not(.flavour-glitch)
   margin-top: 0.4em;
 }
 
-.admin-wrapper:not(.fields-row__column) > .fields-group > .input .checkbox,
+.admin-wrapper :not(.fields-row__column) > .fields-group > .input .checkbox,
 .admin-wrapper .fields-row > * > .input .checkbox,
 .admin-wrapper .label_input > ul > .input .checkbox,
 .admin-wrapper .label_input__wrapper > ul > .input .checkbox,
 .admin-wrapper .radio_buttons > ul > .input .checkbox,
 .admin-wrapper .with_block_label.radio_buttons .label_input > .input .checkbox,
-.admin-wrapper:not(.fields-row__column) > .fields-group .checkbox .checkbox,
+.admin-wrapper :not(.fields-row__column) > .fields-group .checkbox .checkbox,
 .admin-wrapper .fields-row > * .checkbox .checkbox,
 .admin-wrapper .label_input > ul .checkbox .checkbox,
 .admin-wrapper .label_input__wrapper > ul .checkbox .checkbox,
 .admin-wrapper .radio_buttons > ul .checkbox .checkbox,
 .admin-wrapper .with_block_label.radio_buttons .label_input .checkbox .checkbox,
-.admin-wrapper:not(.fields-row__column) > .fields-group .radio .checkbox,
+.admin-wrapper :not(.fields-row__column) > .fields-group .radio .checkbox,
 .admin-wrapper .fields-row > * .radio .checkbox,
 .admin-wrapper .label_input > ul .radio .checkbox,
 .admin-wrapper .label_input__wrapper > ul .radio .checkbox,
@@ -5197,7 +6204,7 @@ body:not(.flavour-glitch)
   padding: 1em !important;
 }
 
-.admin-wrapper:not(.fields-row__column) > .fields-group li.checkbox,
+.admin-wrapper :not(.fields-row__column) > .fields-group li.checkbox,
 .admin-wrapper .fields-row > * li.checkbox,
 .admin-wrapper .label_input > ul li.checkbox,
 .admin-wrapper .label_input__wrapper > ul li.checkbox,
@@ -5206,7 +6213,7 @@ body:not(.flavour-glitch)
   width: calc(50% - 27px);
 }
 
-.admin-wrapper:not(.fields-row__column) > .fields-group li.checkbox label,
+.admin-wrapper :not(.fields-row__column) > .fields-group li.checkbox label,
 .admin-wrapper .fields-row > * li.checkbox label,
 .admin-wrapper .label_input > ul li.checkbox label,
 .admin-wrapper .label_input__wrapper > ul li.checkbox label,
@@ -5216,7 +6223,8 @@ body:not(.flavour-glitch)
   padding-top: 0;
 }
 
-.admin-wrapper:not(.fields-row__column)
+.admin-wrapper
+  :not(.fields-row__column)
   > .fields-group
   li.checkbox
   label::before,
@@ -5234,7 +6242,12 @@ body:not(.flavour-glitch)
   inset: 0;
 }
 
-.admin-wrapper:not(.fields-row__column) > .fields-group li.checkbox label input,
+.admin-wrapper
+  :not(.fields-row__column)
+  > .fields-group
+  li.checkbox
+  label
+  input,
 .admin-wrapper .fields-row > * li.checkbox label input,
 .admin-wrapper .label_input > ul li.checkbox label input,
 .admin-wrapper .label_input__wrapper > ul li.checkbox label input,
@@ -5248,13 +6261,13 @@ body:not(.flavour-glitch)
   inset: 1em !important;
 }
 
-.admin-wrapper:not(.fields-row__column) > .fields-group > h6,
+.admin-wrapper :not(.fields-row__column) > .fields-group > h6,
 .admin-wrapper .fields-row > * > h6,
 .admin-wrapper .label_input > ul > h6,
 .admin-wrapper .label_input__wrapper > ul > h6,
 .admin-wrapper .radio_buttons > ul > h6,
 .admin-wrapper .with_block_label.radio_buttons .label_input > h6,
-.admin-wrapper:not(.fields-row__column) > .fields-group > p,
+.admin-wrapper :not(.fields-row__column) > .fields-group > p,
 .admin-wrapper .fields-row > * > p,
 .admin-wrapper .label_input > ul > p,
 .admin-wrapper .label_input__wrapper > ul > p,
@@ -5263,7 +6276,7 @@ body:not(.flavour-glitch)
   margin: 0;
 }
 
-.admin-wrapper:not(.fields-row__column) > .fields-group > h6:not(:last-child),
+.admin-wrapper :not(.fields-row__column) > .fields-group > h6:not(:last-child),
 .admin-wrapper .fields-row > * > h6:not(:last-child),
 .admin-wrapper .label_input > ul > h6:not(:last-child),
 .admin-wrapper .label_input__wrapper > ul > h6:not(:last-child),
@@ -5272,7 +6285,7 @@ body:not(.flavour-glitch)
   .with_block_label.radio_buttons
   .label_input
   > h6:not(:last-child),
-.admin-wrapper:not(.fields-row__column) > .fields-group > p:not(:last-child),
+.admin-wrapper :not(.fields-row__column) > .fields-group > p:not(:last-child),
 .admin-wrapper .fields-row > * > p:not(:last-child),
 .admin-wrapper .label_input > ul > p:not(:last-child),
 .admin-wrapper .label_input__wrapper > ul > p:not(:last-child),
@@ -5493,7 +6506,12 @@ body:not(.flavour-glitch)
   #mastodon
   .columns-area
   .scrollable:not(.scrollable--flex)
-  .account-timeline__header {
+  .account-timeline__header,
+.layout-multiple-columns
+  #mastodon
+  .columns-area
+  .scrollable:not(.scrollable--flex)
+  .dismissable-banner {
   margin: 0 !important;
 }
 
@@ -5510,7 +6528,8 @@ body:not(.flavour-glitch)
 .layout-multiple-columns
   #mastodon
   .columns-area
-  .scrollable:not(.focusable)
+  .scrollable
+  :not(.focusable)
   > .account,
 .layout-multiple-columns #mastodon .columns-area .timeline-hint {
   border-radius: 0;
@@ -5529,7 +6548,8 @@ body:not(.flavour-glitch)
 .layout-multiple-columns
   #mastodon
   .columns-area
-  .scrollable:not(.focusable)
+  .scrollable
+  :not(.focusable)
   > .account::before,
 .layout-multiple-columns #mastodon .columns-area .timeline-hint::before {
   border-radius: 0 !important;
@@ -5548,14 +6568,15 @@ body:not(.flavour-glitch)
 .layout-multiple-columns
   #mastodon
   .columns-area
-  .scrollable:not(.focusable)
+  .scrollable
+  :not(.focusable)
   > .account::after,
 .layout-multiple-columns #mastodon .columns-area .timeline-hint::after {
   inset-inline: 0 !important;
 }
 
 .layout-multiple-columns #mastodon .columns-area [class*='explore__'] > * {
-  border-radius: var(--radius) !important;
+  border-radius: var(--radius);
 }
 
 .layout-multiple-columns #mastodon .columns-area .detailed-status__wrapper {
@@ -5571,18 +6592,34 @@ body:not(.flavour-glitch)
 .layout-multiple-columns
   #mastodon
   .columns-area
-  .status__action-bar:not(i, .status__action-bar-spacer) {
+  .status__action-bar
+  :not(i, .status__action-bar-spacer) {
   display: flex;
-  flex-grow: 9999 !important;
+  flex-grow: 9999;
   justify-content: center !important;
   max-width: 55px;
   min-width: max-content;
+}
+
+.layout-multiple-columns
+  #mastodon
+  .columns-area
+  .status__action-bar
+  > .icon-button:first-child {
+  margin-inline-start: -8px !important;
 }
 
 .layout-multiple-columns #mastodon .columns-area .status__action-bar,
 .layout-multiple-columns #mastodon .columns-area .detailed-status__action-bar,
 .layout-multiple-columns #mastodon .columns-area .picture-in-picture__footer {
   flex-wrap: wrap;
+}
+
+.layout-multiple-columns
+  #mastodon
+  .columns-area
+  .follow_requests-unlocked_explanation {
+  margin: 0 !important;
 }
 
 .layout-multiple-columns #mastodon .columns-area .column-header,
@@ -5695,8 +6732,8 @@ body:not(.flavour-glitch)
 
 .layout-multiple-columns #mastodon .columns-area .drawer__inner:not(.darker),
 .layout-multiple-columns #mastodon .columns-area .drawer__inner__mastodon {
-  background-color: transparent;
   border: 0 !important;
+  background-color: transparent !important;
 }
 
 .layout-multiple-columns #mastodon .columns-area .drawer__inner.darker {
@@ -5720,5 +6757,5 @@ body:not(.flavour-glitch)
 }
 
 .modal-root__container {
-  animation: bounceIn 0.7s !important;
+  animation: bounce-in 0.7s;
 }
