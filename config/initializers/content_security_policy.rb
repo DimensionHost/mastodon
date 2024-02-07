@@ -84,13 +84,13 @@ end
 # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy-Report-Only
 # Rails.application.config.content_security_policy_report_only = true
 
-Rails.application.config.content_security_policy_nonce_generator = nil 
+Rails.application.config.content_security_policy_nonce_generator = ->request { SecureRandom.base64(16) }
 
 Rails.application.config.content_security_policy_nonce_directives = %w(style-src)
 
 Rails.application.reloader.to_prepare do
   PgHero::HomeController.content_security_policy do |p|
-    p.script_src :self, :unsafe_inline, assets_host, "https://media.chalk.moe"
+    p.script_src :self, :unsafe_inline, assets_host
     p.style_src  :self, :unsafe_inline, assets_host
   end
 
@@ -104,8 +104,8 @@ Rails.application.reloader.to_prepare do
       p.connect_src     :none
       p.frame_ancestors :self
       p.frame_src       :self
-      p.script_src      :unsafe_inline, "https://media.chalk.moe"
-      p.style_src       :self, :unsafe_inline, assets_host
+      p.script_src      :unsafe_inline
+      p.style_src       :unsafe_inline
       p.worker_src      :none
     end
 
