@@ -93,7 +93,7 @@ export default class StatusPrepend extends PureComponent {
         <FormattedMessage
           id='notification.reaction'
           defaultMessage='{name} reacted to your status'
-          values={{ name : linkifiedAccounts }}
+          values={{ name: linkifiedAccounts }}
         />
       );
     case 'reblog':
