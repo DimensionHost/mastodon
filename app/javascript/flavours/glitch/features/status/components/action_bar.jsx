@@ -18,8 +18,8 @@ import ReplyAllIcon from '@/material-icons/400-24px/reply_all.svg?react';
 import StarIcon from '@/material-icons/400-24px/star-fill.svg?react';
 import StarBorderIcon from '@/material-icons/400-24px/star.svg?react';
 import RepeatActiveIcon from '@/svg-icons/repeat_active.svg?react';
-import RepeatDisabledIcon from '@/svg-icons/repeat_disabled.svg';
-import RepeatPrivateIcon from '@/svg-icons/repeat_private.svg';
+import RepeatDisabledIcon from '@/svg-icons/repeat_disabled.svg?react';
+import RepeatPrivateIcon from '@/svg-icons/repeat_private.svg?react';
 import RepeatPrivateActiveIcon from '@/svg-icons/repeat_private_active.svg?react';
 import { PERMISSION_MANAGE_USERS, PERMISSION_MANAGE_FEDERATION } from 'flavours/glitch/permissions';
 import { accountAdminLink, statusAdminLink } from 'flavours/glitch/utils/backend_links';
@@ -242,16 +242,6 @@ class ActionBar extends PureComponent {
     }
 
     const canReact = signedIn && status.get('reactions').filter(r => r.get('count') > 0 && r.get('me')).size < maxReactions;
-    const reactButton = (
-      <IconButton
-        className='add-reaction-icon'
-        onClick={this.handleNoOp} // EmojiPickerDropdown handles that
-        title={intl.formatMessage(messages.react)}
-        disabled={!canReact}
-        icon='add_reaction'
-        iconComponent={AddReactionIcon}
-      />
-    );
 
     const reblogPrivate = status.getIn(['account', 'id']) === me && status.get('visibility') === 'private';
 
@@ -276,13 +266,7 @@ class ActionBar extends PureComponent {
         <div className='detailed-status__button'><IconButton title={intl.formatMessage(messages.reply)} icon={replyIcon} iconComponent={replyIconComponent} onClick={this.handleReplyClick} /></div>
         <div className='detailed-status__button'><IconButton className={classNames({ reblogPrivate })} disabled={!publicStatus && !reblogPrivate} active={status.get('reblogged')} title={reblogTitle} icon='retweet' iconComponent={reblogIconComponent} onClick={this.handleReblogClick} /></div>
         <div className='detailed-status__button'><IconButton className='star-icon' animate active={status.get('favourited')} title={intl.formatMessage(messages.favourite)} icon='star' iconComponent={status.get('favourited') ? StarIcon : StarBorderIcon} onClick={this.handleFavouriteClick} /></div>
-        <div className='detailed-status__button'>
-          {
-            signedIn
-              ? <EmojiPickerDropdown onPickEmoji={this.handleEmojiPick} button={reactButton} disabled={!canReact} />
-              : reactButton
-          }
-        </div>
+        <div className='detailed-status__button'><EmojiPickerDropdown onPickEmoji={this.handleEmojiPick} title={intl.formatMessage(messages.react)} icon={AddReactionIcon} disabled={!canReact} /></div>
         <div className='detailed-status__button'><IconButton className='bookmark-icon' disabled={!signedIn} active={status.get('bookmarked')} title={intl.formatMessage(messages.bookmark)} icon='bookmark' iconComponent={status.get('bookmarked') ? BookmarkIcon : BookmarkBorderIcon} onClick={this.handleBookmarkClick} /></div>
 
         <div className='detailed-status__action-bar-dropdown'>
