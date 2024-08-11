@@ -113,29 +113,37 @@ module ApplicationHelper
     content_tag(:i, nil, attributes.merge(class: class_names.join(' ')))
   end
 
+  def material_symbol(icon, attributes = {})
+    inline_svg_tag(
+      "400-24px/#{icon}.svg",
+      class: ['icon', "material-#{icon}"].concat(attributes[:class].to_s.split),
+      role: :img
+    )
+  end
+
   def check_icon
     inline_svg_tag 'check.svg'
   end
 
   def visibility_icon(status)
     if status.public_visibility?
-      fa_icon('globe', title: I18n.t('statuses.visibilities.public'))
+      material_symbol('globe', title: I18n.t('statuses.visibilities.public'))
     elsif status.unlisted_visibility?
-      fa_icon('unlock', title: I18n.t('statuses.visibilities.unlisted'))
+      material_symbol('lock_open', title: I18n.t('statuses.visibilities.unlisted'))
     elsif status.private_visibility? || status.limited_visibility?
-      fa_icon('lock', title: I18n.t('statuses.visibilities.private'))
+      material_symbol('lock', title: I18n.t('statuses.visibilities.private'))
     elsif status.direct_visibility?
-      fa_icon('at', title: I18n.t('statuses.visibilities.direct'))
+      material_symbol('alternate_email', title: I18n.t('statuses.visibilities.direct'))
     end
   end
 
   def interrelationships_icon(relationships, account_id)
     if relationships.following[account_id] && relationships.followed_by[account_id]
-      fa_icon('exchange', title: I18n.t('relationships.mutual'), class: 'fa-fw active passive')
+      material_symbol('sync_alt', title: I18n.t('relationships.mutual'), class: 'active passive')
     elsif relationships.following[account_id]
-      fa_icon(locale_direction == 'ltr' ? 'arrow-right' : 'arrow-left', title: I18n.t('relationships.following'), class: 'fa-fw active')
+      material_symbol(locale_direction == 'ltr' ? 'arrow_right_alt' : 'arrow_left_alt', title: I18n.t('relationships.following'), class: 'active')
     elsif relationships.followed_by[account_id]
-      fa_icon(locale_direction == 'ltr' ? 'arrow-left' : 'arrow-right', title: I18n.t('relationships.followers'), class: 'fa-fw passive')
+      material_symbol(locale_direction == 'ltr' ? 'arrow_left_alt' : 'arrow_right_alt', title: I18n.t('relationships.followers'), class: 'passive')
     end
   end
 
@@ -231,6 +239,45 @@ module ApplicationHelper
 
   def prerender_custom_emojis(html, custom_emojis, other_options = {})
     EmojiFormatter.new(html, custom_emojis, other_options.merge(animate: prefers_autoplay?)).to_s
+  end
+
+  def mascot_url
+    full_asset_url(instance_presenter.mascot&.file&.url || frontend_asset_path('images/elephant_ui_plane.svg'))
+  end
+
+  def instance_presenter
+    @instance_presenter ||= InstancePresenter.new
+  end
+
+  def favicon_path(size = '48')
+    instance_presenter.favicon&.file&.url(size)
+  end
+
+  def app_icon_path(size = '48')
+    instance_presenter.app_icon&.file&.url(size)
+  end
+
+  def use_mask_icon?
+    instance_presenter.app_icon.blank?
+  end
+
+  # glitch-soc addition to handle the multiple flavors
+  def preload_locale_pack
+    supported_locales = Themes.instance.flavour(current_flavour)['locales']
+    preload_pack_asset "locales/#{current_flavour}/#{I18n.locale}-json.js" if supported_locales.include?(I18n.locale.to_s)
+  end
+
+  def flavoured_javascript_pack_tag(pack_name, **options)
+    javascript_pack_tag("flavours/#{current_flavour}/#{pack_name}", **options)
+  end
+
+  def flavoured_stylesheet_pack_tag(pack_name, **options)
+    stylesheet_pack_tag("flavours/#{current_flavour}/#{pack_name}", **options)
+  end
+
+  def preload_signed_in_js_packs
+    preload_files = Themes.instance.flavour(current_flavour)&.fetch('signed_in_preload', nil) || []
+    safe_join(preload_files.map { |entry| preload_pack_asset entry })
   end
 
   private

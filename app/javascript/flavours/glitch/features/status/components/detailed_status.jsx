@@ -15,6 +15,7 @@ import { getHashtagBarForStatus } from 'flavours/glitch/components/hashtag_bar';
 import PictureInPicturePlaceholder from 'flavours/glitch/components/picture_in_picture_placeholder';
 import { VisibilityIcon } from 'flavours/glitch/components/visibility_icon';
 import PollContainer from 'flavours/glitch/containers/poll_container';
+import { identityContextPropShape, withIdentity } from 'flavours/glitch/identity_context';
 import { WithRouterPropTypes } from 'flavours/glitch/utils/react_router';
 
 import { Avatar } from '../../../components/avatar';
@@ -22,6 +23,7 @@ import { DisplayName } from '../../../components/display_name';
 import MediaGallery from '../../../components/media_gallery';
 import StatusContent from '../../../components/status_content';
 import StatusReactions from '../../../components/status_reactions';
+import { visibleReactions } from '../../../initial_state';
 import Audio from '../../audio';
 import scheduleIdleTask from '../../ui/util/schedule_idle_task';
 import Video from '../../video';
@@ -29,12 +31,8 @@ import Video from '../../video';
 import Card from './card';
 
 class DetailedStatus extends ImmutablePureComponent {
-
-  static contextTypes = {
-    identity: PropTypes.object,
-  };
-
   static propTypes = {
+    identity: identityContextPropShape,
     status: ImmutablePropTypes.map,
     settings: ImmutablePropTypes.map.isRequired,
     onOpenMedia: PropTypes.func.isRequired,
@@ -292,7 +290,7 @@ class DetailedStatus extends ImmutablePureComponent {
     return (
       <div style={outerStyle}>
         <div ref={this.setRef} className={classNames('detailed-status', `detailed-status-${status.get('visibility')}`, { compact })} data-status-by={status.getIn(['account', 'acct'])}>
-          <a href={status.getIn(['account', 'url'])} onClick={this.handleAccountClick} className='detailed-status__display-name'>
+          <a href={status.getIn(['account', 'url'])} data-hover-card-account={status.getIn(['account', 'id'])} onClick={this.handleAccountClick} className='detailed-status__display-name'>
             <div className='detailed-status__display-avatar'><Avatar account={status.get('account')} size={48} /></div>
             <DisplayName account={status.get('account')} localDomain={this.props.domain} />
           </a>
@@ -315,13 +313,13 @@ class DetailedStatus extends ImmutablePureComponent {
             {...statusContentProps}
           />
 
-          <StatusReactions
+          {visibleReactions > 0 && (<StatusReactions
             statusId={status.get('id')}
             reactions={status.get('reactions')}
             addReaction={this.props.onReactionAdd}
             removeReaction={this.props.onReactionRemove}
-            canReact={this.context.identity.signedIn}
-          />
+            canReact={this.props.identity.signedIn}
+          />)}
 
           <div className='detailed-status__meta'>
             <div className='detailed-status__meta__line'>
@@ -349,4 +347,4 @@ class DetailedStatus extends ImmutablePureComponent {
 
 }
 
-export default withRouter(DetailedStatus);
+export default withRouter(withIdentity(DetailedStatus));

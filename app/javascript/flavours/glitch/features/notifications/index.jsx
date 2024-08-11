@@ -19,6 +19,7 @@ import NotificationsIcon from '@/material-icons/400-24px/notifications-fill.svg?
 import { compareId } from 'flavours/glitch/compare_id';
 import { Icon }  from 'flavours/glitch/components/icon';
 import { NotSignedInIndicator } from 'flavours/glitch/components/not_signed_in_indicator';
+import { identityContextPropShape, withIdentity } from 'flavours/glitch/identity_context';
 
 import { addColumn, removeColumn, moveColumn } from '../../actions/columns';
 import { submitMarkers } from '../../actions/markers';
@@ -37,7 +38,10 @@ import { LoadGap } from '../../components/load_gap';
 import ScrollableList from '../../components/scrollable_list';
 import NotificationPurgeButtonsContainer from '../../containers/notification_purge_buttons_container';
 
-import { FilteredNotificationsBanner } from './components/filtered_notifications_banner';
+import {
+  FilteredNotificationsBanner,
+  FilteredNotificationsIconButton,
+} from './components/filtered_notifications_banner';
 import NotificationsPermissionBanner from './components/notifications_permission_banner';
 import ColumnSettingsContainer from './containers/column_settings_container';
 import FilterBarContainer from './containers/filter_bar_container';
@@ -82,7 +86,6 @@ const mapStateToProps = state => ({
   lastReadId: state.getIn(['settings', 'notifications', 'showUnread']) ? state.getIn(['notifications', 'readMarkerId']) : '0',
   canMarkAsRead: state.getIn(['settings', 'notifications', 'showUnread']) && state.getIn(['notifications', 'readMarkerId']) !== '0' && getNotifications(state).some(item => item !== null && compareId(item.get('id'), state.getIn(['notifications', 'readMarkerId'])) > 0),
   needsNotificationPermission: state.getIn(['settings', 'notifications', 'alerts']).includes(true) && state.getIn(['notifications', 'browserSupport']) && state.getIn(['notifications', 'browserPermission']) === 'default' && !state.getIn(['settings', 'notifications', 'dismissPermissionBanner']),
-  grouping: state.getIn(['settings', 'notifications', 'grouping']),
 });
 
 /* glitch */
@@ -94,12 +97,8 @@ const mapDispatchToProps = dispatch => ({
 });
 
 class Notifications extends PureComponent {
-
-  static contextTypes = {
-    identity: PropTypes.object,
-  };
-
   static propTypes = {
+    identity: identityContextPropShape,
     columnId: PropTypes.string,
     notifications: ImmutablePropTypes.list.isRequired,
     showFilterBar: PropTypes.bool.isRequired,
@@ -116,7 +115,6 @@ class Notifications extends PureComponent {
     lastReadId: PropTypes.string,
     canMarkAsRead: PropTypes.bool,
     needsNotificationPermission: PropTypes.bool,
-    grouping: ImmutablePropTypes.map,
   };
 
   static defaultProps = {
@@ -221,69 +219,19 @@ class Notifications extends PureComponent {
     this.props.dispatch(submitMarkers({ immediate: true }));
   };
 
-  /**
-   * Gets the list of notifications, grouped up (as per user settings) such that multiple users' interactions on the same
-   * post are collapsed into a single notification.
-   */
-  getGroupedNotifications() {
-    const { notifications, grouping } = this.props;
-    const groupedNotifications = [];
-
-    // if grouping is { "favourite": true, "reblog": false, "foo": true, "bar": false }
-    // then typesToGroup is [ "favourite", "foo" ]
-    const typesToGroup = grouping.reduce((acc, enabled, groupBy) => enabled ? acc.push(groupBy) : acc, ImmutableList.of());
-
-    // for each notification....
-    for (const notif of notifications) {
-
-      // `null` is used to signify that there is a "loading gap" in the notifications. We make sure that these loading gaps persist.
-      if (!notif) {
-        groupedNotifications.push(notif);
-        continue;
-      }
-
-      // Make sure that we only group up notifications of the provided types.
-      if (typesToGroup.includes(notif.get('type'))) {
-
-        // Get an already existing notification to collapse into
-        const matchingNotifIdx = groupedNotifications.findIndex(
-          other => other?.get('type') === notif.get('type') && other?.get('status') === notif.get('status'),
-        );
-        const matchingNotif = groupedNotifications[matchingNotifIdx];
-
-        // Collapse this notifcation into the existing notification if it exists,
-        // otherwise push it as a new notification.
-        if (matchingNotif) {
-          groupedNotifications[matchingNotifIdx] = matchingNotif.update(
-            'account',
-            ImmutableList(),
-            accounts => accounts.push(notif.get('account')),
-          );
-        } else {
-          groupedNotifications.push(notif.update('account', singleAccount => ImmutableList.of(singleAccount)));
-        }
-      } else {
-        groupedNotifications.push(notif);
-      }
-    }
-    return ImmutableList(groupedNotifications);
-  }
-
   render () {
-    const { intl, isLoading, isUnread, columnId, multiColumn, hasMore, numPending, showFilterBar, lastReadId, canMarkAsRead, needsNotificationPermission } = this.props;
+    const { intl, notifications, isLoading, isUnread, columnId, multiColumn, hasMore, numPending, showFilterBar, lastReadId, canMarkAsRead, needsNotificationPermission } = this.props;
     const { notifCleaningActive } = this.props;
     const { animatingNCD } = this.state;
     const pinned = !!columnId;
     const emptyMessage = <FormattedMessage id='empty_column.notifications' defaultMessage="You don't have any notifications yet. When other people interact with you, you will see it here." />;
-    const { signedIn } = this.context.identity;
+    const { signedIn } = this.props.identity;
 
     let scrollableContent = null;
 
     const filterBarContainer = (signedIn && showFilterBar)
       ? (<FilterBarContainer />)
       : null;
-
-    const notifications = this.getGroupedNotifications();
 
     if (isLoading && this.scrollableContent) {
       scrollableContent = this.scrollableContent;
@@ -292,7 +240,7 @@ class Notifications extends PureComponent {
         <LoadGap
           key={'gap:' + notifications.getIn([index + 1, 'id'])}
           disabled={isLoading}
-          maxId={index > 0 ? notifications.getIn([index - 1, 'id']) : null}
+          param={index > 0 ? notifications.getIn([index - 1, 'id']) : null}
           onClick={this.handleLoadGap}
         />
       ) : (
@@ -313,6 +261,13 @@ class Notifications extends PureComponent {
 
     let scrollContainer;
 
+    const prepend = (
+      <>
+        {needsNotificationPermission && <NotificationsPermissionBanner />}
+        <FilteredNotificationsBanner />
+      </>
+    );
+
     if (signedIn) {
       scrollContainer = (
         <ScrollableList
@@ -322,7 +277,7 @@ class Notifications extends PureComponent {
           showLoading={isLoading && notifications.size === 0}
           hasMore={hasMore}
           numPending={numPending}
-          prepend={needsNotificationPermission && <NotificationsPermissionBanner />}
+          prepend={prepend}
           alwaysPrepend
           emptyMessage={emptyMessage}
           onLoadMore={this.handleLoadOlder}
@@ -338,7 +293,9 @@ class Notifications extends PureComponent {
       scrollContainer = <NotSignedInIndicator />;
     }
 
-    const extraButtons = [];
+    const extraButtons = [
+      <FilteredNotificationsIconButton key='filtered-notifications-icon' className='column-header__button' />,
+    ];
 
     if (canMarkAsRead) {
       extraButtons.push(
@@ -411,8 +368,6 @@ class Notifications extends PureComponent {
 
         {filterBarContainer}
 
-        <FilteredNotificationsBanner />
-
         {scrollContainer}
 
         <Helmet>
@@ -425,4 +380,4 @@ class Notifications extends PureComponent {
 
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(injectIntl(Notifications));
+export default connect(mapStateToProps, mapDispatchToProps)(withIdentity(injectIntl(Notifications)));
