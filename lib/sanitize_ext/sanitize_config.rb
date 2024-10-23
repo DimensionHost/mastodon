@@ -21,7 +21,7 @@ class Sanitize
       gemini
     ).freeze
 
-    CLASS_WHITELIST_TRANSFORMER = lambda do |env|
+    ALLOWED_CLASS_TRANSFORMER = lambda do |env|
       node = env[:node]
       class_list = node['class']&.split(/[\t\n\f\r ]/)
 
@@ -31,6 +31,7 @@ class Sanitize
         next true if /^(h|p|u|dt|e)-/.match?(e) # microformats classes
         next true if /^(mention|hashtag)$/.match?(e) # semantic classes
         next true if /^(ellipsis|invisible)$/.match?(e) # link formatting classes
+        next true if /^quote-inline$/.match?(e) # quote inline classes
       end
 
       node['class'] = class_list.join(' ')
@@ -71,7 +72,7 @@ class Sanitize
                  :relative
                end
 
-      current_node.replace(Nokogiri::XML::Text.new(current_node.text, current_node.document)) unless LINK_PROTOCOLS.include?(scheme)
+      current_node.replace(current_node.document.create_text_node(current_node.text)) unless LINK_PROTOCOLS.include?(scheme)
     end
 
     UNSUPPORTED_ELEMENTS_TRANSFORMER = lambda do |env|
@@ -98,7 +99,7 @@ class Sanitize
 
       add_attributes: {
         'a' => {
-          'rel' => 'nofollow noopener noreferrer',
+          'rel' => 'nofollow noopener',
           'target' => '_blank',
         },
       },
@@ -109,7 +110,7 @@ class Sanitize
       },
 
       transformers: [
-        CLASS_WHITELIST_TRANSFORMER,
+        ALLOWED_CLASS_TRANSFORMER,
         IMG_TAG_TRANSFORMER,
         TRANSLATE_TRANSFORMER,
         UNSUPPORTED_HREF_TRANSFORMER,
@@ -144,7 +145,7 @@ class Sanitize
       node = env[:node]
 
       rel = (node['rel'] || '').split & ['tag']
-      rel += %w(nofollow noopener noreferrer) unless TagManager.instance.local_url?(node['href'])
+      rel += %w(nofollow noopener) unless TagManager.instance.local_url?(node['href'])
 
       if rel.empty?
         node.remove_attribute('rel')
@@ -173,7 +174,7 @@ class Sanitize
       add_attributes: {},
 
       transformers: [
-        CLASS_WHITELIST_TRANSFORMER,
+        ALLOWED_CLASS_TRANSFORMER,
         IMG_TAG_TRANSFORMER,
         TRANSLATE_TRANSFORMER,
         UNSUPPORTED_HREF_TRANSFORMER,

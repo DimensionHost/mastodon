@@ -87,6 +87,7 @@ class REST::InstanceSerializer < ActiveModel::Serializer
       },
 
       polls: {
+        allow_media: true,
         max_options: PollValidator::MAX_OPTIONS,
         max_characters_per_option: PollValidator::MAX_OPTION_CHARS,
         min_expiration: PollValidator::MIN_EXPIRATION,
@@ -113,9 +114,7 @@ class REST::InstanceSerializer < ActiveModel::Serializer
   end
 
   def api_versions
-    {
-      mastodon: 1,
-    }
+    Mastodon::Version.api_versions
   end
 
   private

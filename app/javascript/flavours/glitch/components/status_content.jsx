@@ -9,11 +9,13 @@ import { withRouter } from 'react-router-dom';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import { connect } from 'react-redux';
 
+import QuoteIcon from '@/material-icons/400-24px/format_quote-fill.svg?react';
 import ImageIcon from '@/material-icons/400-24px/image.svg?react';
 import InsertChartIcon from '@/material-icons/400-24px/insert_chart.svg?react';
 import LinkIcon from '@/material-icons/400-24px/link.svg?react';
 import MovieIcon from '@/material-icons/400-24px/movie.svg?react';
 import MusicNoteIcon from '@/material-icons/400-24px/music_note.svg?react';
+import { ContentWarning } from 'flavours/glitch/components/content_warning';
 import { Icon } from 'flavours/glitch/components/icon';
 import { identityContextPropShape, withIdentity } from 'flavours/glitch/identity_context';
 import { autoPlayGif, languages as preloadedLanguages } from 'flavours/glitch/initial_state';
@@ -40,13 +42,14 @@ const isLinkMisleading = (link) => {
     case Node.TEXT_NODE:
       linkTextParts.push(node.textContent);
       break;
-    case Node.ELEMENT_NODE:
+    case Node.ELEMENT_NODE: {
       if (node.classList.contains('invisible')) return;
       const children = node.childNodes;
       for (let i = 0; i < children.length; i++) {
         walk(children[i]);
       }
       break;
+    }
     }
   };
 
@@ -199,7 +202,7 @@ class StatusContent extends PureComponent {
         link.classList.add('unhandled-link');
 
         link.setAttribute('target', '_blank');
-        link.setAttribute('rel', 'noopener nofollow noreferrer');
+        link.setAttribute('rel', 'noopener nofollow');
 
         try {
           if (tagLinks && isLinkMisleading(link)) {
@@ -352,7 +355,7 @@ class StatusContent extends PureComponent {
     const renderTranslate = this.props.onTranslate && this.props.identity.signedIn && ['public', 'unlisted'].includes(status.get('visibility')) && status.get('search_index').trim().length > 0 && targetLanguages?.includes(contentLocale);
 
     const content = { __html: statusContent ?? getStatusContent(status) };
-    const spoilerContent = { __html: status.getIn(['translation', 'spoilerHtml']) || status.get('spoilerHtml') };
+    const spoilerHtml = status.getIn(['translation', 'spoilerHtml']) || status.get('spoilerHtml');
     const language = status.getIn(['translation', 'language']) || status.get('language');
     const classNames = classnames('status__content', {
       'status__content--with-action': parseClick && !disabled,
@@ -368,6 +371,37 @@ class StatusContent extends PureComponent {
       <TranslateButton onClick={this.handleTranslate} translation={status.get('translation')} />
     );
 
+    let quote = '';
+
+    if (status.get('quote', null) !== null) {
+      let quoteStatus = status.get('quote');
+      let quoteStatusContent = { __html: quoteStatus.get('contentHtml') };
+      let quoteStatusAccount = quoteStatus.get('account');
+      let quoteStatusDisplayName = { __html: quoteStatusAccount.get('display_name_html') };
+
+      quote = (
+        <div className='status__quote'>
+          <blockquote>
+            <bdi>
+              <span className='quote-display-name'>
+                <Icon
+                  fixedWidth
+                  aria-hidden='true'
+                  key='icon-quote-right'
+                  icon={QuoteIcon} />
+                <strong className='display-name__html'>
+                  <a onClick={this.handleAccountClick} href={quoteStatus.getIn(['account', 'url'])} dangerouslySetInnerHTML={quoteStatusDisplayName} />
+                </strong>
+              </span>
+            </bdi>
+            <div>
+              <a href={quoteStatus.get('url')} target='_blank' rel='noopener' dangerouslySetInnerHTML={quoteStatusContent} />
+            </div>
+          </blockquote>
+        </div>
+      );
+    }
+
     if (status.get('spoiler_text').length > 0) {
       let mentionsPlaceholder = '';
 
@@ -382,45 +416,26 @@ class StatusContent extends PureComponent {
         </Permalink>
       )).reduce((aggregate, item) => [...aggregate, item, ' '], []);
 
-      let toggleText = null;
-      if (hidden) {
-        toggleText = [
-          <FormattedMessage
-            id='status.show_more'
-            defaultMessage='Show more'
-            key='0'
-          />,
-        ];
-        if (mediaIcons) {
-          const mediaComponents = {
-            'link': LinkIcon,
-            'picture-o': ImageIcon,
-            'tasks': InsertChartIcon,
-            'video-camera': MovieIcon,
-            'music': MusicNoteIcon,
-          };
+      let spoilerIcons = [];
+      if (hidden && mediaIcons) {
+        const mediaComponents = {
+          'link': LinkIcon,
+          'picture-o': ImageIcon,
+          'tasks': InsertChartIcon,
+          'video-camera': MovieIcon,
+          'music': MusicNoteIcon,
+        };
 
-          mediaIcons.forEach((mediaIcon, idx) => {
-            toggleText.push(
-              <Icon
-                fixedWidth
-                className='status__content__spoiler-icon'
-                id={mediaIcon}
-                icon={mediaComponents[mediaIcon]}
-                aria-hidden='true'
-                key={`icon-${idx}`}
-              />,
-            );
-          });
-        }
-      } else {
-        toggleText = (
-          <FormattedMessage
-            id='status.show_less'
-            defaultMessage='Show less'
-            key='0'
+        spoilerIcons = mediaIcons.map((mediaIcon) => (
+          <Icon
+            fixedWidth
+            className='status__content__spoiler-icon'
+            id={mediaIcon}
+            icon={mediaComponents[mediaIcon]}
+            aria-hidden='true'
+            key={`icon-${mediaIcon}`}
           />
-        );
+        ));
       }
 
       if (hidden) {
@@ -429,19 +444,12 @@ class StatusContent extends PureComponent {
 
       return (
         <div className={classNames} tabIndex={0} onMouseDown={this.handleMouseDown} onMouseUp={this.handleMouseUp}>
-          <p
-            style={{ marginBottom: hidden && status.get('mentions').isEmpty() ? '0px' : null }}
-          >
-            <span dangerouslySetInnerHTML={spoilerContent} className='translate' lang={language} />
-            {' '}
-            <button type='button' className='status__content__spoiler-link' onClick={this.handleSpoilerClick} aria-expanded={!hidden}>
-              {toggleText}
-            </button>
-          </p>
+          <ContentWarning text={spoilerHtml} expanded={!hidden} onClick={this.handleSpoilerClick} icons={spoilerIcons} />
 
           {mentionsPlaceholder}
 
           <div className={`status__content__spoiler ${!hidden ? 'status__content__spoiler--visible' : ''}`}>
+            {quote}
             <div
               ref={this.setContentsRef}
               key={`contents-${tagLinks}`}
@@ -467,6 +475,7 @@ class StatusContent extends PureComponent {
           onMouseUp={this.handleMouseUp}
           tabIndex={0}
         >
+          {quote}
           <div
             ref={this.setContentsRef}
             key={`contents-${tagLinks}-${rewriteMentions}`}
@@ -488,6 +497,7 @@ class StatusContent extends PureComponent {
           className={'status__content'}
           tabIndex={0}
         >
+          {quote}
           <div
             ref={this.setContentsRef}
             key={`contents-${tagLinks}`}

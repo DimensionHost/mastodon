@@ -74,6 +74,18 @@ class ActivityPub::TagManager
     account_status_replies_url(target.account, target, page_params)
   end
 
+  def likes_uri_for(target)
+    raise ArgumentError, 'target must be a local activity' unless %i(note comment activity).include?(target.object_type) && target.local?
+
+    account_status_likes_url(target.account, target)
+  end
+
+  def shares_uri_for(target)
+    raise ArgumentError, 'target must be a local activity' unless %i(note comment activity).include?(target.object_type) && target.local?
+
+    account_status_shares_url(target.account, target)
+  end
+
   def followers_uri_for(target)
     target.local? ? account_followers_url(target) : target.followers_url.presence
   end
@@ -83,11 +95,15 @@ class ActivityPub::TagManager
   # Unlisted and private statuses go out primarily to the followers collection
   # Others go out only to the people they mention
   def to(status)
+    to = []
+
+    to << uri_for(status.quote.account) if status.quote?
+
     case status.visibility
     when 'public'
-      [COLLECTIONS[:public]]
+      to << COLLECTIONS[:public]
     when 'unlisted', 'private'
-      [account_followers_url(status.account)]
+      to << account_followers_url(status.account)
     when 'direct', 'limited'
       if status.account.silenced?
         # Only notify followers if the account is locally silenced

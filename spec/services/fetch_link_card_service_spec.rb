@@ -192,8 +192,8 @@ RSpec.describe FetchLinkCardService do
         context 'when encoding problems appear in title tag' do
           let(:status) { Fabricate(:status, text: 'Check out http://example.com/latin1_posing_as_utf8_broken') }
 
-          it 'does not create a preview card' do
-            expect(status.preview_card).to be_nil
+          it 'creates a preview card anyway that replaces invalid bytes with U+FFFD (replacement char)' do
+            expect(status.preview_card.title).to eq("Tofu � l'orange")
           end
         end
       end
@@ -307,9 +307,9 @@ RSpec.describe FetchLinkCardService do
     let(:status) do
       Fabricate(:status, account: Fabricate(:account, domain: 'example.com'), text: <<-TEXT)
       Habt ihr ein paar gute Links zu <a>foo</a>
-      #<span class="tag"><a href="https://quitter.se/tag/wannacry" target="_blank" rel="tag noopener noreferrer" title="https://quitter.se/tag/wannacry">Wannacry</a></span> herumfliegen?
-      Ich will mal unter <br> <a href="http://example.com/not-found" target="_blank" rel="noopener noreferrer" title="http://example.com/not-found">http://example.com/not-found</a> was sammeln. !
-      <a href="http://sn.jonkman.ca/group/416/id" target="_blank" rel="noopener noreferrer" title="http://sn.jonkman.ca/group/416/id">security</a>&nbsp;
+      #<span class="tag"><a href="https://quitter.se/tag/wannacry" target="_blank" rel="tag noopener" title="https://quitter.se/tag/wannacry">Wannacry</a></span> herumfliegen?
+      Ich will mal unter <br> <a href="http://example.com/not-found" target="_blank" rel="noopener" title="http://example.com/not-found">http://example.com/not-found</a> was sammeln. !
+      <a href="http://sn.jonkman.ca/group/416/id" target="_blank" rel="noopener" title="http://sn.jonkman.ca/group/416/id">security</a>&nbsp;
       TEXT
     end
 

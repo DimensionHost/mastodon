@@ -46,10 +46,10 @@ class Form::AdminSettings
     status_page_url
     captcha_enabled
     authorized_fetch
-    reject_pattern
-    reject_blurhash
     app_icon
     favicon
+    reject_pattern
+    reject_blurhash
   ).freeze
 
   INTEGER_KEYS = %i(
@@ -94,6 +94,8 @@ class Form::AdminSettings
     authorized_fetch: :authorized_fetch_mode?,
   }.freeze
 
+  DESCRIPTION_LIMIT = 200
+
   attr_accessor(*KEYS)
 
   validates :registrations_mode, inclusion: { in: %w(open approved none) }, if: -> { defined?(@registrations_mode) }
@@ -103,7 +105,7 @@ class Form::AdminSettings
   validates :show_domain_blocks, inclusion: { in: %w(disabled users all) }, if: -> { defined?(@show_domain_blocks) }
   validates :show_domain_blocks_rationale, inclusion: { in: %w(disabled users all) }, if: -> { defined?(@show_domain_blocks_rationale) }
   validates :media_cache_retention_period, :content_cache_retention_period, :backups_retention_period, numericality: { only_integer: true }, allow_blank: true, if: -> { defined?(@media_cache_retention_period) || defined?(@content_cache_retention_period) || defined?(@backups_retention_period) }
-  validates :site_short_description, length: { maximum: 200 }, if: -> { defined?(@site_short_description) }
+  validates :site_short_description, length: { maximum: DESCRIPTION_LIMIT }, if: -> { defined?(@site_short_description) }
   validates :reject_pattern, regexp_syntax: true, if: -> { defined?(@reject_pattern) }
   validates :status_page_url, url: true, allow_blank: true
   validate :validate_site_uploads

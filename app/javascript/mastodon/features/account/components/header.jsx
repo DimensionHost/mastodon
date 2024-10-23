@@ -92,10 +92,10 @@ const messageForFollowButton = relationship => {
 
   if (relationship.get('following') && relationship.get('followed_by')) {
     return messages.mutual;
-  } else if (!relationship.get('following') && relationship.get('followed_by')) {
-    return messages.followBack;
   } else if (relationship.get('following') || relationship.get('requested')) {
     return messages.unfollow;
+  } else if (relationship.get('followed_by')) {
+    return messages.followBack;
   } else {
     return messages.follow;
   }
@@ -421,7 +421,7 @@ class Header extends ImmutablePureComponent {
 
         <div className='account__header__bar'>
           <div className='account__header__tabs'>
-            <a className='avatar' href={account.get('avatar')} rel='noopener noreferrer' target='_blank' onClick={this.handleAvatarClick}>
+            <a className='avatar' href={account.get('avatar')} rel='noopener' target='_blank' onClick={this.handleAvatarClick}>
               <Avatar account={suspended || hidden ? undefined : account} size={90} />
             </a>
 

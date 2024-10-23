@@ -88,6 +88,7 @@ class Status extends ImmutablePureComponent {
     rootId: PropTypes.string,
     onClick: PropTypes.func,
     onReply: PropTypes.func,
+    onQuote: PropTypes.func,
     onFavourite: PropTypes.func,
     onReblog: PropTypes.func,
     onBookmark: PropTypes.func,
@@ -653,6 +654,27 @@ class Status extends ImmutablePureComponent {
             media={status.get('media_attachments')}
           />,
         );
+      } else if (['image', 'gifv'].includes(status.getIn(['media_attachments', 0, 'type'])) || status.get('media_attachments').size > 1) {
+        media.push(
+          <Bundle fetchComponent={MediaGallery} loading={this.renderLoadingMediaGallery}>
+            {Component => (
+              <Component
+                media={attachments}
+                lang={language}
+                sensitive={status.get('sensitive')}
+                letterbox={settings.getIn(['media', 'letterbox'])}
+                fullwidth={!rootId && settings.getIn(['media', 'fullwidth'])}
+                hidden={isCollapsed || !isExpanded}
+                onOpenMedia={this.handleOpenMedia}
+                cacheWidth={this.props.cacheMediaWidth}
+                defaultWidth={this.props.cachedMediaWidth}
+                visible={this.state.showMedia}
+                onToggleVisibility={this.handleToggleMediaVisibility}
+              />
+            )}
+          </Bundle>,
+        );
+        mediaIcons.push('picture-o');
       } else if (attachments.getIn([0, 'type']) === 'audio') {
         const attachment = status.getIn(['media_attachments', 0]);
         const description = attachment.getIn(['translation', 'description']) || attachment.get('description');
@@ -708,33 +730,12 @@ class Status extends ImmutablePureComponent {
           </Bundle>,
         );
         mediaIcons.push('video-camera');
-      } else {  //  Media type is 'image' or 'gifv'
-        media.push(
-          <Bundle fetchComponent={MediaGallery} loading={this.renderLoadingMediaGallery}>
-            {Component => (
-              <Component
-                media={attachments}
-                lang={language}
-                sensitive={status.get('sensitive')}
-                letterbox={settings.getIn(['media', 'letterbox'])}
-                fullwidth={!rootId && settings.getIn(['media', 'fullwidth'])}
-                hidden={isCollapsed || !isExpanded}
-                onOpenMedia={this.handleOpenMedia}
-                cacheWidth={this.props.cacheMediaWidth}
-                defaultWidth={this.props.cachedMediaWidth}
-                visible={this.state.showMedia}
-                onToggleVisibility={this.handleToggleMediaVisibility}
-              />
-            )}
-          </Bundle>,
-        );
-        mediaIcons.push('picture-o');
       }
 
       if (!status.get('sensitive') && !(status.get('spoiler_text').length > 0) && settings.getIn(['collapsed', 'backgrounds', 'preview_images'])) {
         background = attachments.getIn([0, 'preview_url']);
       }
-    } else if (status.get('card') && settings.get('inline_preview_cards') && !this.props.muted) {
+    } else if (!status.get('quote') && status.get('card') && settings.get('inline_preview_cards') && !this.props.muted) {
       media.push(
         <Card
           onOpenMedia={this.handleOpenMedia}
@@ -845,6 +846,7 @@ class Status extends ImmutablePureComponent {
               disabled={!history}
               tagLinks={settings.get('tag_misleading_links')}
               rewriteMentions={settings.get('rewrite_mentions')}
+              zoomEmojisOnHover={settings.get('zoom_emojis_on_hover')}
               {...statusContentProps}
             />
 

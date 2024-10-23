@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { initBlockModal } from 'flavours/glitch/actions/blocks';
 import {
   replyCompose,
+  quoteCompose,
   mentionCompose,
   directCompose,
 } from 'flavours/glitch/actions/compose';
@@ -35,8 +36,6 @@ import {
 import Status from 'flavours/glitch/components/status';
 import { deleteModal } from 'flavours/glitch/initial_state';
 import { makeGetStatus, makeGetPictureInPicture } from 'flavours/glitch/selectors';
-
-import { showAlertForError } from '../actions/alerts';
 
 const makeMapStateToProps = () => {
   const getStatus = makeGetStatus();
@@ -90,6 +89,22 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     });
   },
 
+  onQuote (status) {
+    const getStatus = makeGetStatus();
+
+    dispatch((_, getState) => {
+      let state = getState();
+      const statusFromState = getStatus(state, ownProps);
+      const rebloggedBy = statusFromState.get('reblog') ? statusFromState.get('account') : undefined;
+
+      if (state.getIn(['local_settings', 'confirm_before_clearing_draft']) && state.getIn(['compose', 'text']).trim().length !== 0) {
+        dispatch(openModal({ modalType: 'CONFIRM_QUOTE', modalProps: { status, rebloggedBy } }));
+      } else {
+        dispatch(quoteCompose(status, rebloggedBy));
+      }
+    });
+  },
+ 
   onReblog (status, e) {
     dispatch(toggleReblog(status.get('id'), e.shiftKey));
   },
@@ -125,10 +140,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   onEmbed (status) {
     dispatch(openModal({
       modalType: 'EMBED',
-      modalProps: {
-        id: status.get('id'),
-        onError: error => dispatch(showAlertForError(error)),
-      },
+      modalProps: { id: status.get('id') },
     }));
   },
 

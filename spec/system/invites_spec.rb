@@ -7,10 +7,7 @@ RSpec.describe 'Invites' do
 
   let(:user) { Fabricate :user }
 
-  before do
-    host! 'localhost:3000' # TODO: Move into before for all system specs?
-    sign_in user
-  end
+  before { sign_in user }
 
   describe 'Viewing invites' do
     it 'Lists existing user invites' do
@@ -55,10 +52,6 @@ RSpec.describe 'Invites' do
   end
 
   private
-
-  def css_id(record)
-    "##{dom_id(record)}" # TODO: Extract to system spec helper?
-  end
 
   def copyable_field
     within '.input-copy' do
