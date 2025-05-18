@@ -11,7 +11,7 @@ import {
 } from './announcements';
 import { updateConversations } from './conversations';
 import { processNewNotificationForGroups, refreshStaleNotificationGroups, pollRecentNotifications as pollRecentGroupNotifications } from './notification_groups';
-import { updateNotifications, expandNotifications } from './notifications';
+import { updateNotifications } from './notifications';
 import { updateStatus } from './statuses';
 import {
   updateTimeline,
@@ -23,6 +23,7 @@ import {
   fillPublicTimelineGaps,
   fillCommunityTimelineGaps,
   fillListTimelineGaps,
+  fillBubbleTimelineGaps,
 } from './timelines';
 
 /**
@@ -107,9 +108,6 @@ export const connectTimelineStream = (timelineId, channelName, params = {}, opti
           break;
         }
         case 'notifications_merged': {
-          const state = getState();
-          if (state.notifications.top || !state.notifications.mounted)
-            dispatch(expandNotifications({ forceLoad: true, maxId: undefined }));
           dispatch(refreshStaleNotificationGroups());
           break;
         }
@@ -163,6 +161,14 @@ export const connectUserStream = () =>
  */
 export const connectCommunityStream = ({ onlyMedia } = {}) =>
   connectTimelineStream(`community${onlyMedia ? ':media' : ''}`, `public:local${onlyMedia ? ':media' : ''}`, {}, { fillGaps: () => (fillCommunityTimelineGaps({ onlyMedia })) });
+
+/**
+ * @param {Object} options
+ * @param {boolean} [options.onlyMedia]
+ * @returns {function(): void}
+ */
+export const connectBubbleStream = ({ onlyMedia } = {}) =>
+  connectTimelineStream(`bubble${onlyMedia ? ':media' : ''}`, `public:bubble${onlyMedia ? ':media' : ''}`, {}, { fillGaps: () => (fillBubbleTimelineGaps({ onlyMedia })) });
 
 /**
  * @param {Object} options

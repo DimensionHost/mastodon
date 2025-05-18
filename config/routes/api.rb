@@ -10,6 +10,7 @@ namespace :api, format: false do
       scope module: :statuses do
         resources :reblogged_by, controller: :reblogged_by_accounts, only: :index
         resources :favourited_by, controller: :favourited_by_accounts, only: :index
+        resources :reactions, controller: :reactions, only: :index
         resource :reblog, only: :create
         post :unreblog, to: 'reblogs#destroy'
 
@@ -50,15 +51,17 @@ namespace :api, format: false do
       resources :list, only: :show
     end
 
-    get '/streaming', to: 'streaming#index'
-    get '/streaming/(*any)', to: 'streaming#index'
+    with_options to: 'streaming#index' do
+      get '/streaming'
+      get '/streaming/(*any)'
+    end
 
     resources :custom_emojis, only: [:index]
     resources :suggestions, only: [:index, :destroy]
     resources :scheduled_statuses, only: [:index, :show, :update, :destroy]
     resources :preferences, only: [:index]
 
-    resources :annual_reports, only: [:index] do
+    resources :annual_reports, only: [:index, :show] do
       member do
         post :read
       end
@@ -81,7 +84,7 @@ namespace :api, format: false do
       end
     end
 
-    resources :media, only: [:create, :update, :show]
+    resources :media, only: [:create, :update, :show, :destroy]
     resources :blocks, only: [:index]
     resources :mutes, only: [:index]
     resources :favourites, only: [:index]
@@ -91,6 +94,7 @@ namespace :api, format: false do
     resources :filters, only: [:index, :create, :show, :update, :destroy]
     resources :endorsements, only: [:index]
     resources :markers, only: [:index, :create]
+    resources :gifs, only: [:index]
 
     namespace :profile do
       resource :avatar, only: :destroy
@@ -119,11 +123,15 @@ namespace :api, format: false do
         resources :peers, only: [:index]
         resources :rules, only: [:index]
         resources :domain_blocks, only: [:index]
+        resources :bubble_domains, only: [:index]
         resource :privacy_policy, only: [:show]
+        resource :terms_of_service, only: [:show]
         resource :extended_description, only: [:show]
         resource :translation_languages, only: [:show]
         resource :languages, only: [:show]
         resource :activity, only: [:show], controller: :activity
+
+        get '/terms_of_service/:date', to: 'terms_of_services#show'
       end
     end
 
@@ -192,6 +200,7 @@ namespace :api, format: false do
         resources :lists, only: :index
         resources :identity_proofs, only: :index
         resources :featured_tags, only: :index
+        resources :endorsements, only: :index
       end
 
       member do
@@ -205,8 +214,10 @@ namespace :api, format: false do
       end
 
       scope module: :accounts do
-        resource :pin, only: :create
-        post :unpin, to: 'pins#destroy'
+        post :pin, to: 'endorsements#create'
+        post :endorse, to: 'endorsements#create'
+        post :unpin, to: 'endorsements#destroy'
+        post :unendorse, to: 'endorsements#destroy'
         resource :note, only: :create
       end
     end
@@ -215,6 +226,8 @@ namespace :api, format: false do
       member do
         post :follow
         post :unfollow
+        post :feature
+        post :unfeature
       end
     end
 
@@ -230,7 +243,7 @@ namespace :api, format: false do
 
     resources :featured_tags, only: [:index, :create, :destroy]
 
-    resources :polls, only: [:create, :show] do
+    resources :polls, only: [:show] do
       resources :votes, only: :create, module: :polls
     end
 

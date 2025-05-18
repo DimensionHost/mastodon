@@ -1,5 +1,7 @@
 @use 'sass:color';
 @use 'sass:math';
+@use 'functions' as *;
+@use 'variables' as *;
 
 $no-columns-breakpoint: 890px;
 $sidebar-width: 300px;
@@ -40,7 +42,7 @@ $content-width: 840px;
     &__toggle {
       display: none;
       background: var(--background-color);
-      border-bottom: 1px solid color.adjust($ui-base-color, $lightness: 4%);
+      border-bottom: 1px solid lighten($ui-base-color, 4%);
       align-items: center;
 
       &__logo {
@@ -234,7 +236,7 @@ $content-width: 840px;
           &:hover,
           &:focus,
           &:active {
-            background: color.adjust($ui-base-color, $lightness: 4%);
+            background: lighten($ui-base-color, 4%);
           }
 
           &.selected {
@@ -253,6 +255,10 @@ $content-width: 840px;
 
         .time-period {
           padding: 0 10px;
+        }
+
+        .back-link {
+          margin-bottom: 0;
         }
       }
 
@@ -534,7 +540,7 @@ body,
 
       &:hover {
         color: $primary-text-color;
-        border-bottom: 2px solid color.adjust($ui-base-color, $lightness: 5%);
+        border-bottom: 2px solid lighten($ui-base-color, 5%);
       }
 
       &.selected {
@@ -626,16 +632,6 @@ body,
 .simple_form.new_report_note,
 .simple_form.new_account_moderation_note {
   max-width: 100%;
-}
-
-.simple_form {
-  .actions {
-    margin-top: 15px;
-  }
-
-  .button {
-    font-size: 15px;
-  }
 }
 
 .batch-form-box {
@@ -805,7 +801,7 @@ a.inline-name-tag,
   &.suspended {
     .username {
       text-decoration: line-through;
-      color: color.adjust($error-red, $lightness: 12%);
+      color: lighten($error-red, 12%);
     }
 
     .avatar {
@@ -845,7 +841,7 @@ a.name-tag,
   }
 
   &.negative {
-    border-left-color: color.adjust($error-red, $lightness: 12%);
+    border-left-color: lighten($error-red, 12%);
   }
 
   &.warning {
@@ -1140,7 +1136,7 @@ a.name-tag,
 
   &.expired {
     .expiration {
-      color: color.adjust($error-red, $lightness: 12%);
+      color: lighten($error-red, 12%);
     }
 
     .permissions-list__item__icon {
@@ -1280,7 +1276,7 @@ a.name-tag,
     }
 
     path:last-child {
-      stroke: color.adjust($highlight-text-color, $lightness: 6%) !important;
+      stroke: lighten($highlight-text-color, 6%) !important;
       fill: none !important;
     }
   }
@@ -1298,9 +1294,9 @@ a.sparkline {
   background-color: var(--background-color);
   background-image: linear-gradient(
     90deg,
-    color.adjust($ui-base-color, $lightness: 8%),
-    color.adjust($ui-base-color, $lightness: 12%),
-    color.adjust($ui-base-color, $lightness: 8%)
+    lighten($ui-base-color, 8%),
+    lighten($ui-base-color, 12%),
+    lighten($ui-base-color, 8%)
   );
   background-size: 200px 100%;
   background-repeat: no-repeat;
@@ -1327,17 +1323,23 @@ a.sparkline {
   }
 
   &__item {
-    border-bottom: 1px solid color.adjust($ui-base-color, $lightness: 4%);
+    border-bottom: 1px solid lighten($ui-base-color, 4%);
 
     &__key {
       font-weight: 500;
       padding: 11px 10px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
     }
 
     &__value {
       text-align: end;
       color: $darker-text-color;
       padding: 11px 10px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
     }
 
     &__indicator {
@@ -1380,7 +1382,7 @@ a.sparkline {
 
   &__category {
     cursor: pointer;
-    border-bottom: 1px solid color.adjust($ui-base-color, $lightness: -8%);
+    border-bottom: 1px solid darken($ui-base-color, 8%);
 
     &__label {
       padding: 15px;
@@ -1472,7 +1474,7 @@ a.sparkline {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      background: color.adjust($ui-base-color, $lightness: -8%);
+      background: darken($ui-base-color, 8%);
     }
   }
 
@@ -1490,7 +1492,7 @@ a.sparkline {
         margin: 0;
         width: 56px;
         height: 56px;
-        background-color: color.adjust($ui-base-color, $lightness: -8%);
+        background-color: darken($ui-base-color, 8%);
         border-radius: 8px;
         border: 1px solid $ui-base-color;
       }
@@ -1861,7 +1863,7 @@ a.sparkline {
       flex: 0 0 auto;
       width: 4px;
       height: 21px;
-      background: color.adjust($ui-base-color, $lightness: 8%);
+      background: lighten($ui-base-color, 8%);
       margin: 0 2px;
       border-radius: 2px;
 
@@ -1933,9 +1935,115 @@ a.sparkline {
     }
 
     .status {
-      border: 1px solid color.adjust($ui-base-color, $lightness: 4%);
+      border: 1px solid lighten($ui-base-color, 4%);
       background: $ui-base-color;
       border-radius: 4px;
+    }
+  }
+}
+
+.status__card {
+  padding: 15px;
+  border-radius: 4px;
+  background: $ui-base-color;
+  font-size: 15px;
+  line-height: 20px;
+  word-wrap: break-word;
+  font-weight: 400;
+  border: 1px solid lighten($ui-base-color, 4%);
+  color: $primary-text-color;
+  box-sizing: border-box;
+  min-height: 100%;
+
+  .status__prepend {
+    padding: 0 0 15px;
+    gap: 4px;
+    align-items: center;
+  }
+
+  .status__content {
+    padding-top: 0;
+
+    summary {
+      display: list-item;
+    }
+  }
+}
+
+.admin {
+  &__terms-of-service {
+    &__container {
+      background: var(--surface-background-color);
+      border-radius: 8px;
+      border: 1px solid var(--background-border-color);
+      overflow: hidden;
+
+      &__header {
+        padding: 16px;
+        font-size: 14px;
+        line-height: 20px;
+        color: $secondary-text-color;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      &__body {
+        background: var(--background-color);
+        padding: 16px;
+        overflow-y: scroll;
+        height: 30vh;
+      }
+    }
+
+    &__history {
+      & > li {
+        border-bottom: 1px solid var(--background-border-color);
+
+        &:last-child {
+          border-bottom: 0;
+        }
+      }
+
+      &__item {
+        padding: 16px 0;
+        padding-bottom: 8px;
+
+        h5 {
+          font-size: 14px;
+          line-height: 20px;
+          font-weight: 600;
+          margin-bottom: 16px;
+
+          a {
+            color: inherit;
+            text-decoration: none;
+          }
+        }
+      }
+    }
+  }
+}
+
+.dot-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+
+  &__indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: $dark-text-color;
+  }
+
+  &.success {
+    color: $valid-value-color;
+
+    .dot-indicator__indicator {
+      background-color: $valid-value-color;
     }
   }
 }

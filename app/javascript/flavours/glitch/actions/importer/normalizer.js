@@ -1,14 +1,11 @@
 import escapeTextContentForBrowser from 'escape-html';
 
+import { makeEmojiMap } from 'flavours/glitch/models/custom_emoji';
+
 import emojify from '../../features/emoji/emoji';
 import { autoHideCW } from '../../utils/content_warning';
 
 const domParser = new DOMParser();
-
-const makeEmojiMap = emojis => emojis.reduce((obj, emoji) => {
-  obj[`:${emoji.shortcode}:`] = emoji;
-  return obj;
-}, {});
 
 export function searchTextFromRawStatus (status) {
   const spoilerText   = status.spoiler_text || '';
@@ -59,8 +56,6 @@ export function normalizeStatus(status, normalOldStatus, settings) {
     normalStatus.contentHtml = normalOldStatus.get('contentHtml');
     normalStatus.spoilerHtml = normalOldStatus.get('spoilerHtml');
     normalStatus.hidden = normalOldStatus.get('hidden');
-    normalStatus.quote = normalOldStatus.get('quote');
-    normalStatus.quote_hidden = normalOldStatus.get('quote_hidden');
 
     if (normalOldStatus.get('translation')) {
       normalStatus.translation = normalOldStatus.get('translation');
@@ -75,34 +70,16 @@ export function normalizeStatus(status, normalOldStatus, settings) {
     normalStatus.spoilerHtml  = emojify(escapeTextContentForBrowser(spoilerText), emojiMap);
     normalStatus.hidden       = (spoilerText.length > 0 || normalStatus.sensitive) && autoHideCW(settings, spoilerText);
 
-    if (status.quote && status.quote.id) {
-      const quote_spoilerText = status.quote.spoiler_text || '';
-      const quote_searchContent = [quote_spoilerText, status.quote.content].join('\n\n').replace(/<br\s*\/?>/g, '\n').replace(/<\/p><p>/g, '\n\n');
-
-      const quote_emojiMap = makeEmojiMap(normalStatus.quote.emojis);
-
-      const quote_account_emojiMap = makeEmojiMap(status.quote.account.emojis);
-      const displayName = normalStatus.quote.account.display_name.length === 0 ? normalStatus.quote.account.username : normalStatus.quote.account.display_name;
-      normalStatus.quote.account.display_name_html = emojify(escapeTextContentForBrowser(displayName), quote_account_emojiMap);
-      normalStatus.quote.search_index = domParser.parseFromString(quote_searchContent, 'text/html').documentElement.textContent;
-      let docElem = domParser.parseFromString(normalStatus.quote.content, 'text/html').documentElement;
-      Array.from(docElem.querySelectorAll('span.quote-inline'), span => span.remove());
-      Array.from(docElem.querySelectorAll('p,br'), line => {
-        let parentNode = line.parentNode;
-        if (line.nextSibling) {
-          parentNode.insertBefore(document.createTextNode(' '), line.nextSibling);
-        }
-      });
-      let _contentHtml = docElem.textContent;
-      normalStatus.quote.contentHtml  = '<p>'+emojify(_contentHtml.slice(0, 150), quote_emojiMap) + (_contentHtml.slice(150) ? '...' : '')+'</p>';
-      normalStatus.quote.spoilerHtml  = emojify(escapeTextContentForBrowser(quote_spoilerText), quote_emojiMap);
-      normalStatus.quote_hidden       = (quote_spoilerText.length > 0 || normalStatus.quote.sensitive) && autoHideCW(settings, quote_spoilerText);
-
-      // delete the quote link!!!!
-      let parentDocElem = domParser.parseFromString(normalStatus.contentHtml, 'text/html').documentElement;
-      Array.from(parentDocElem.querySelectorAll('span.quote-inline'), span => span.remove());
-      normalStatus.contentHtml = parentDocElem.children[1].innerHTML;
+    if (normalStatus.url && !(normalStatus.url.startsWith('http://') || normalStatus.url.startsWith('https://'))) {
+      normalStatus.url = null;
     }
+
+    normalStatus.url ||= normalStatus.uri;
+
+    normalStatus.media_attachments.forEach(item => {
+      if (item.remote_url && !(item.remote_url.startsWith('http://') || item.remote_url.startsWith('https://')))
+        item.remote_url = null;
+    });
   }
 
   if (normalOldStatus) {
@@ -130,38 +107,6 @@ export function normalizeStatusTranslation(translation, status) {
     contentHtml: emojify(translation.content, emojiMap),
     spoilerHtml: emojify(escapeTextContentForBrowser(translation.spoiler_text), emojiMap),
     spoiler_text: translation.spoiler_text,
-  };
-
-  return normalTranslation;
-}
-
-export function normalizePoll(poll, normalOldPoll) {
-  const normalPoll = { ...poll };
-  const emojiMap = makeEmojiMap(poll.emojis);
-
-  normalPoll.options = poll.options.map((option, index) => {
-    const normalOption = {
-      ...option,
-      voted: poll.own_votes && poll.own_votes.includes(index),
-      titleHtml: emojify(escapeTextContentForBrowser(option.title), emojiMap),
-    };
-
-    if (normalOldPoll && normalOldPoll.getIn(['options', index, 'title']) === option.title) {
-      normalOption.translation = normalOldPoll.getIn(['options', index, 'translation']);
-    }
-
-    return normalOption;
-  });
-
-  return normalPoll;
-}
-
-export function normalizePollOptionTranslation(translation, poll) {
-  const emojiMap = makeEmojiMap(poll.get('emojis').toJS());
-
-  const normalTranslation = {
-    ...translation,
-    titleHtml: emojify(escapeTextContentForBrowser(translation.title), emojiMap),
   };
 
   return normalTranslation;

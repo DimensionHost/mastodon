@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { initBlockModal } from 'flavours/glitch/actions/blocks';
 import {
   replyCompose,
-  quoteCompose,
   mentionCompose,
   directCompose,
 } from 'flavours/glitch/actions/compose';
@@ -29,6 +28,7 @@ import {
   unmuteStatus,
   deleteStatus,
   toggleStatusSpoilers,
+  toggleStatusCollapse,
   editStatus,
   translateStatus,
   undoStatusTranslation,
@@ -48,10 +48,7 @@ const makeMapStateToProps = () => {
     let account = undefined;
     let prepend = undefined;
 
-    if (props.featured && status) {
-      account = status.get('account');
-      prepend = 'featured';
-    } else if (reblogStatus !== null && typeof reblogStatus === 'object') {
+    if (reblogStatus !== null && typeof reblogStatus === 'object') {
       account = status.get('account');
       status = reblogStatus;
       prepend = 'reblogged_by';
@@ -89,22 +86,6 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     });
   },
 
-  onQuote (status) {
-    const getStatus = makeGetStatus();
-
-    dispatch((_, getState) => {
-      let state = getState();
-      const statusFromState = getStatus(state, ownProps);
-      const rebloggedBy = statusFromState.get('reblog') ? statusFromState.get('account') : undefined;
-
-      if (state.getIn(['local_settings', 'confirm_before_clearing_draft']) && state.getIn(['compose', 'text']).trim().length !== 0) {
-        dispatch(openModal({ modalType: 'CONFIRM_QUOTE', modalProps: { status, rebloggedBy } }));
-      } else {
-        dispatch(quoteCompose(status, rebloggedBy));
-      }
-    });
-  },
- 
   onReblog (status, e) {
     dispatch(toggleReblog(status.get('id'), e.shiftKey));
   },
@@ -222,6 +203,11 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   onToggleHidden (status) {
     dispatch(toggleStatusSpoilers(status.get('id')));
   },
+
+  onToggleCollapsed (status, isCollapsed) {
+    dispatch(toggleStatusCollapse(status.get('id'), isCollapsed));
+  },
+
 
   deployPictureInPicture (status, type, mediaProps) {
     dispatch((_, getState) => {

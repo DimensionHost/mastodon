@@ -6,4 +6,5 @@ export { ConfirmEditStatusModal } from './edit_status';
 export { ConfirmUnfollowModal } from './unfollow';
 export { ConfirmClearNotificationsModal } from './clear_notifications';
 export { ConfirmLogOutModal } from './log_out';
-export { ConfirmQuoteModal } from './quote';
+export { ConfirmFollowToListModal } from './follow_to_list';
+export { ConfirmMissingAltTextModal } from './missing_alt_text';

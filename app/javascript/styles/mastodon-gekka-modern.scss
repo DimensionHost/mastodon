@@ -1,4 +1,5 @@
-@import 'mastodon-gekka-modern/variables';
-@import 'application';
-@import 'modern';
-@import 'mastodon-gekka-modern/diff';
+@use 'mastodon-gekka-modern/variables';
+@use 'application';
+@use 'modern';
+@use 'mastodon-gekka-modern/diff';
+@use 'modern-urusai-fixes';

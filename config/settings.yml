@@ -25,14 +25,27 @@ defaults: &defaults
   visible_reactions: 6
   hide_followers_count: false
   reserved_usernames:
+    - abuse
+    - account
+    - accounts
     - admin
-    - support
-    - help
-    - root
-    - webmaster
+    - administration
     - administrator
+    - admins
+    - help
+    - helpdesk
+    - instance
     - mod
     - moderator
+    - moderators
+    - mods
+    - owner
+    - root
+    - security
+    - server
+    - staff
+    - support
+    - webmaster
   disallowed_hashtags: # space separated string or list of hashtags without the hash
   bootstrap_timeline_accounts: ''
   activity_api_enabled: true
@@ -42,10 +55,12 @@ defaults: &defaults
   default_content_type: 'text/plain'
   show_domain_blocks: 'disabled'
   show_domain_blocks_rationale: 'disabled'
+  show_bubble_domains: 'users'
   outgoing_spoilers: ''
   require_invite_text: false
   backups_retention_period: 7
   captcha_enabled: false
+  allow_referer_origin: false
   reject_pattern: ''
   reject_blurhash: ''
 

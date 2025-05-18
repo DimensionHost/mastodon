@@ -71,7 +71,7 @@ function dispatchAssociatedRecords(
 }
 
 function selectNotificationGroupedTypes(state: RootState) {
-  const types: NotificationType[] = ['favourite', 'reblog'];
+  const types: NotificationType[] = ['favourite', 'reblog', 'reaction'];
 
   if (selectSettingsNotificationsGroupFollows(state)) types.push('follow');
 
@@ -141,6 +141,9 @@ export const pollRecentNotifications = createDataLoadingThunk(
 
     return { notifications };
   },
+  {
+    useLoadingBar: false,
+  },
 );
 
 export const processNewNotificationForGroups = createAppAsyncThunk(
@@ -152,7 +155,7 @@ export const processNewNotificationForGroups = createAppAsyncThunk(
 
     const showInColumn =
       activeFilter === 'all'
-        ? notificationShows[notification.type]
+        ? notificationShows[notification.type] !== false
         : activeFilter === notification.type;
 
     if (!showInColumn) return;

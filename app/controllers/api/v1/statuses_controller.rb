@@ -58,6 +58,8 @@ class Api::V1::StatusesController < Api::BaseController
     statuses = [@status] + @context.ancestors + @context.descendants
 
     render json: @context, serializer: REST::ContextSerializer, relationships: StatusRelationshipsPresenter.new(statuses, current_user&.account_id)
+
+    ActivityPub::FetchAllRepliesWorker.perform_async(@status.id) if !current_account.nil? && @status.should_fetch_replies?
   end
 
   def create
@@ -76,8 +78,7 @@ class Api::V1::StatusesController < Api::BaseController
       content_type: status_params[:content_type],
       allowed_mentions: status_params[:allowed_mentions],
       idempotency: request.headers['Idempotency-Key'],
-      with_rate_limit: true,
-      quote_id: status_params[:quote_id].presence
+      with_rate_limit: true
     )
 
     render json: @status, serializer: serializer_for_status
@@ -114,7 +115,7 @@ class Api::V1::StatusesController < Api::BaseController
     @status.account.statuses_count = @status.account.statuses_count - 1
     json = render_to_body json: @status, serializer: REST::StatusSerializer, source_requested: true
 
-    RemovalWorker.perform_async(@status.id, { 'redraft' => true })
+    RemovalWorker.perform_async(@status.id, { 'redraft' => !truthy_param?(:delete_media) })
 
     render json: json
   end
@@ -160,7 +161,6 @@ class Api::V1::StatusesController < Api::BaseController
       :visibility,
       :language,
       :scheduled_at,
-      :quote_id,
       :content_type,
       allowed_mentions: [],
       media_ids: [],
