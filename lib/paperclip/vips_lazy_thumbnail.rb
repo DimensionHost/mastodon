@@ -110,11 +110,16 @@ module Paperclip
     end
 
     def save_options
-      case @format
-      when 'jpg'
-        { Q: 90, interlace: true }
+      format = (@format || @current_format).to_s.downcase
+      case format
+      when 'jpeg'
+        { Q: 92, interlace: true }
+      when '.jpg', '.jpeg'
+        { Q: 97, interlace: true }
+      when '.png'
+        { compression: 7, filter: :avg }
       else
-        {}
+        { }
       end
     end
 
