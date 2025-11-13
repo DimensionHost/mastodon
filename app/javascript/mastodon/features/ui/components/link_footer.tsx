@@ -19,9 +19,7 @@ export const LinkFooter: React.FC<{
   return (
     <div className='link-footer'>
       <p>
-        New to Mastodon and want an easier transition? Try the{' '}
-        <a href='https://elk.urusai.social/'>Alternative UI (Elk)</a> for a more
-        &quot;bird-like&quot; interface!
+        당신만의 차원을 주최해 보세요.
       </p>
       <p>
         <strong>{domain}</strong>:{' '}

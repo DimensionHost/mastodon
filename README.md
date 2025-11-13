@@ -1,4 +1,14 @@
-# Mastodon Glitch+Urusai Edition
+# Mastodon Glitch+Urusai+Dimension Edition
+이 저장소는 마스토돈의 디멘션 스타일 포크 버전입니다.
+Mastodon Glitch+Urusai에 코드 기반을 두고 있습니다.
+서버 특색이 강한 편이기 때문에 사용하실 땐 수정하여 사용하는 것을 권장합니다.
+
+디멘션 포크 커스텀 기능(서드파티 앱 호환 여부 확인 없음)
+- :dmo: 로 등록한 이모지가 로컬 전용글 이모지로 사용됩니다. 로컬글 선택시 붙으며, 직접 입력 시에도 로컬글로 적용.
+- 투표 기한에 30분, 3시간, 30일이 추가되어 있습니다.
+- 게시 -> 뿌우
+
+개발 예정: 그림·사진이 많은 서버를 위한 이미지 업로드 특화 기능
 
 This is the repo for the fork of Mastodon used by [Urusai! Social](https://urusai.social/).
 
