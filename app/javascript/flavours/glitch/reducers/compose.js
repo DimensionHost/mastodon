@@ -724,7 +724,8 @@ export const composeReducer = (state = initialState, action) => {
   case REDRAFT: {
     const do_not_federate = !!action.status.get('local_only');
     let text = action.raw_text || unescapeHTML(expandMentions(action.status));
-    if (do_not_federate) text = text.replace(/ ?:dmo:?\u200b?\s?$/, ''); //로컬모지 중복 방지
+    //TODO: Restore local-only emoji support.
+    //if (do_not_federate) text = text.replace(/ ?:dmo:?\u200b?\s?$/, '');
     return state.withMutations(map => {
       map.set('text', text);
       map.set('content_type', action.content_type || 'text/plain');

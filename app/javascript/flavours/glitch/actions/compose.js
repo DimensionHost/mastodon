@@ -239,9 +239,10 @@ export function submitCompose(successCallback, overridePrivacy) {
       return;
     }
 
-    //로컬온리 사용할 때 로컬온리이모지추가
-    if (getState().getIn(['compose', 'advanced_options', 'do_not_federate'])) {
-      status = status + ' :dmo:';
+    // TODO: Restore local-only emoji support.
+    // if (getState().getIn(['compose', 'advanced_options', 'do_not_federate'])) {
+    //   status = status + ' :dmo:';
+    // }
 
     dispatch(submitComposeRequest());
 

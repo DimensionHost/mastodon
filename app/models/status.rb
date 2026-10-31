@@ -457,6 +457,7 @@ class Status < ApplicationRecord
     end
   end
 
+  # TODO: Restore local-only emoji support.
   def marked_local_only?
     /#{local_only_emoji}\ufe0f?\z/.match?(content)
   end
