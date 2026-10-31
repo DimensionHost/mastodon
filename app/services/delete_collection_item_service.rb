@@ -7,7 +7,7 @@ class DeleteCollectionItemService
 
     if collection_item.local?
       revoke ? @collection_item.revoke! : @collection_item.destroy!
-      distribute_remove_activity if Mastodon::Feature.collections_federation_enabled?
+      distribute_remove_activity
     else
       collection_item.destroy!
     end
@@ -16,7 +16,7 @@ class DeleteCollectionItemService
   private
 
   def distribute_remove_activity
-    ActivityPub::AccountRawDistributionWorker.perform_async(activity_json, @collection.account.id)
+    ActivityPub::CollectionRawDistributionWorker.perform_async(activity_json, @collection.id)
   end
 
   def activity_json

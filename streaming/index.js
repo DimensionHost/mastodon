@@ -3,6 +3,7 @@
 import fs from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
+import querystring from 'node:querystring';
 import url from 'node:url';
 
 import cors from 'cors';
@@ -104,6 +105,19 @@ const parseJSON = (json, req) => {
     return null;
   }
 };
+
+/**
+ * Parses the query string from a request object.
+ * @param {Request?} req
+ */
+const parseQueryString = (req) => {
+  if (!req?.url) {
+    return undefined;
+  }
+  const url = new URL(req.url, "http://./");
+  const qs = url.search.slice(1);
+  return querystring.parse(qs);
+}
 
 // Used for priming the counters/gauges for the various metrics that are
 // per-channel
@@ -437,8 +451,8 @@ const startServer = async () => {
    */
   const accountFromRequest = (req) => new Promise((resolve, reject) => {
     const authorization = req.headers.authorization;
-    const location      = req.url ? url.parse(req.url, true) : undefined;
-    const accessToken   = location?.query.access_token || req.headers['sec-websocket-protocol'];
+    const query         = parseQueryString(req);
+    const accessToken   = query?.access_token || req.headers['sec-websocket-protocol'];
 
       if (!authorization && !accessToken) {
         reject(new AuthenticationError('Missing access token'));
@@ -462,28 +476,28 @@ const startServer = async () => {
     const onlyMedia = isTruthy(query.only_media);
 
     switch (path) {
-      case '/api/v1/streaming/user':
-        return 'user';
-      case '/api/v1/streaming/user/notification':
-        return 'user:notification';
-      case '/api/v1/streaming/public':
-        return onlyMedia ? 'public:media' : 'public';
-      case '/api/v1/streaming/public/local':
-        return onlyMedia ? 'public:local:media' : 'public:local';
-      case '/api/v1/streaming/public/bubble':
-        return onlyMedia ? 'public:bubble:media' : 'public:bubble';
-      case '/api/v1/streaming/public/remote':
-        return onlyMedia ? 'public:remote:media' : 'public:remote';
-      case '/api/v1/streaming/hashtag':
-        return 'hashtag';
-      case '/api/v1/streaming/hashtag/local':
-        return 'hashtag:local';
-      case '/api/v1/streaming/direct':
-        return 'direct';
-      case '/api/v1/streaming/list':
-        return 'list';
-      default:
-        return undefined;
+    case '/api/v1/streaming/user':
+      return 'user';
+    case '/api/v1/streaming/user/notification':
+      return 'user:notification';
+    case '/api/v1/streaming/public':
+      return onlyMedia ? 'public:media' : 'public';
+    case '/api/v1/streaming/public/local':
+      return onlyMedia ? 'public:local:media' : 'public:local';
+    case '/api/v1/streaming/public/bubble':
+      return onlyMedia ? 'public:bubble:media' : 'public:bubble';
+    case '/api/v1/streaming/public/remote':
+      return onlyMedia ? 'public:remote:media' : 'public:remote';
+    case '/api/v1/streaming/hashtag':
+      return 'hashtag';
+    case '/api/v1/streaming/hashtag/local':
+      return 'hashtag:local';
+    case '/api/v1/streaming/direct':
+      return 'direct';
+    case '/api/v1/streaming/list':
+      return 'list';
+    default:
+      return undefined;
     }
   };
 
@@ -1444,8 +1458,8 @@ const startServer = async () => {
    * @param {import('pino').Logger} log
    */
   function onConnection(ws, req, log) {
-    // Note: url.parse could throw, which would terminate the connection, so we
-    // increment the connected clients metric straight away when we establish
+    // In case the handler throws, which would terminate the connection,
+    // increment the connected clients metric straight away when it establishes
     // the connection, without waiting:
     metrics.connectedClients.labels({ type: 'websocket' }).inc();
 
@@ -1530,15 +1544,10 @@ const startServer = async () => {
 
     subscribeWebsocketToSystemChannel(session);
 
-    // Parse the URL for the connection arguments (if supplied), url.parse can throw:
-    const location = req.url && url.parse(req.url, true);
-
-    if (location && location.query.stream) {
-      subscribeWebsocketToChannel(
-        session,
-        firstParam(location.query.stream),
-        location.query,
-      );
+    // Parse the URL for the connection arguments (if supplied)
+    const query = parseQueryString(req);
+    if (query && query.stream) {
+      subscribeWebsocketToChannel(session, firstParam(query.stream), query);
     }
   }
 
