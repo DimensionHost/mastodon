@@ -9,7 +9,6 @@ id:
   accounts:
     followers:
       other: Pengikut
-    following: Mengikuti
     instance_actor_flash: Akun ini adalah aktor virtual yang merepresentasikan server itu sendiri dan bukan pengguna individu. Ini dipakai untuk tujuan gabungan dan seharusnya tidak ditangguhkan.
     last_active: terakhir aktif
     link_verified_on: Kepemilikan tautan ini telah dicek pada %{date}
@@ -538,7 +537,6 @@ id:
       action_log: Log audit
       action_taken_by: Aksi dilakukan oleh
       actions:
-        delete_description_html: Kiriman yang dilaporkan akan dihapus dan peringatan akan direkam untuk membantu Anda mengurus masalah oleh akun yang sama di masa mendatang.
         mark_as_sensitive_description_html: Media di dalam kiriman terlapor akan ditandai sebagai sensitif dan hukuman akan direkam untuk membantu menangani pelanggaran dari akun yang sama di masa mendatang.
         other_description_html: Lihat opsi lain untuk mengendalikan perilaku akun dan menyesuaikan komunikasi ke akun yang dilaporkan.
         resolve_description_html: Tidak ada tindakan untuk akun yang dilaporkan, tidak ada peringatan yang direkam, dan laporan akan ditutup.
@@ -553,7 +551,6 @@ id:
         none: Tidak ada
       comment_description_html: 'Untuk menyediakan lebih banyak informasi, %{name} menulis:'
       created_at: Dilaporkan
-      delete_and_resolve: Hapus kiriman
       forwarded: Diteruskan
       forwarded_to: Diteruskan ke %{domain}
       mark_as_resolved: Tandai telah diseleseikan
@@ -578,7 +575,6 @@ id:
       resolved_msg: Laporan berhasil diselesaikan!
       skip_to_actions: Langsung ke tindakan
       status: Status
-      statuses: Konten yang dilaporkan
       statuses_description_html: Konten menyinggung akan disampaikan saat komunikasi dengan akun yang dilaporkan
       target_origin: Akun asal yang dilaporkan
       title: Laporan
@@ -670,7 +666,6 @@ id:
         title: Keluarkan pengguna dari pengindeksan mesin telusur secara bawaan
       discovery:
         follow_recommendations: Ikuti rekomendasi
-        preamble: Menampilkan konten menarik penting dalam memandu pengguna baru yang mungkin tidak tahu siapa pun di Mastodon. Atur bagaimana berbagai fitur penemuan bekerja di server Anda.
         profile_directory: Direktori profil
         public_timelines: Linimasa publik
         title: Penemuan
@@ -758,7 +753,6 @@ id:
         shared_by_over_week:
           other: Dibagikan oleh %{count} orang selama seminggu terakhir
         title: Tautan sedang tren
-        usage_comparison: Dibagikan %{today} kali hari ini, dibandingkan %{yesterday} kemarin
       only_allowed: Yang diizinkan saja
       pending_review: Tinjauan tertunda
       preview_card_providers:
@@ -797,7 +791,6 @@ id:
         trendable: Dapat muncul di bawah tren
         trending_rank: 'Sedang tren #%{rank}'
         usable: Dapat digunakan
-        usage_comparison: Digunakan %{today} kali hari ini, dibandingkan %{yesterday} kemarin
         used_by_over_week:
           other: Digunakan oleh %{count} orang selama seminggu terakhir
       trending: Sedang tren
@@ -862,10 +855,7 @@ id:
     hint_html: Jika Anda ingin pindah dari akun lain ke sini, Anda dapat membuat alias, yang dilakukan sebelum Anda setuju dengan memindah pengikut dari akun lama ke akun sini. Aksi ini <strong>tidak berbahaya dan tidak bisa dikembalikan</strong>. <strong>Pemindahan akun dimulai dari akun lama</strong>.
     remove: Hapus tautan alias
   appearance:
-    advanced_web_interface: Antarmuka web tingkat lanjut
-    advanced_web_interface_hint: 'Jika Anda ingin memanfaatkan seluruh lebar layar Anda, antarmuka web tingkat lanjut memungkinkan Anda mengonfigurasi beragam kolom untuk menampilkan informasi sebanyak yang Anda inginkan: Beranda, notifikasi, linimasa gabungan, daftar, dan tagar.'
     animations_and_accessibility: Animasi dan aksesibilitas
-    confirmation_dialogs: Dialog konfirmasi
     discovery: Jelajah
     localization:
       body: Mastodon diterjemahkan oleh sukarelawan.
@@ -954,7 +944,6 @@ id:
   deletes:
     challenge_not_passed: Informasi yang Anda masukkan salah
     confirm_password: Masukkan kata sandi sekarang untuk memverifikasi identitas Anda
-    confirm_username: Masukkan nama pengguna untuk mengonfirmasi prosedur
     proceed: Hapus akun
     success_msg: Akun Anda berhasil dihapus
     warning:
@@ -1028,9 +1017,6 @@ id:
     lists: Daftar
     mutes: Anda bisukan
     storage: Penyimpanan media
-  featured_tags:
-    add_new: Tambah baru
-    hint_html: "<strong>Apa itu tagar yang diunggulkan?</strong> Mereka ditampilkan secara mencolok di profil publik Anda dan mengizinkan orang-orang untuk menjelajahi kiriman publik khususnya yang ada di bawah tagar tersebut. Mereka adalah alat yang bagus untuk melacak pekerjaan kreatif atau proyek jangka panjang."
   filters:
     contexts:
       account: Profil
@@ -1091,7 +1077,6 @@ id:
   imports:
     errors:
       invalid_csv_file: 'Berkas CVS tidak sah. Kesalahan: %{error}'
-      over_rows_processing_limit: berisi lebih dari %{count} baris
     modes:
       merge: Gabung
       merge_long: Pertahankan rekaman yang sudah ada dan buat baru
@@ -1158,7 +1143,6 @@ id:
     incoming_migrations_html: Untuk pindah dari akun lain ke sini, Anda harus <a href="%{path}">membuat alias akun</a> terlebih dahulu.
     moved_msg: Akun Anda dialihkan ke %{acct} dan pengikut Anda akan ikut dipindahkan.
     not_redirecting: Saat ini akun Anda tidak dialihkan ke akun lain.
-    on_cooldown: Anda baru saja memindahkan akun Anda. Fungsi ini akan tersedia kembali %{count} hari lagi.
     past_migrations: Migrasi lampau
     proceed_with_move: Pindahkan pengikut
     redirected_msg: Akun Anda sedang dialihkan ke %{acct}.
@@ -1171,7 +1155,6 @@ id:
       disabled_account: Akun Anda tidak akan dapat dipakai secara penuh. Namun, Anda tetap akan memiliki akses ke ekspor data dan aktivasi ulang.
       followers: Tindakan ini akan memindah semua pengikut Anda dari akun sekarang ke akun baru
       only_redirect_html: Secara alternatif, Anda <a href="%{path}">hanya dapat menaruh tulisan mengarahkan ke profil Anda</a>.
-      other_data: Tidak akan ada data lagi yang dipindahkan secara otomatis
       redirect: Pemberitahuan peralihan akan dimunculkan pada akun profil Anda dan akun akan dikecualikan dari pencarian
   moderation:
     title: Moderasi
@@ -1225,7 +1208,7 @@ id:
           billion: M
           million: Jt
           quadrillion: Kdt
-          thousand: Rb
+          thousand: rb
           trillion: T
   otp_authentication:
     code_hint: Masukkan kode yang dibuat oleh aplikasi autentikator sebagai konfirmasi
@@ -1240,7 +1223,6 @@ id:
     next: Selanjutnya
     older: Lebih lama
     prev: Sebelumnya
-    truncate: "&hellip;"
   polls:
     errors:
       already_voted: Anda sudah mengikuti japat ini
@@ -1289,9 +1271,6 @@ id:
     descriptions:
       account: Kiriman publik dari @%{acct}
       tag: 'Kiriman publik ditagari #%{hashtag}'
-  scheduled_statuses:
-    over_daily_limit: Anda telah melampaui batas %{limit} kiriman terjadwal untuk sehari
-    over_total_limit: Anda telah melampaui batas %{limit} kiriman terjadwal
   sessions:
     activity: Aktivitas terakhir
     browser: Peramban
@@ -1340,7 +1319,6 @@ id:
     appearance: Tampilan
     authorized_apps: Apl yang diizinkan
     back: Kembali ke Mastodon
-    delete: Penghapusan akun
     development: Pengembangan
     edit_profile: Ubah profil
     featured_tags: Tagar unggulan
@@ -1384,11 +1362,9 @@ id:
     enabled: Otomatis hapus kiriman lama
     enabled_hint: "Otomatis menghapus kiriman Anda saat sudah mencapai batasan usia, kecuali yang cocok \nsesuai di bawah ini"
     exceptions: Pengecualian
-    explanation: Karena menghapus kiriman adalah operasi dengan sumber daya besar, ini akan dilakukan perlahan ketika server tidak sedang sibuk. Karena alasan ini, kiriman akan dihapus setelah mencapai batas waktu.
     ignore_favs: Abaikan favorit
     ignore_reblogs: Abaikan boost
     interaction_exceptions: Pengecualian berdasar interaksi
-    interaction_exceptions_explanation: Perlu diingat tidak ada jaminan kiriman akan dihapus jika ia di bawah batas favorit atau boost setelah sebelumnya berhasil melewatinya.
     keep_direct: Simpan pesan langsung
     keep_direct_hint: Tidak mengapus pesan langsung Anda
     keep_media: Simpan kiriman dengan lampiran media
@@ -1421,10 +1397,6 @@ id:
       too_late: Terlambat untuk mengajukan banding hukuman ini
   tags:
     does_not_match_previous_name: tidak cocok dengan nama sebelumnya
-  themes:
-    contrast: Mastodon (Kontras tinggi)
-    default: Mastodon (Gelap)
-    mastodon-light: Mastodon (Terang)
   time:
     formats:
       default: "%d %b %Y, %H:%M"

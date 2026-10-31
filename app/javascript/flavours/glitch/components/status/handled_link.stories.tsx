@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { HashtagMenuController } from '@/flavours/glitch/features/ui/components/hashtag_menu_controller';
-import { accountFactoryState } from '@/testing/factories';
+import { accountFactoryImmutable } from '@/testing/factories';
 
 import { HoverCardController } from '../hover_card_controller';
 
@@ -21,9 +21,13 @@ const meta = {
   render({ mentionAccount, hashtagAccount, ...args }) {
     let mention: HandledLinkProps['mention'] | undefined;
     if (mentionAccount === 'local') {
-      mention = { id: '1', acct: 'testuser' };
+      mention = { id: '1', acct: 'testuser', username: 'testuser' };
     } else if (mentionAccount === 'remote') {
-      mention = { id: '2', acct: 'remoteuser@mastodon.social' };
+      mention = {
+        id: '2',
+        acct: 'remoteuser@mastodon.social',
+        username: 'remoteuser',
+      };
     }
     return (
       <>
@@ -49,13 +53,15 @@ const meta = {
     mentionAccount: {
       control: { type: 'select' },
       options: ['local', 'remote', 'none'],
-      defaultValue: 'none',
+      table: {
+        defaultValue: { summary: 'none' },
+      },
     },
   },
   parameters: {
     state: {
       accounts: {
-        '1': accountFactoryState({ id: '1', acct: 'hashtaguser' }),
+        '1': accountFactoryImmutable({ id: '1', acct: 'hashtaguser' }),
       },
     },
   },

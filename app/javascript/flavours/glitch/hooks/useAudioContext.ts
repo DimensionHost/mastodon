@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 
 interface AudioContextOptions {
-  audioElementRef: React.MutableRefObject<HTMLAudioElement | null>;
+  audioElementRef: React.RefObject<HTMLAudioElement | null>;
 }
 
 /**
@@ -13,12 +13,12 @@ interface AudioContextOptions {
  */
 
 export const useAudioContext = ({ audioElementRef }: AudioContextOptions) => {
-  const audioContextRef = useRef<AudioContext>();
-  const sourceRef = useRef<MediaElementAudioSourceNode>();
-  const gainNodeRef = useRef<GainNode>();
+  const audioContextRef = useRef<AudioContext>(null);
+  const sourceRef = useRef<MediaElementAudioSourceNode>(null);
+  const gainNodeRef = useRef<GainNode>(null);
 
   useEffect(() => {
-    if (!audioElementRef.current) {
+    if (!audioElementRef.current || typeof AudioContext === 'undefined') {
       return;
     }
 
@@ -39,17 +39,24 @@ export const useAudioContext = ({ audioElementRef }: AudioContextOptions) => {
       if (context.state !== 'closed') {
         void context.close();
       }
+      audioContextRef.current = null;
+      gainNodeRef.current = null;
+      sourceRef.current = null;
     };
   }, [audioElementRef]);
 
   const playAudio = useCallback(() => {
-    void audioElementRef.current?.play();
-    void audioContextRef.current?.resume();
+    if (audioContextRef.current && audioElementRef.current) {
+      void audioElementRef.current.play();
+      void audioContextRef.current.resume();
+    }
   }, [audioElementRef]);
 
   const pauseAudio = useCallback(() => {
-    audioElementRef.current?.pause();
-    void audioContextRef.current?.suspend();
+    if (audioContextRef.current && audioElementRef.current) {
+      audioElementRef.current.pause();
+      void audioContextRef.current.suspend();
+    }
   }, [audioElementRef]);
 
   return {

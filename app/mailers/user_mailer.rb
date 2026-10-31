@@ -172,6 +172,8 @@ class UserMailer < Devise::Mailer
   end
 
   def appeal_approved(user, appeal)
+    return if user.nil?
+
     @resource = user
     @appeal   = appeal
 
@@ -181,6 +183,8 @@ class UserMailer < Devise::Mailer
   end
 
   def appeal_rejected(user, appeal)
+    return if user.nil?
+
     @resource = user
     @appeal   = appeal
 
@@ -216,7 +220,6 @@ class UserMailer < Devise::Mailer
   def terms_of_service_changed(user, terms_of_service)
     @resource = user
     @terms_of_service = terms_of_service
-    @markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML, escape_html: true, no_images: true)
 
     I18n.with_locale(locale) do
       mail subject: default_i18n_subject
@@ -229,6 +232,23 @@ class UserMailer < Devise::Mailer
 
     I18n.with_locale(locale) do
       mail subject: default_i18n_subject
+    end
+  end
+
+  def sign_in_token(user, remote_ip, user_agent, timestamp)
+    @resource   = user
+    @instance   = Rails.configuration.x.local_domain
+    @remote_ip  = remote_ip
+    @user_agent = user_agent
+    @detection  = Browser.new(user_agent)
+    @timestamp  = timestamp.to_time.utc
+
+    return if @resource.disabled?
+
+    I18n.with_locale(@resource.locale || I18n.default_locale) do
+      mail to: @resource.email,
+           subject: I18n.t('user_mailer.sign_in_token.subject'),
+           reply_to: Setting.site_contact_email
     end
   end
 

@@ -1,15 +1,16 @@
-import { injectIntl, defineMessages } from 'react-intl';
+import { defineMessages } from 'react-intl';
 
 import { connect } from 'react-redux';
 
 import WarningIcon from '@/material-icons/400-20px/warning.svg?react';
+import { injectIntl } from '@/mastodon/components/intl';
 import { IconButton } from 'mastodon/components/icon_button';
 
 import { changeComposeSpoilerness } from '../../../actions/compose';
 
 const messages = defineMessages({
-  marked: { id: 'compose_form.spoiler.marked', defaultMessage: 'Text is hidden behind warning' },
-  unmarked: { id: 'compose_form.spoiler.unmarked', defaultMessage: 'Text is not hidden' },
+  marked: { id: 'compose_form.spoiler.marked', defaultMessage: 'Remove content warning' },
+  unmarked: { id: 'compose_form.spoiler.unmarked', defaultMessage: 'Add content warning' },
 });
 
 const mapStateToProps = (state, { intl }) => ({

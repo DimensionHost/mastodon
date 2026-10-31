@@ -6,10 +6,11 @@ class AccountsController < ApplicationController
 
   include AccountControllerConcern
   include SignatureAuthentication
+  include Redisable
 
-  vary_by -> { public_fetch_mode? ? 'Accept, Accept-Language, Cookie' : 'Accept, Accept-Language, Cookie, Signature' }
+  vary_by -> { actors_require_signature? ? 'Accept, Accept-Language, Cookie, Signature' : 'Accept, Accept-Language, Cookie' }
 
-  before_action :require_account_signature!, if: -> { request.format == :json && authorized_fetch_mode? }
+  before_action :require_account_signature!, if: -> { request.format == :json && actors_require_signature? }
 
   skip_around_action :set_locale, if: -> { [:json, :rss].include?(request.format&.to_sym) }
   skip_before_action :require_functional!, unless: :limited_federation_mode?
@@ -18,6 +19,8 @@ class AccountsController < ApplicationController
     respond_to do |format|
       format.html do
         expires_in(15.seconds, public: true, stale_while_revalidate: 30.seconds, stale_if_error: 1.hour) unless user_signed_in?
+
+        redirect_to short_account_path(@account) if account_id_param.present? && username_param.blank?
       end
 
       format.rss do
@@ -29,13 +32,20 @@ class AccountsController < ApplicationController
       end
 
       format.json do
-        expires_in 3.minutes, public: !(authorized_fetch_mode? && signed_request_account.present?)
+        expires_in 3.minutes, public: !(actors_require_signature? && signed_request_account.present?)
+
+        record_reach!
+
         render_with_cache json: @account, content_type: 'application/activity+json', serializer: ActivityPub::ActorSerializer, adapter: ActivityPub::Adapter
       end
     end
   end
 
   private
+
+  def record_reach!
+    AccountReachFilter.record_reach_for(@account.id, signed_request_account&.preferred_inbox_url)
+  end
 
   def filtered_statuses
     default_statuses.tap do |statuses|

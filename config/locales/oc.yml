@@ -10,7 +10,6 @@ oc:
     followers:
       one: Seguidor
       other: Seguidors
-    following: Abonaments
     last_active: darrièra activitat
     link_verified_on: La proprietat d’aqueste ligam foguèt verificada lo %{date}
     nothing_here: I a pas res aquí !
@@ -442,10 +441,7 @@ oc:
     add_new: Crear un alias
     remove: Desligar l’alias
   appearance:
-    advanced_web_interface: Interfàcia web avançada
-    advanced_web_interface_hint: 'Se volètz utilizar la nautor complèta de l’ecran, l’interfàcia web avançada vos permet de configurar diferentas colomnas per mostrar tan d’informacions que volètz : Acuèlh, notificacions, flux d’actualitat, e d’autras listas e etiquetas.'
     animations_and_accessibility: Animacion e accessibilitat
-    confirmation_dialogs: Fenèstras de confirmacion
     discovery: Descobèrta
     localization:
       body: Mastodon es traduch per de benevòls.
@@ -520,7 +516,6 @@ oc:
   deletes:
     challenge_not_passed: Las informacions qu’avètz fornidas son pas corrèctas
     confirm_password: Picatz vòstre senhal actual per verificar vòstra identitat
-    confirm_username: Picatz vòstre nom d’utilizaire per confirmar la procedura
     proceed: Suprimir lo compte
     success_msg: Compte ben suprimit
     warning:
@@ -566,8 +561,6 @@ oc:
     lists: Listas
     mutes: Personas rescondudas
     storage: Mèdias gardats
-  featured_tags:
-    add_new: Ajustar una etiqueta nòva
   filters:
     contexts:
       account: Perfils
@@ -671,7 +664,6 @@ oc:
     warning:
       before: 'Abans de contunhar, volgatz legir aquestas nòtas amb atencion :'
       only_redirect_html: Autrament, podètz <a href="%{path}">solament definir una redireccion sus vòstre perfil</a>.
-      other_data: Cap d’autra donada serà desplaçada automaticament
   moderation:
     title: Moderacion
   notification_mailer:
@@ -761,9 +753,6 @@ oc:
     missing_resource: URL de redireccion pas trobada
   rss:
     content_warning: 'Avís de contengut :'
-  scheduled_statuses:
-    over_daily_limit: Avètz passat la limita de %{limit}  tuts programats per aquel jorn
-    over_total_limit: Avètz passat la limita de %{limit}  tuts programats
   sessions:
     activity: Darrièra activitat
     browser: Navigator
@@ -807,7 +796,6 @@ oc:
     appearance: Aparéncia
     authorized_apps: Aplicacions autorizadas
     back: Tornar a Mastodon
-    delete: Supression de compte
     development: Desvolopament
     edit_profile: Modificar lo perfil
     featured_tags: Etiquetas en avant
@@ -852,7 +840,6 @@ oc:
   statuses_cleanup:
     enabled: Supression automatica de publicacions ancianas
     enabled_hint: Suprimís automaticament vòstras publicacions quand correspondon al critèri d’atge causit, levat se correspondon tanben a las excepcions çai-jos
-    explanation: Perque la supression es una operacion costosa en ressorsa, es realizat doçament quand lo servidor es pas ocupat a quicòm mai. Per aquò, vòstras publicacions seràn benlèu pas suprimidas aprèp aver atengut lo critèri d’atge.
     ignore_favs: Ignorar los favorits
     ignore_reblogs: Ignorar los partatges
     interaction_exceptions: Excepcions basadas sus las interaccions
@@ -885,10 +872,6 @@ oc:
     sensitive_content: Contengut sensible
   tags:
     does_not_match_previous_name: correspond pas al nom precedent
-  themes:
-    contrast: Mastodon (Fòrt contrast)
-    default: Mastodon (Escur)
-    mastodon-light: Mastodon (Clar)
   time:
     formats:
       default: Lo %-d %B de %Y a %Ho%M

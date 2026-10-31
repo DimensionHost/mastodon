@@ -13,6 +13,7 @@ import { Button } from '@/mastodon/components/button';
 import { Dropdown } from '@/mastodon/components/dropdown';
 import type { SelectItem } from '@/mastodon/components/dropdown_selector';
 import { IconButton } from '@/mastodon/components/icon_button';
+import { NavigationFocusTarget } from '@/mastodon/components/navigation_focus_target';
 import { messages as privacyMessages } from '@/mastodon/features/compose/components/privacy_dropdown';
 import { createAppSelector, useAppSelector } from '@/mastodon/store';
 import AlternateEmailIcon from '@/material-icons/400-24px/alternate_email.svg?react';
@@ -128,8 +129,11 @@ export const VisibilityModal: FC<VisibilityModalProps> = forwardRef(
     const disableVisibility = !!statusId;
     const disableQuotePolicy =
       visibility === 'private' || visibility === 'direct';
-    const disablePublicVisibilities: boolean = useAppSelector(
+    const disablePublicVisibilities = useAppSelector(
       selectDisablePublicVisibilities,
+    );
+    const isQuotePost = useAppSelector(
+      (state) => state.compose.get('quoted_status_id') !== null,
     );
 
     const visibilityItems = useMemo<SelectItem<StatusVisibility>[]>(() => {
@@ -214,14 +218,15 @@ export const VisibilityModal: FC<VisibilityModalProps> = forwardRef(
             iconComponent={CloseIcon}
             onClick={onClose}
           />
-          <FormattedMessage
-            id='visibility_modal.header'
-            defaultMessage='Visibility and interaction'
+          <NavigationFocusTarget
+            as='h1'
+            className='dialog-modal__header__title'
           >
-            {(chunks) => (
-              <span className='dialog-modal__header__title'>{chunks}</span>
-            )}
-          </FormattedMessage>
+            <FormattedMessage
+              id='visibility_modal.header'
+              defaultMessage='Visibility and interaction'
+            />
+          </NavigationFocusTarget>
         </div>
         <div className='dialog-modal__content'>
           <div className='dialog-modal__content__description'>
@@ -315,6 +320,21 @@ export const VisibilityModal: FC<VisibilityModalProps> = forwardRef(
                 id={quoteDescriptionId}
               />
             </div>
+
+            {isQuotePost && visibility === 'direct' && (
+              <div className='visibility-modal__quote-warning'>
+                <FormattedMessage
+                  id='visibility_modal.direct_quote_warning.title'
+                  defaultMessage="Quotes can't be embedded in private mentions"
+                  tagName='h3'
+                />
+                <FormattedMessage
+                  id='visibility_modal.direct_quote_warning.text'
+                  defaultMessage='If you save the current settings, the embedded quote will be converted to a link.'
+                  tagName='p'
+                />
+              </div>
+            )}
           </div>
           <div className='dialog-modal__content__actions'>
             <Button onClick={onClose} secondary>

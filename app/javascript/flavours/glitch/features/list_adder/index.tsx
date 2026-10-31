@@ -1,9 +1,11 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useId } from 'react';
 
 import { FormattedMessage, useIntl, defineMessages } from 'react-intl';
 
 import { isFulfilled } from '@reduxjs/toolkit';
 
+import { Toggle } from '@/flavours/glitch/components/form_fields';
+import { isRedesignEnabled } from '@/flavours/glitch/utils/environment';
 import CloseIcon from '@/material-icons/400-24px/close.svg?react';
 import ListAltIcon from '@/material-icons/400-24px/list_alt.svg?react';
 import { fetchLists } from 'flavours/glitch/actions/lists';
@@ -15,9 +17,9 @@ import {
 } from 'flavours/glitch/api/lists';
 import type { ApiListJSON } from 'flavours/glitch/api_types/lists';
 import { Button } from 'flavours/glitch/components/button';
-import { CheckBox } from 'flavours/glitch/components/check_box';
 import { Icon } from 'flavours/glitch/components/icon';
 import { IconButton } from 'flavours/glitch/components/icon_button';
+import { NavigationFocusTarget } from 'flavours/glitch/components/navigation_focus_target';
 import { getOrderedLists } from 'flavours/glitch/selectors/lists';
 import { useAppDispatch, useAppSelector } from 'flavours/glitch/store';
 
@@ -25,6 +27,10 @@ const messages = defineMessages({
   newList: {
     id: 'lists.new_list_name',
     defaultMessage: 'New list name',
+  },
+  newFeed: {
+    id: 'custom_feeds.new_feed_name',
+    defaultMessage: 'New feed name',
   },
   createList: {
     id: 'lists.create',
@@ -42,6 +48,8 @@ const ListItem: React.FC<{
   checked: boolean;
   onChange: (id: string, checked: boolean) => void;
 }> = ({ id, title, checked, onChange }) => {
+  const uniqueId = useId();
+
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       onChange(id, e.target.checked);
@@ -50,14 +58,13 @@ const ListItem: React.FC<{
   );
 
   return (
-    // eslint-disable-next-line jsx-a11y/label-has-associated-control
-    <label className='lists__item'>
+    <label className='lists__item' htmlFor={uniqueId}>
       <div className='lists__item__title'>
         <Icon id='list-ul' icon={ListAltIcon} />
         <span>{title}</span>
       </div>
 
-      <CheckBox value={id} checked={checked} onChange={handleChange} />
+      <Toggle id={uniqueId} checked={checked} onChange={handleChange} />
     </label>
   );
 };
@@ -102,7 +109,9 @@ const NewListItem: React.FC<{
           onChange={handleChange}
           maxLength={30}
           required
-          placeholder={intl.formatMessage(messages.newList)}
+          placeholder={intl.formatMessage(
+            isRedesignEnabled() ? messages.newFeed : messages.newList,
+          )}
         />
       </label>
 
@@ -181,13 +190,21 @@ const ListAdder: React.FC<{
           onClick={onClose}
         />
 
-        <span className='dialog-modal__header__title'>
-          <FormattedMessage
-            id='lists.add_to_lists'
-            defaultMessage='Add {name} to lists'
-            values={{ name: <strong>@{account?.acct}</strong> }}
-          />
-        </span>
+        <NavigationFocusTarget as='h1' className='dialog-modal__header__title'>
+          {isRedesignEnabled() ? (
+            <FormattedMessage
+              id='custom_feeds.add_to_feeds'
+              defaultMessage='Add {name} to custom feeds'
+              values={{ name: <strong>@{account?.acct}</strong> }}
+            />
+          ) : (
+            <FormattedMessage
+              id='lists.add_to_lists'
+              defaultMessage='Add {name} to lists'
+              values={{ name: <strong>@{account?.acct}</strong> }}
+            />
+          )}
+        </NavigationFocusTarget>
       </div>
 
       <div className='dialog-modal__content'>

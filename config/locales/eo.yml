@@ -10,7 +10,6 @@ eo:
     followers:
       one: Sekvanto
       other: Sekvantoj
-    following: Sekvatoj
     instance_actor_flash: Ĉi tiu konto estas virtuala agento uzata por reprezenti la servilon mem kaj neniun individuan uzanton. Ĝi estas uzata por federaciaj celoj kaj ĝi devas ne esti suspendita.
     last_active: laste aktiva
     link_verified_on: Proprieto de ĉi tiu ligilo estis kontrolita je %{date}
@@ -507,8 +506,6 @@ eo:
           description: Vi ricevis registradon de FASP. Malakcepti ĝin se vi ne komencis ĉi tiun. Se vi ja, zorge kompari nomon kaj ŝloŝilafingrospuron antaŭ ol konfirmas la registradon.
           reject: Malakcepti
           title: Konfirmi registradon de FASP
-        save: Konservi
-        select_capabilities: Elekti mandatojn
         sign_in: Ensaluti
         status: Stato
         title: Fediversaj helpaj servicaj donantoj
@@ -651,7 +648,6 @@ eo:
       action_log: Ĵurnalo de revizo
       action_taken_by: Ago farita de
       actions:
-        delete_description_html: Raportitaj afiŝoj estos forigita kaj admono estos rekordita por helpi vin indiki estontajn afiŝojn de la sama konto kontraŭ reguloj.
         mark_as_sensitive_description_html: La audovidaĵo en la raportita mesaĝo markotas kiel sentema kaj admono rekorditas.
         other_description_html: Vidu pli da ebloj por regi la sintenon de la konto kaj por personigi la komunikadon kun la raportita konto.
         resolve_description_html: Nenio okazotas al la raportita konto kaj la raporto fermotas.
@@ -677,7 +673,6 @@ eo:
       confirm: Konfirmi
       confirm_action: Konfirmi moderigadagon kontra @%{acct}
       created_at: Raportita
-      delete_and_resolve: Forigi afiŝojn
       forwarded: Plusendita
       forwarded_replies_explanation: Ĉi tiu raporto estas de malproksima uzanto kaj estas pri malproksima enhavo. Ĝi plusendis al vi ĉar la raportita enhavo estas rediraĵo je unu el viaj uzantoj.
       forwarded_to: Plusendita al %{domain}
@@ -705,7 +700,6 @@ eo:
       resolved_msg: Signalo sukcese solvita!
       skip_to_actions: Salti al agoj
       status: Afiŝo
-      statuses: Raportita enhavo
       statuses_description_html: Sentema enhavo referencitas kun la raportita konto
       summary:
         action_preambles:
@@ -831,11 +825,8 @@ eo:
         title: Defaŭltigi, ke uzantoj ne estu aŭtomate aldonitaj al la serĉilo-indekso sen sia konsento
       discovery:
         follow_recommendations: Sekvorekomendoj
-        preamble: Interesa enhavo estas grava por novaj uzantoj kiuj eble ne konas ajn iun.
-        privacy: Privateco
         profile_directory: Profilujo
         public_timelines: Publikaj templinioj
-        publish_statistics: Publikigi statistikojn
         title: Eltrovado
         trends: Tendencoj
       domain_blocks:
@@ -854,7 +845,6 @@ eo:
         warning_hint: Ni rekomendas uzi "Konsento neprigas por enskribiĝi" krom se vi memcertas, ke via teamo de moderistoj povas ellabori spamon kaj malignajn registradojn rapide.
       security:
         authorized_fetch: Devigi aŭtentigon de frataraj serviloj
-        authorized_fetch_hint: Neprigante aŭtentigon por federataj serviloj permesas pli striktan devigon de ambaŭ uzanto-nivelaj kaj servilo-nivelaj blokoj. Tamen, ĉi tiu uzas pli risurcojn, reduktas la ĝisiradon de viaj respondoj, kaj povas enkonduki aferoj, pri kongruoj. Plu, ĉi tiu ne preventos homojn el alporti viajn afiŝojn kaj uzantojn.
         authorized_fetch_overridden_hint: Vi nuntempe ne povas ŝanĝi ĉi tiun agordon ĉar ĝi estas anstataŭita de mediovariablo.
         federation_authentication: Devigado de la aŭtentigo de la federacio
       title: Agordoj de la servilo
@@ -1034,7 +1024,6 @@ eo:
           one: Diskonita de 1 persono ekde lasta semajno
           other: Diskonita de %{count} personoj ekde lasta semajno
         title: Tendencantaj ligiloj
-        usage_comparison: Diskonita %{today}-foje hodiau, sed estas %{yesterday} hierau
       not_allowed_to_trend: Ne rajtas fariĝi furoraĵo
       only_allowed: Nur permesitas
       pending_review: Atendante revizion
@@ -1079,7 +1068,6 @@ eo:
         trendable: Povas aperi en tendencoj
         trending_rank: 'Populara #%{rank}'
         usable: Povas esti uzata
-        usage_comparison: Uzita %{today}-foje hodiau, sed estas %{yesterday} hierau
         used_by_over_week:
           one: Uzita de 1 persono ekde lasta semajno
           other: Uzita de %{count} personoj ekde lasta semajno
@@ -1175,10 +1163,7 @@ eo:
     hint_html: Se vi volas translokiĝi de alia konto al ĉi tie, kreu alinomon. Ĝi estas <strong>sekura kaj inversebla</strong>. <strong>Ĝi komencitas de malnova konto</strong>.
     remove: Malligili alinomon
   appearance:
-    advanced_web_interface: Altnivela retpaĝa interfaco
-    advanced_web_interface_hint: 'Se vi volas uzi la tutan larĝecon de via ekrano, la kompleksa reta interfaco permesas al vi agordi multajn malsamajn kolumnojn por vidi tiom da informoj kiom vi volas samtempe: Hejmo, sciigoj, fratara templinio, kaj ajna kvanto de listoj kaj kradvortoj.'
     animations_and_accessibility: Animacioj kaj alirebleco
-    confirmation_dialogs: Konfirmaj fenestroj
     discovery: Eltrovo
     localization:
       body: Mastodon estas tradukita de volontuloj.
@@ -1188,7 +1173,6 @@ eo:
   application_mailer:
     notification_preferences: Ŝanĝi retpoŝtajn preferojn
     salutation: "%{name},"
-    settings: 'Ŝanĝi retpoŝtajn preferojn: %{link}'
     unsubscribe: Malabonu
     view: 'Vidi:'
     view_profile: Vidi profilon
@@ -1319,13 +1303,12 @@ eo:
   deletes:
     challenge_not_passed: La informaĵo ke vi enigis estis malĝusta
     confirm_password: Enmetu vian nunan pasvorton por konfirmi vian identecon
-    confirm_username: Enigi vian uzantnomon por konfirmi la procedo
     proceed: Forigi konton
     success_msg: Via konto estis sukcese forigita
     warning:
       before: 'Antau ol dauri, legu ĉi tiujn notojn zorgeme:'
       caches: Enhavo kiu kaŝmemorigitas de aliaj serviloj eble restas
-      data_removal: Viaj afiŝoj kaj aliaj informoj estos forigita por eterne
+      data_removal: Viaj afiŝoj kaj aliaj informoj estos forigita por ĉiam
       email_change_html: Vi povas <a href="%{path}">ŝanĝi vian retadreson</a> sen forigi vian konton
       email_contact_html: Se ĝi ankoraŭ ne alvenas, vi povas retpoŝti al <a href="mailto:%{email}">%{email}</a> por helpo
       email_reconfirmation_html: Se vi ne ricevas la konfirmretpoŝton, vi povas <a href="%{path}">denove peti</a>
@@ -1364,8 +1347,6 @@ eo:
       your_appeal_pending: Vi sendis apelacion
       your_appeal_rejected: Via apelacio malakceptitas
   edit_profile:
-    basic_information: Baza informo
-    hint_html: "<strong>Personigi, kion homoj vidi en via publika profilo kaj apud viaj afiŝoj. </strong> Aliaj homoj estas pli probable resekvi vin kaj interagi kun vi se vi havus finigitan profilon kaj profilan foton."
     other: Alia
   emoji_styles:
     auto: Aŭtomata
@@ -1407,10 +1388,8 @@ eo:
     mutes: Vi silentigas
     storage: Aŭdovidaĵa konservado
   featured_tags:
-    add_new: Aldoni novan
     errors:
       limit: Vi jam elstarigis la maksimuman kvanton da kradvortoj
-    hint_html: "<strong>Kio estas la trajtaj kradvortoj?</strong> Ili bone videblas en via publika profilo kaj permesas al homoj trarigardi viajn publikajn mesaĝojn specife laŭ tiuj kradvortoj. Ili estas bonaj iloj por sekvi la evoluon de kreadaj laboroj aŭ longdaŭraj projektoj."
   filters:
     contexts:
       account: Profiloj
@@ -1482,7 +1461,6 @@ eo:
       empty: Malpena CSV-dosiero
       incompatible_type: Nekongrua kun la elektita importotipo
       invalid_csv_file: Nevalida CSV-dosiero. %{error}
-      over_rows_processing_limit: enhavas pli ol %{count} vicoj
       too_large: La dosiero estas tro larĝa
     failures: Malsukcesoj
     imported: Importitaj
@@ -1596,21 +1574,6 @@ eo:
     failed_sign_in_html: Malsukcese ensalutprovo per %{method} de %{ip} (%{browser})
     successful_sign_in_html: Sukcese ensaluto per %{method} de %{ip} (%{browser})
     title: Aŭtentiga historio
-  mail_subscriptions:
-    unsubscribe:
-      action: Jes, malabonu
-      complete: Malabonita
-      confirmation_html: Ĉu vi certas, ke vi volas malaboni je ricevi %{type} por Mastodon ĉe %{domain} al via retpoŝto ĉe %{email}? Vi ĉiam povas reaboni de viaj <a href="%{settings_path}">retpoŝtaj sciigaj agordoj</a>.
-      emails:
-        notification_emails:
-          favourite: sciigoj retpoŝtaj de ŝatataj
-          follow: sciigoj retpoŝtaj de sekvoj
-          follow_request: retpoŝtajn petoj de sekvado
-          mention: sciigoj retpoŝtaj de mencioj
-          reblog: sciigoj retpoŝtaj de diskonigoj
-      resubscribe_html: Se vi malabonis erare, vi povas reaboni de viaj <a href="%{settings_path}">retpoŝtaj sciigaj agordoj</a>.
-      success_html: Vi ne plu ricevos %{type} por Mastodon ĉe %{domain} al via retpoŝto ĉe %{email}.
-      title: Malaboni
   media_attachments:
     validations:
       images_and_video: Aldoni videon al mesaĝo, kiu jam havas bildojn ne eblas
@@ -1633,7 +1596,6 @@ eo:
     incoming_migrations_html: Por moviĝi el alia konto al ĉi tiu, vi unue devas <a href="%{path}">krei kromnomo de konto</a>.
     moved_msg: Vua konto nun alidirektas al %{acct} kaj via sekvantoj translokigitas.
     not_redirecting: Via konto ne alidirektas al ajn alia konto nun.
-    on_cooldown: Vi lastatempe translokigis vian konton. Ĝi estos disponebla malantau ol %{count} dioj.
     past_migrations: Pasintaj translokaj
     proceed_with_move: Translokigi sekvantoj
     redirected_msg: Via konto nun alidirektas al %{acct}.
@@ -1646,7 +1608,6 @@ eo:
       disabled_account: Via nuna konto ne estos tute uzebla poste.
       followers: Ĉi tiu ago translokigos ĉi tiujn sekvantojn de la nuna konto al la nova konto
       only_redirect_html: Alie, vi povas <a href="%{path}">nur aldoni alidirekton en via profilo</a>.
-      other_data: Neniu alia datumo estos movita aŭtomate
       redirect: Via nuna profilo de konto ĝisdatigotas kun alidirektoavizo
   moderation:
     title: Moderigado
@@ -1721,7 +1682,6 @@ eo:
     next: Sekva
     older: Malpli nova
     prev: Antaŭa
-    truncate: "&hellip;"
   polls:
     errors:
       already_voted: Vi jam voĉdonis al ĉi tiu enketa
@@ -1791,8 +1751,6 @@ eo:
       account: Publikaj mesaĝoj de @%{acct}
       tag: 'Publikaj afiŝoj pri #%{hashtag}'
   scheduled_statuses:
-    over_daily_limit: Vi transpasis la limigon al %{limit} samtage planitaj mesaĝoj
-    over_total_limit: Vi transpasis la limigon al %{limit} planitaj mesaĝoj
     too_soon: dato devas esti en la futuro
   self_destruct:
     lead_html: Bedaŭrinde, <strong>%{domain}</strong> konstante fermiĝas. Se vi havis konton tie, vi ne povos daŭrigi uzi ĝin, sed vi ankoraŭ povas peti sekurkopion de viaj datumoj.
@@ -1850,7 +1808,6 @@ eo:
     appearance: Apero
     authorized_apps: Rajtigitaj aplikaĵoj
     back: Reveni al Mastodon
-    delete: Konta forigo
     development: Evoluigado
     edit_profile: Redakti profilon
     export: Eksporti
@@ -1922,11 +1879,9 @@ eo:
     enabled: Aŭtomate forigi malnovajn postojn
     enabled_hint: Automate forigi viajn mesaĝojn kiam ili atingas la aĝlimon kaj havas escepton
     exceptions: Esceptoj
-    explanation: Forigi mesaĝojn estas rimeda ago, do ĉi tio malrapide sekve faratas kiam la servilo ne estas okupita.
     ignore_favs: Ignori stelumojn
     ignore_reblogs: Ignori diskonigojn
     interaction_exceptions: Esceptoj lau interagoj
-    interaction_exceptions_explanation: Sciu ke estas neniu garantio ke mesaĝo estos forigita se ĝi iras sub la limo de diskonigoj aŭ stelumoj post atingi ĝin.
     keep_direct: Konservi rektajn mesaĝojn
     keep_direct_hint: Ne forigos viajn rektajn mesagôjn
     keep_media: Konservi afiŝojn kun aŭdovidaj aldonaĵoj
@@ -1965,11 +1920,6 @@ eo:
   terms_of_service_interstitial:
     past_preamble_html: Ni ŝanĝis niajn servkondiĉojn ekde via lasta vizito. Ni instigas vin revizii la ĝisdatigitajn kondiĉojn.
     title: La servkondiĉoj de %{domain} ŝanĝiĝas
-  themes:
-    contrast: Mastodon (Forta kontrasto)
-    default: Mastodon (Malhela)
-    mastodon-light: Mastodon (Hela)
-    system: Aŭtomata (uzu sisteman temon)
   time:
     formats:
       default: "%Y.%b.%d, %H:%M"

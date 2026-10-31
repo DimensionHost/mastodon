@@ -46,6 +46,14 @@ module StatusesHelper
     status.preloadable_poll.options.map { |o| "[ ] #{o}" }.join("\n")
   end
 
+  def status_classnames(status, is_quote)
+    if is_quote
+      'status--is-quote'
+    elsif status.quote.present?
+      'status--has-quote'
+    end
+  end
+
   def status_description(status)
     components = [[media_summary(status), status_text_summary(status)].compact_blank.join(' · ')]
 
@@ -86,8 +94,7 @@ module StatusesHelper
       adapter: SEO::Adapter
     ).to_json
 
-    # rubocop:disable Rails/OutputSafety
+    # rubocop:disable-next Rails/OutputSafety
     content_tag(:script, json_escape(json).html_safe, type: 'application/ld+json')
-    # rubocop:enable Rails/OutputSafety
   end
 end

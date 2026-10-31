@@ -7,6 +7,8 @@ import { multiply } from 'color-blend';
 import { createBrowserHistory } from 'history';
 
 import { WithOptionalRouterPropTypes, withOptionalRouter } from 'flavours/glitch/utils/react_router';
+import { IGNORE_FOCUS_ON_OPEN } from '../reducers/modal';
+import { normalizeKey } from './hotkeys/utils';
 
 class ModalRoot extends PureComponent {
 
@@ -22,21 +24,21 @@ class ModalRoot extends PureComponent {
       }),
     ]),
     noEsc: PropTypes.bool,
-    ignoreFocus: PropTypes.bool,
+    ignoreFocus: PropTypes.oneOfType([
+      PropTypes.bool,
+      PropTypes.string, // 'on-open', see IGNORE_FOCUS_ON_OPEN
+    ]),
     ...WithOptionalRouterPropTypes,
   };
 
   activeElement = this.props.children ? document.activeElement : null;
 
-  handleKeyUp = (e) => {
-    if ((e.key === 'Escape' || e.key === 'Esc' || e.keyCode === 27)
-         && !!this.props.children && !this.props.noEsc) {
-      this.props.onClose();
-    }
-  };
-
+  /**
+   * @param {KeyboardEvent} e Event
+   */
   handleKeyDown = (e) => {
-    if (e.key === 'Tab') {
+    const key = normalizeKey(e.key);
+    if (key === 'tab') {
       const focusable = Array.from(this.node.querySelectorAll('button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])')).filter((x) => window.getComputedStyle(x).display !== 'none');
       const index = focusable.indexOf(e.target);
 
@@ -53,24 +55,26 @@ class ModalRoot extends PureComponent {
         e.stopPropagation();
         e.preventDefault();
       }
+    } else if (key === 'escape' && !e.defaultPrevented && !!this.props.children) {
+      this.props.onClose();
     }
   };
 
+  handleBackgroundClick = (e) => {
+    // Close modal, but only when clicking outside of the modal's content
+    if (e.target.matches('.modal-root__container *') || !e.target.matches('.modal-root *')) {
+      return;
+    }
+
+    this.props.onClose();
+  }
+
   componentDidMount () {
-    window.addEventListener('keyup', this.handleKeyUp, false);
     window.addEventListener('keydown', this.handleKeyDown, false);
     this.history = this.props.history || createBrowserHistory();
 
     if (this.props.children) {
       this._handleModalOpen();
-    }
-  }
-
-  UNSAFE_componentWillReceiveProps (nextProps) {
-    if (!!nextProps.children && !this.props.children) {
-      this.activeElement = document.activeElement;
-
-      this.getSiblings().forEach(sibling => sibling.setAttribute('inert', true));
     }
   }
 
@@ -90,16 +94,21 @@ class ModalRoot extends PureComponent {
 
       this._handleModalClose();
     }
+
     if (this.props.children && !prevProps.children) {
+      this.activeElement = document.activeElement;
+
+      this.getSiblings().forEach(sibling => sibling.setAttribute('inert', true));
+
       this._handleModalOpen();
     }
+
     if (this.props.children) {
       this._ensureHistoryBuffer();
     }
   }
 
   componentWillUnmount () {
-    window.removeEventListener('keyup', this.handleKeyUp);
     window.removeEventListener('keydown', this.handleKeyDown);
   }
 
@@ -125,7 +134,11 @@ class ModalRoot extends PureComponent {
   _ensureHistoryBuffer () {
     const { pathname, search, hash, state } = this.history.location;
     if (!state || state.mastodonModalKey !== this._modalHistoryKey) {
-      this.history.push({ pathname, search, hash }, { ...state, mastodonModalKey: this._modalHistoryKey });
+      this.history.push({ pathname, search, hash }, {
+        ...state,
+        focusTarget: this.props.ignoreFocus !== IGNORE_FOCUS_ON_OPEN,
+        mastodonModalKey: this._modalHistoryKey,
+      });
     }
   }
 
@@ -138,7 +151,7 @@ class ModalRoot extends PureComponent {
   };
 
   render () {
-    const { children, onClose } = this.props;
+    const { children } = this.props;
     const visible = !!children;
 
     if (!visible) {
@@ -157,9 +170,10 @@ class ModalRoot extends PureComponent {
     }
 
     return (
-      <div className='modal-root' ref={this.setRef}>
-        <div style={{ pointerEvents: visible ? 'auto' : 'none' }}>
-          <div role='presentation' className='modal-root__overlay' onClick={onClose} style={{ backgroundColor }} />
+      // eslint-disable-next-line jsx-a11y/no-static-element-interactions
+      <div className='modal-root' ref={this.setRef} onClick={this.handleBackgroundClick}>
+        <div>
+          <div className='modal-root__overlay' style={{ backgroundColor }} />
           <div role='dialog' className='modal-root__container'>{children}</div>
         </div>
       </div>

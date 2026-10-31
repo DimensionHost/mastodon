@@ -72,7 +72,7 @@ export const FavouriteModal: React.FC<{
         <div className='safety-action-modal__actions'>
           <div className='spacer' />
 
-          <button onClick={handleCancel} className='link-button'>
+          <button onClick={handleCancel} className='link-button' type='button'>
             <FormattedMessage
               id='confirmation_modal.cancel'
               defaultMessage='Cancel'
@@ -82,7 +82,6 @@ export const FavouriteModal: React.FC<{
           <Button
             onClick={handleFavourite}
             text={intl.formatMessage(messages.favourite)}
-            /* eslint-disable-next-line jsx-a11y/no-autofocus -- We are in the modal */
             autoFocus
           />
         </div>

@@ -34,26 +34,41 @@ const randomUpTo = max =>
   Math.floor(Math.random() * Math.floor(max));
 
 /**
+ * @typedef {import('flavours/glitch/store').AppDispatch} Dispatch
+ * @typedef {import('flavours/glitch/store').GetState} GetState
+ * @typedef {import('redux').UnknownAction} UnknownAction
+ * @typedef {(dispatch: Dispatch, getState: GetState) => Promise<void>} FallbackFunction
+ */
+
+/**
+ * @typedef {(dispatch: Dispatch, getState: GetState) => () => void} StreamThunk
+ */
+
+/**
  * @param {string} timelineId
  * @param {string} channelName
  * @param {Object.<string, string>} params
  * @param {Object} options
- * @param {function(Function, Function): Promise<void>} [options.fallback]
- * @param {function(): void} [options.fillGaps]
- * @param {function(object): boolean} [options.accept]
- * @returns {function(): void}
+ * @param {FallbackFunction} [options.fallback]
+ * @param {() => UnknownAction} [options.fillGaps]
+ * @param {(status: object) => boolean} [options.accept]
+ * @returns {StreamThunk}
  */
 export const connectTimelineStream = (timelineId, channelName, params = {}, options = {}) => {
   const { messages } = getLocale();
 
+  // Public streams are currently not returning personalized quote policies
+  const bogusQuotePolicy = channelName.startsWith('public') || channelName.startsWith('hashtag');
+
   return connectStream(channelName, params, (dispatch, getState) => {
+    // @ts-ignore
     const locale = getState().getIn(['meta', 'locale']);
 
     // @ts-expect-error
     let pollingId;
 
     /**
-     * @param {function(Function, Function): Promise<void>} fallback
+     * @param {FallbackFunction} fallback
      */
 
     const useFallback = async fallback => {
@@ -90,11 +105,11 @@ export const connectTimelineStream = (timelineId, channelName, params = {}, opti
         switch (data.event) {
         case 'update':
           // @ts-expect-error
-          dispatch(updateTimeline(timelineId, JSON.parse(data.payload), options.accept));
+          dispatch(updateTimeline(timelineId, JSON.parse(data.payload), { accept: options.accept, bogusQuotePolicy }));
           break;
         case 'status.update':
           // @ts-expect-error
-          dispatch(updateStatus(JSON.parse(data.payload)));
+          dispatch(updateStatus(JSON.parse(data.payload), { bogusQuotePolicy }));
           break;
         case 'delete':
           dispatch(deleteFromTimelines(data.payload));
@@ -133,7 +148,7 @@ export const connectTimelineStream = (timelineId, channelName, params = {}, opti
 };
 
 /**
- * @param {Function} dispatch
+ * @param {Dispatch} dispatch
  */
 async function refreshHomeTimelineAndNotification(dispatch) {
   await dispatch(expandHomeTimeline({ maxId: undefined }));
@@ -149,56 +164,72 @@ async function refreshHomeTimelineAndNotification(dispatch) {
 }
 
 /**
- * @returns {function(): void}
+ * @returns {StreamThunk}
  */
 export const connectUserStream = () =>
-  connectTimelineStream('home', 'user', {}, { fallback: refreshHomeTimelineAndNotification, fillGaps: fillHomeTimelineGaps });
+  connectTimelineStream('home', 'user', {}, {
+    fallback: refreshHomeTimelineAndNotification,
+    // @ts-expect-error
+    fillGaps: fillHomeTimelineGaps
+  });
 
 /**
  * @param {Object} options
  * @param {boolean} [options.onlyMedia]
- * @returns {function(): void}
+ * @returns {StreamThunk}
  */
 export const connectCommunityStream = ({ onlyMedia } = {}) =>
-  connectTimelineStream(`community${onlyMedia ? ':media' : ''}`, `public:local${onlyMedia ? ':media' : ''}`, {}, { fillGaps: () => (fillCommunityTimelineGaps({ onlyMedia })) });
+  connectTimelineStream(`community${onlyMedia ? ':media' : ''}`, `public:local${onlyMedia ? ':media' : ''}`, {}, {
+    // @ts-expect-error
+    fillGaps: () => (fillCommunityTimelineGaps({ onlyMedia }))
+  });
 
 /**
  * @param {Object} options
  * @param {boolean} [options.onlyMedia]
- * @returns {function(): void}
+ * @returns {StreamThunk}
  */
 export const connectBubbleStream = ({ onlyMedia } = {}) =>
-  connectTimelineStream(`bubble${onlyMedia ? ':media' : ''}`, `public:bubble${onlyMedia ? ':media' : ''}`, {}, { fillGaps: () => (fillBubbleTimelineGaps({ onlyMedia })) });
+  connectTimelineStream(`bubble${onlyMedia ? ':media' : ''}`, `public:bubble${onlyMedia ? ':media' : ''}`, {}, {
+    // @ts-expect-error
+    fillGaps: () => (fillBubbleTimelineGaps({ onlyMedia }))
+  });
 
 /**
  * @param {Object} options
  * @param {boolean} [options.onlyMedia]
  * @param {boolean} [options.onlyRemote]
  * @param {boolean} [options.allowLocalOnly]
- * @returns {function(): void}
+ * @returns {StreamThunk}
  */
 export const connectPublicStream = ({ onlyMedia, onlyRemote, allowLocalOnly } = {}) =>
-  connectTimelineStream(`public${onlyRemote ? ':remote' : (allowLocalOnly ? ':allow_local_only' : '')}${onlyMedia ? ':media' : ''}`, `public${onlyRemote ? ':remote' : (allowLocalOnly ? ':allow_local_only' : '')}${onlyMedia ? ':media' : ''}`, {}, { fillGaps: () => fillPublicTimelineGaps({ onlyMedia, onlyRemote, allowLocalOnly }) });
+  connectTimelineStream(`public${onlyRemote ? ':remote' : (allowLocalOnly ? ':allow_local_only' : '')}${onlyMedia ? ':media' : ''}`, `public${onlyRemote ? ':remote' : (allowLocalOnly ? ':allow_local_only' : '')}${onlyMedia ? ':media' : ''}`, {}, {
+    // @ts-expect-error
+    fillGaps: () => fillPublicTimelineGaps({ onlyMedia, onlyRemote, allowLocalOnly })
+  });
 
 /**
  * @param {string} columnId
  * @param {string} tagName
  * @param {boolean} onlyLocal
- * @param {function(object): boolean} accept
- * @returns {function(): void}
+ * @param {(status: object) => boolean} accept
+ * @returns {StreamThunk}
  */
 export const connectHashtagStream = (columnId, tagName, onlyLocal, accept) =>
   connectTimelineStream(`hashtag:${columnId}${onlyLocal ? ':local' : ''}`, `hashtag${onlyLocal ? ':local' : ''}`, { tag: tagName }, { accept });
 
 /**
- * @returns {function(): void}
+ * @returns {StreamThunk}
  */
 export const connectDirectStream = () =>
   connectTimelineStream('direct', 'direct');
 
 /**
  * @param {string} listId
- * @returns {function(): void}
+ * @returns {StreamThunk}
  */
 export const connectListStream = listId =>
-  connectTimelineStream(`list:${listId}`, 'list', { list: listId }, { fillGaps: () => fillListTimelineGaps(listId) });
+  connectTimelineStream(`list:${listId}`, 'list', { list: listId }, {
+    // @ts-expect-error
+    fillGaps: () => fillListTimelineGaps(listId)
+  });

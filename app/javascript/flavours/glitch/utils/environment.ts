@@ -12,16 +12,28 @@ export function isProduction() {
   else return import.meta.env.PROD;
 }
 
-export type Features = 'modern_emojis' | 'fasp' | 'http_message_signatures';
+export type ServerFeatures = 'fasp' | 'redesign';
 
-export function isFeatureEnabled(feature: Features) {
+export function isServerFeatureEnabled(feature: ServerFeatures) {
   return initialState?.features.includes(feature) ?? false;
 }
 
-export function isModernEmojiEnabled() {
+type ClientFeatures = 'redesign';
+
+export function isClientFeatureEnabled(feature: ClientFeatures) {
   try {
-    return isFeatureEnabled('modern_emojis');
-  } catch {
+    const features =
+      window.localStorage.getItem('experiments')?.split(',') ?? [];
+    return features.includes(feature);
+  } catch (err) {
+    console.warn('Could not access localStorage to get client features', err);
     return false;
   }
+}
+
+/* Checks if the 5.0 redesign features are enabled or not. */
+export function isRedesignEnabled() {
+  return (
+    isServerFeatureEnabled('redesign') || isClientFeatureEnabled('redesign')
+  );
 }

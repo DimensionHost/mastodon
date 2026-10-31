@@ -55,7 +55,9 @@ const addReply = (
 
   if (!state.inReplyTos[id]) {
     const siblings = (state.replies[in_reply_to_id] ??= []);
-    const index = siblings.findIndex((sibling) => compareId(sibling, id) < 0);
+    const index = siblings.findLastIndex(
+      (sibling) => compareId(sibling, id) < 0,
+    );
     siblings.splice(index + 1, 0, id);
     state.inReplyTos[id] = in_reply_to_id;
   }
@@ -166,7 +168,10 @@ const updateContext = (state: Draft<State>, status: ApiStatusJSON): void => {
 export const contextsReducer = createReducer(initialState, (builder) => {
   builder
     .addCase(fetchContext.fulfilled, (state, action) => {
-      if (action.payload.prefetchOnly) {
+      const currentReplies = state.replies[action.meta.arg.statusId] ?? [];
+      const hasReplies = currentReplies.length > 0;
+      // Ignore prefetchOnly if there are no replies - then we can load them immediately
+      if (action.payload.prefetchOnly && hasReplies) {
         storePrefetchedReplies(
           state,
           action.meta.arg.statusId,
@@ -179,7 +184,7 @@ export const contextsReducer = createReducer(initialState, (builder) => {
           action.payload.context,
         );
 
-        if (action.payload.refresh) {
+        if (action.payload.refresh && !action.payload.prefetchOnly) {
           state.refreshing[action.meta.arg.statusId] = action.payload.refresh;
         }
       }

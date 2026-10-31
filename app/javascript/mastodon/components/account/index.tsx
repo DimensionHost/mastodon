@@ -21,6 +21,7 @@ import { openModal } from 'mastodon/actions/modal';
 import { initMuteModal } from 'mastodon/actions/mutes';
 import { apiFollowAccount } from 'mastodon/api/accounts';
 import { Avatar } from 'mastodon/components/avatar';
+import { VerifiedBadge } from 'mastodon/components/badge';
 import { Button } from 'mastodon/components/button';
 import { FollowersCounter } from 'mastodon/components/counters';
 import { DisplayName } from 'mastodon/components/display_name';
@@ -29,7 +30,6 @@ import { FollowButton } from 'mastodon/components/follow_button';
 import { RelativeTimestamp } from 'mastodon/components/relative_timestamp';
 import { ShortNumber } from 'mastodon/components/short_number';
 import { Skeleton } from 'mastodon/components/skeleton';
-import { VerifiedBadge } from 'mastodon/components/verified_badge';
 import { useIdentity } from 'mastodon/identity_context';
 import { me } from 'mastodon/initial_state';
 import type { MenuItem } from 'mastodon/models/dropdown_menu';
@@ -73,6 +73,11 @@ interface AccountProps {
   defaultAction?: 'block' | 'mute';
   withBio?: boolean;
   withMenu?: boolean;
+  withBorder?: boolean;
+  extraAccountInfo?: React.ReactNode;
+  className?: string;
+  children?: React.ReactNode;
+  reference?: string;
 }
 
 export const Account: React.FC<AccountProps> = ({
@@ -83,6 +88,11 @@ export const Account: React.FC<AccountProps> = ({
   defaultAction,
   withBio,
   withMenu = true,
+  withBorder = true,
+  extraAccountInfo,
+  className,
+  children,
+  reference,
 }) => {
   const intl = useIntl();
   const { signedIn } = useIdentity();
@@ -161,7 +171,7 @@ export const Account: React.FC<AccountProps> = ({
                 modalProps: {
                   accountId: id,
                   onConfirm: () => {
-                    apiFollowAccount(id)
+                    apiFollowAccount(id, { ref: reference })
                       .then((relationship) => {
                         dispatch(
                           followAccountSuccess({
@@ -217,6 +227,7 @@ export const Account: React.FC<AccountProps> = ({
     defaultAction,
     isRemote,
     signedIn,
+    reference,
   ]);
 
   if (hidden) {
@@ -261,7 +272,7 @@ export const Account: React.FC<AccountProps> = ({
       />
     );
   } else {
-    button = <FollowButton accountId={id} />;
+    button = <FollowButton accountId={id} reference={reference} />;
   }
 
   let muteTimeRemaining: React.ReactNode;
@@ -269,7 +280,7 @@ export const Account: React.FC<AccountProps> = ({
   if (account?.mute_expires_at) {
     muteTimeRemaining = (
       <>
-        · <RelativeTimestamp timestamp={account.mute_expires_at} futureDate />
+        · <RelativeTimestamp hasFuture timestamp={account.mute_expires_at} />
       </>
     );
   }
@@ -284,8 +295,9 @@ export const Account: React.FC<AccountProps> = ({
 
   return (
     <div
-      className={classNames('account', {
+      className={classNames('account', className, {
         'account--minimal': minimal,
+        'account--without-border': !withBorder,
       })}
     >
       <div
@@ -295,10 +307,11 @@ export const Account: React.FC<AccountProps> = ({
       >
         <div className='account__info-wrapper'>
           <Link
-            className='account__display-name'
+            className='account__display-name focusable'
             title={account?.acct}
-            to={`/@${account?.acct}`}
+            to={{ pathname: `/@${account?.acct}`, state: { reference } }}
             data-hover-card-account={id}
+            data-hover-card-reference={reference}
           >
             <div className='account__avatar-wrapper'>
               {account ? (
@@ -345,6 +358,8 @@ export const Account: React.FC<AccountProps> = ({
                 />
               </div>
             ))}
+
+          {extraAccountInfo}
         </div>
 
         {!minimal && (
@@ -353,6 +368,8 @@ export const Account: React.FC<AccountProps> = ({
             {button}
           </div>
         )}
+
+        {children}
       </div>
     </div>
   );

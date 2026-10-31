@@ -3,19 +3,26 @@ import { useState, useMemo, useCallback, createRef } from 'react';
 import { useIntl, defineMessages, FormattedMessage } from 'react-intl';
 
 import classNames from 'classnames';
-import { Helmet } from 'react-helmet';
 import { useHistory } from 'react-router-dom';
 
-import Toggle from 'react-toggle';
+import { Helmet } from '@unhead/react/helmet';
 
+import { Button } from '@/mastodon/components/button/redesign';
+import { Column } from '@/mastodon/components/column';
+import { ColumnHeader as LegacyColumnHeader } from '@/mastodon/components/column/header';
+import { ColumnHeader } from '@/mastodon/components/column_header';
+import { isRedesignEnabled } from '@/mastodon/utils/environment';
 import AddPhotoAlternateIcon from '@/material-icons/400-24px/add_photo_alternate.svg?react';
 import EditIcon from '@/material-icons/400-24px/edit.svg?react';
 import PersonIcon from '@/material-icons/400-24px/person.svg?react';
 import { updateAccount } from 'mastodon/actions/accounts';
 import { closeOnboarding } from 'mastodon/actions/onboarding';
-import { Button } from 'mastodon/components/button';
-import { Column } from 'mastodon/components/column';
-import { ColumnHeader } from 'mastodon/components/column_header';
+import { Button as LegacyButton } from 'mastodon/components/button';
+import {
+  TextAreaField,
+  TextInputField,
+  Toggle,
+} from 'mastodon/components/form_fields';
 import { Icon } from 'mastodon/components/icon';
 import { LoadingIndicator } from 'mastodon/components/loading_indicator';
 import { me } from 'mastodon/initial_state';
@@ -67,6 +74,11 @@ export const Profile: React.FC<{
   const dispatch = useAppDispatch();
   const intl = useIntl();
   const history = useHistory();
+
+  const maxDisplayNameLength = useAppSelector(
+    (state) =>
+      state.server.server.item?.configuration.accounts.max_display_name_length,
+  );
 
   const handleDisplayNameChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -132,7 +144,7 @@ export const Profile: React.FC<{
       }),
     )
       .then(() => {
-        history.push('/start/follows');
+        history.push('/home');
         dispatch(closeOnboarding());
         return '';
       })
@@ -154,12 +166,20 @@ export const Profile: React.FC<{
       bindToDocument={!multiColumn}
       label={intl.formatMessage(messages.title)}
     >
-      <ColumnHeader
-        title={intl.formatMessage(messages.title)}
-        icon='person'
-        iconComponent={PersonIcon}
-        multiColumn={multiColumn}
-      />
+      {isRedesignEnabled() ? (
+        <ColumnHeader
+          withBackButton
+          title={intl.formatMessage(messages.title)}
+        />
+      ) : (
+        <LegacyColumnHeader
+          title={intl.formatMessage(messages.title)}
+          icon='person'
+          iconComponent={PersonIcon}
+          multiColumn={multiColumn}
+          showBackButton
+        />
+      )}
 
       <div className='scrollable scrollable--flex'>
         <div className='simple_form app-form'>
@@ -212,62 +232,47 @@ export const Profile: React.FC<{
           </div>
 
           <div className='fields-group'>
-            <div
-              className={classNames('input with_block_label', {
-                field_with_errors: !!errors?.display_name,
-              })}
-            >
-              <label htmlFor='display_name'>
+            <TextInputField
+              maxLength={maxDisplayNameLength ?? 40}
+              label={
                 <FormattedMessage
                   id='onboarding.profile.display_name'
                   defaultMessage='Display name'
                 />
-              </label>
-              <span className='hint'>
+              }
+              hint={
                 <FormattedMessage
                   id='onboarding.profile.display_name_hint'
                   defaultMessage='Your full name or your fun name…'
                 />
-              </span>
-              <div className='label_input'>
-                <input
-                  id='display_name'
-                  type='text'
-                  value={displayName}
-                  onChange={handleDisplayNameChange}
-                  maxLength={30}
-                />
-              </div>
-            </div>
+              }
+              value={displayName}
+              onChange={handleDisplayNameChange}
+              status={errors?.display_name ? 'error' : undefined}
+              id='display_name'
+            />
           </div>
 
           <div className='fields-group'>
-            <div
-              className={classNames('input with_block_label', {
-                field_with_errors: !!errors?.note,
-              })}
-            >
-              <label htmlFor='note'>
+            <TextAreaField
+              maxLength={500}
+              label={
                 <FormattedMessage
                   id='onboarding.profile.note'
                   defaultMessage='Bio'
                 />
-              </label>
-              <span className='hint'>
+              }
+              hint={
                 <FormattedMessage
                   id='onboarding.profile.note_hint'
                   defaultMessage='You can @mention other people or #hashtags…'
                 />
-              </span>
-              <div className='label_input'>
-                <textarea
-                  id='note'
-                  value={note}
-                  onChange={handleNoteChange}
-                  maxLength={500}
-                />
-              </div>
-            </div>
+              }
+              value={note}
+              onChange={handleNoteChange}
+              status={errors?.note ? 'error' : undefined}
+              id='note'
+            />
           </div>
 
           <label className='app-form__toggle'>
@@ -306,16 +311,30 @@ export const Profile: React.FC<{
         <div className='spacer' />
 
         <div className='column-footer'>
-          <Button block onClick={handleSubmit} disabled={isSaving}>
-            {isSaving ? (
-              <LoadingIndicator />
-            ) : (
+          {isRedesignEnabled() ? (
+            <Button
+              variant='solid'
+              color='accent'
+              onClick={handleSubmit}
+              loading={isSaving}
+            >
               <FormattedMessage
-                id='onboarding.profile.save_and_continue'
-                defaultMessage='Save and continue'
+                id='onboarding.profile.finish'
+                defaultMessage='Finish'
               />
-            )}
-          </Button>
+            </Button>
+          ) : (
+            <LegacyButton block onClick={handleSubmit} disabled={isSaving}>
+              {isSaving ? (
+                <LoadingIndicator />
+              ) : (
+                <FormattedMessage
+                  id='onboarding.profile.finish'
+                  defaultMessage='Finish'
+                />
+              )}
+            </LegacyButton>
+          )}
         </div>
       </div>
 

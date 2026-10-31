@@ -3,6 +3,7 @@
 import type { AccountWarningAction } from 'flavours/glitch/models/notification_group';
 
 import type { ApiAccountJSON } from './accounts';
+import type { ApiCollectionJSON } from './collections';
 import type { ApiStatusReactionJSON } from './reaction';
 import type { ApiReportJSON } from './reports';
 import type { ApiStatusJSON } from './statuses';
@@ -24,6 +25,8 @@ export const allNotificationTypes: NotificationType[] = [
   'moderation_warning',
   'severed_relationships',
   'annual_report',
+  'added_to_collection',
+  'collection_update',
 ];
 
 export type NotificationWithStatusType =
@@ -45,7 +48,9 @@ export type NotificationType =
   | 'severed_relationships'
   | 'admin.sign_up'
   | 'admin.report'
-  | 'annual_report';
+  | 'annual_report'
+  | 'added_to_collection'
+  | 'collection_update';
 
 export interface BaseNotificationJSON {
   id: string;
@@ -86,6 +91,26 @@ interface ReportNotificationJSON extends BaseNotificationJSON {
   report: ApiReportJSON;
 }
 
+interface AddedToCollectionNotificationGroupJSON extends BaseNotificationGroupJSON {
+  type: 'added_to_collection';
+  collection: ApiCollectionJSON | null;
+}
+
+interface AddedToCollectionNotificationJSON extends BaseNotificationJSON {
+  type: 'added_to_collection';
+  collection: ApiCollectionJSON | null;
+}
+
+interface CollectionUpdateNotificationGroupJSON extends BaseNotificationGroupJSON {
+  type: 'collection_update';
+  collection: ApiCollectionJSON | null;
+}
+
+interface CollectionUpdateNotificationJSON extends BaseNotificationJSON {
+  type: 'collection_update';
+  collection: ApiCollectionJSON | null;
+}
+
 type SimpleNotificationTypes = 'follow' | 'follow_request' | 'admin.sign_up';
 interface SimpleNotificationGroupJSON extends BaseNotificationGroupJSON {
   type: SimpleNotificationTypes;
@@ -105,8 +130,7 @@ export interface ApiAccountWarningJSON {
   appeal: unknown;
 }
 
-interface ModerationWarningNotificationGroupJSON
-  extends BaseNotificationGroupJSON {
+interface ModerationWarningNotificationGroupJSON extends BaseNotificationGroupJSON {
   type: 'moderation_warning';
   moderation_warning: ApiAccountWarningJSON;
 }
@@ -132,14 +156,12 @@ export interface ApiAccountRelationshipSeveranceEventJSON {
   created_at: string;
 }
 
-interface AccountRelationshipSeveranceNotificationGroupJSON
-  extends BaseNotificationGroupJSON {
+interface AccountRelationshipSeveranceNotificationGroupJSON extends BaseNotificationGroupJSON {
   type: 'severed_relationships';
   event: ApiAccountRelationshipSeveranceEventJSON;
 }
 
-interface AccountRelationshipSeveranceNotificationJSON
-  extends BaseNotificationJSON {
+interface AccountRelationshipSeveranceNotificationJSON extends BaseNotificationJSON {
   type: 'severed_relationships';
   event: ApiAccountRelationshipSeveranceEventJSON;
 }
@@ -165,6 +187,8 @@ export type ApiNotificationJSON =
   | AccountRelationshipSeveranceNotificationJSON
   | NotificationWithStatusJSON
   | ModerationWarningNotificationJSON
+  | AddedToCollectionNotificationJSON
+  | CollectionUpdateNotificationJSON
   | ReactionNotificationJSON;
 
 export type ApiNotificationGroupJSON =
@@ -174,6 +198,8 @@ export type ApiNotificationGroupJSON =
   | NotificationGroupWithStatusJSON
   | ModerationWarningNotificationGroupJSON
   | AnnualReportNotificationGroupJSON
+  | AddedToCollectionNotificationGroupJSON
+  | CollectionUpdateNotificationGroupJSON
   | ReactionNotificationGroupJSON;
 
 export interface ApiNotificationGroupsResultJSON {

@@ -10,8 +10,6 @@ RSpec.describe User do
   let(:account) { Fabricate(:account, username: 'alice') }
 
   it_behaves_like 'two_factor_backupable'
-  it_behaves_like 'User::Activity'
-  it_behaves_like 'User::Confirmation'
 
   describe 'otp_secret' do
     it 'encrypts the saved value' do
@@ -26,7 +24,10 @@ RSpec.describe User do
 
   describe 'Associations' do
     it { is_expected.to belong_to(:account).required }
+    it { is_expected.to belong_to(:invite).optional.counter_cache(:uses) }
+    it { is_expected.to have_many(:invites).inverse_of(:user).dependent(false) }
     it { is_expected.to have_many(:login_activities) }
+    it { is_expected.to have_one(:invite_request).inverse_of(:user).dependent(:destroy).class_name(UserInviteRequest) }
   end
 
   describe 'Validations' do
@@ -39,6 +40,27 @@ RSpec.describe User do
     end
 
     it { is_expected.to allow_value('admin@localhost').for(:email) }
+
+    context 'when registration form time is present' do
+      subject { Fabricate.build :user }
+
+      before { stub_const 'RegistrationFormTimeValidator::REGISTRATION_FORM_MIN_TIME', 3.seconds }
+
+      it { is_expected.to allow_value(10.seconds.ago).for(:registration_form_time) }
+      it { is_expected.to_not allow_value(1.second.ago).for(:registration_form_time).against(:base) }
+    end
+
+    context 'when invite request is required by settings' do
+      before do
+        Setting.require_invite_text = true
+        Setting.registrations_mode = 'none'
+        subject.invite_id = nil
+        subject.external = false
+        subject.bypass_registration_checks = false
+      end
+
+      it { is_expected.to_not allow_values(nil).for(:invite_request) }
+    end
   end
 
   describe 'Normalizations' do
@@ -58,6 +80,10 @@ RSpec.describe User do
     end
   end
 
+  describe 'Nesting' do
+    it { is_expected.to accept_nested_attributes_for(:invite_request) }
+  end
+
   describe 'scopes', :inline_jobs do
     describe 'recent' do
       it 'returns an array of recent users ordered by id' do
@@ -67,16 +93,19 @@ RSpec.describe User do
       end
     end
 
-    describe 'account_not_suspended' do
+    describe 'account_available' do
       it 'returns with linked accounts that are not suspended' do
         suspended_account = Fabricate(:account, suspended_at: 10.days.ago)
         non_suspended_account = Fabricate(:account, suspended_at: nil)
         suspended_user = Fabricate(:user, account: suspended_account)
         non_suspended_user = Fabricate(:user, account: non_suspended_account)
+        deleted_account = Fabricate(:account, requested_deletion_at: 10.days.ago)
+        deleted_user = Fabricate(:user, account: deleted_account)
 
-        expect(described_class.account_not_suspended)
+        expect(described_class.account_available)
           .to include(non_suspended_user)
           .and not_include(suspended_user)
+          .and not_include(deleted_user)
       end
     end
 
@@ -199,9 +228,94 @@ RSpec.describe User do
     context 'with a new user' do
       let(:user) { Fabricate.build :user }
 
+      before { allow(ActivityTracker).to receive(:record) }
+
       it 'does not persist the user' do
         expect { user.update_sign_in! }
           .to_not change(user, :persisted?).from(false)
+        expect(ActivityTracker)
+          .to_not have_received(:record).with('activity:logins', anything)
+      end
+    end
+  end
+
+  describe '#invited?' do
+    subject { user.invited? }
+
+    let(:user) { Fabricate.build :user }
+
+    context 'when invite is present' do
+      before { user.invite = Fabricate(:invite) }
+
+      it { is_expected.to be(true) }
+    end
+
+    context 'when invite is not present' do
+      before { user.invite = nil }
+
+      it { is_expected.to be(false) }
+    end
+  end
+
+  describe '#valid_invitation?' do
+    subject { user.valid_invitation? }
+
+    let(:user) { Fabricate.build :user }
+    let(:invite) { Fabricate :invite }
+
+    context 'when invite is present' do
+      before { user.invite = invite }
+
+      context 'when invite is valid for use' do
+        before { allow(invite).to receive(:valid_for_use?).and_return(true) }
+
+        it { is_expected.to be(true) }
+      end
+
+      context 'when invite is not valid for use' do
+        before { allow(invite).to receive(:valid_for_use?).and_return(false) }
+
+        it { is_expected.to be(false) }
+      end
+    end
+  end
+
+  describe '#invite_code=' do
+    let(:user) { Fabricate.build :user }
+
+    before { user.invite_code = code }
+
+    context 'when code is nil' do
+      let(:code) { nil }
+
+      it 'sets invite code to nil and does not populate invite' do
+        expect(user.invite)
+          .to be_nil
+        expect(user.invite_code)
+          .to be_nil
+      end
+    end
+
+    context 'when code is present but does not match an invite' do
+      let(:code) { 'ABC123' }
+
+      it 'sets invite code to value and does not populate invite' do
+        expect(user.invite)
+          .to be_nil
+        expect(user.invite_code)
+          .to eq(code)
+      end
+    end
+
+    context 'when code is present and does match an invite' do
+      let(:code) { invite.code }
+      let(:invite) { Fabricate :invite }
+
+      it 'sets invite code to value and populates invite' do
+        expect(user.invite)
+          .to eq(invite)
+        expect(user.invite_code)
+          .to eq(code)
       end
     end
   end
@@ -390,7 +504,32 @@ RSpec.describe User do
       expect(user).to have_attributes(disabled: true)
 
       expect(redis)
-        .to have_received(:publish).with("timeline:system:#{user.account.id}", Oj.dump(event: :kill)).once
+        .to have_received(:publish).with("timeline:system:#{user.account.id}", { event: :kill }.to_json).once
+    end
+  end
+
+  describe '#revoke_access!' do
+    subject(:user) { Fabricate(:user, disabled: false, current_sign_in_at: current_sign_in_at, last_sign_in_at: nil) }
+
+    let(:current_sign_in_at) { Time.zone.now }
+
+    let!(:token) { Fabricate(:accessible_access_token, resource_owner_id: user.id) }
+
+    let(:redis_pipeline_stub) { instance_double(Redis::PipelinedConnection, publish: nil) }
+
+    before do
+      allow(redis)
+        .to receive(:pipelined)
+        .and_yield(redis_pipeline_stub)
+    end
+
+    it 'revokes tokens' do
+      user.revoke_access!
+
+      expect(redis_pipeline_stub)
+        .to have_received(:publish).with("timeline:access_token:#{token.id}", { event: :kill }.to_json).once
+
+      expect(token.reload.revoked?).to be true
     end
   end
 
@@ -426,13 +565,13 @@ RSpec.describe User do
         .and remove_user_web_subscriptions
 
       expect(user)
-        .to_not be_external_or_valid_password(original_password)
+        .to_not be_valid_password(original_password)
       expect { session_activation.reload }
         .to raise_error(ActiveRecord::RecordNotFound)
       expect { web_push_subscription.reload }
         .to raise_error(ActiveRecord::RecordNotFound)
       expect(redis_pipeline_stub)
-        .to have_received(:publish).with("timeline:access_token:#{access_token.id}", Oj.dump(event: :kill)).once
+        .to have_received(:publish).with("timeline:access_token:#{access_token.id}", { event: :kill }.to_json).once
     end
 
     def remove_activated_sessions

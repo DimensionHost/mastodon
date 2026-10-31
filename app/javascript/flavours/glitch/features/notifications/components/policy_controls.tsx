@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 
 import { useIntl, defineMessages, FormattedMessage } from 'react-intl';
 
+import { isRedesignEnabled } from '@/flavours/glitch/utils/environment';
 import { openModal } from 'flavours/glitch/actions/modal';
 import { updateNotificationsPolicy } from 'flavours/glitch/actions/notification_policies';
 import type { AppDispatch } from 'flavours/glitch/store';
@@ -84,6 +85,13 @@ export const PolicyControls: React.FC = () => {
   const handleFilterLimitedAccounts = useCallback(
     (value: string) => {
       changeFilter(dispatch, 'for_limited_accounts', value);
+    },
+    [dispatch],
+  );
+
+  const handleFilterBots = useCallback(
+    (value: string) => {
+      changeFilter(dispatch, 'for_bots', value);
     },
     [dispatch],
   );
@@ -179,10 +187,17 @@ export const PolicyControls: React.FC = () => {
           onChange={handleFilterPrivateMentions}
           options={options}
           label={
-            <FormattedMessage
-              id='notifications.policy.filter_private_mentions_title'
-              defaultMessage='Unsolicited private mentions'
-            />
+            isRedesignEnabled() ? (
+              <FormattedMessage
+                id='notifications.policy.filter_private_mentions_title'
+                defaultMessage='Unsolicited private mentions'
+              />
+            ) : (
+              <FormattedMessage
+                id='notifications.policy.filter_messages'
+                defaultMessage='Unsolicited messages'
+              />
+            )
           }
           hint={
             <FormattedMessage
@@ -206,6 +221,24 @@ export const PolicyControls: React.FC = () => {
             <FormattedMessage
               id='notifications.policy.filter_limited_accounts_hint'
               defaultMessage='Limited by server moderators'
+            />
+          }
+        />
+
+        <SelectWithLabel
+          value={notificationPolicy.for_bots}
+          onChange={handleFilterBots}
+          options={options}
+          label={
+            <FormattedMessage
+              id='notifications.policy.filter_bots_title'
+              defaultMessage='Bots'
+            />
+          }
+          hint={
+            <FormattedMessage
+              id='notifications.policy.filter_bots_hint'
+              defaultMessage='Accounts marked as automated'
             />
           }
         />

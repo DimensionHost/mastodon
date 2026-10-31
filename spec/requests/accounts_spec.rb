@@ -4,12 +4,35 @@ require 'rails_helper'
 
 RSpec.describe 'Accounts show response' do
   let(:account) { Fabricate(:account) }
+  let(:authorized_fetch_mode) { 'false' }
+
+  around do |example|
+    ClimateControl.modify AUTHORIZED_FETCH: authorized_fetch_mode.to_s do
+      example.run
+    end
+  end
 
   context 'with numeric-based identifiers' do
-    it 'returns http success' do
-      get "/ap/users/#{account.id}"
+    context 'with JSON format' do
+      before do
+        account.build_reach_filter
+        account.save!
+      end
 
-      expect(response).to have_http_status(200)
+      it 'returns http success and removes reach filter' do
+        get "/ap/users/#{account.id}", headers: { 'ACCEPT' => 'application/json' }
+
+        expect(response).to have_http_status(200)
+        expect(account.reload.reach_filter.present?).to be false
+      end
+    end
+
+    context 'with HTML format' do
+      it 'redirects to success' do
+        get "/ap/users/#{account.id}", as: 'html'
+
+        expect(response).to redirect_to("/@#{account.username}")
+      end
     end
   end
 
@@ -45,6 +68,33 @@ RSpec.describe 'Accounts show response' do
 
     it 'returns appropriate http response code' do
       { html: 403, json: 200, rss: 403 }.each do |format, code|
+        get short_account_path(username: account.username), as: format
+
+        expect(response).to have_http_status(code)
+      end
+    end
+  end
+
+  describe 'permanently deleted account check' do
+    before do
+      account.mark_deleted!
+      account.deletion_request.destroy
+    end
+
+    it 'returns appropriate http response code' do
+      { html: 410, json: 410, rss: 410 }.each do |format, code|
+        get short_account_path(username: account.username), as: format
+
+        expect(response).to have_http_status(code)
+      end
+    end
+  end
+
+  describe 'pending deletion account check' do
+    before { account.mark_deleted! }
+
+    it 'returns appropriate http response code' do
+      { html: 403, json: 403, rss: 403 }.each do |format, code|
         get short_account_path(username: account.username), as: format
 
         expect(response).to have_http_status(code)
@@ -109,12 +159,6 @@ RSpec.describe 'Accounts show response' do
         let(:authorized_fetch_mode) { false }
         let(:headers) { { 'ACCEPT' => 'application/json' } }
 
-        around do |example|
-          ClimateControl.modify AUTHORIZED_FETCH: authorized_fetch_mode.to_s do
-            example.run
-          end
-        end
-
         context 'with a normal account in a JSON request' do
           before do
             get short_account_path(username: account.username), headers: headers
@@ -161,14 +205,17 @@ RSpec.describe 'Accounts show response' do
           end
         end
 
-        context 'with signature' do
-          let(:remote_account) { Fabricate(:account, domain: 'example.com') }
+        context 'with signature', :inline_jobs do
+          let(:remote_account) { Fabricate(:account, domain: 'example.com', inbox_url: 'https://example.com/inbox') }
 
           before do
+            account.build_reach_filter
+            account.save!
+
             get short_account_path(username: account.username), headers: headers, sign_with: remote_account
           end
 
-          it 'returns a JSON version of the account', :aggregate_failures do
+          it 'returns a JSON version of the account and removes reach filter', :aggregate_failures do
             expect(response)
               .to have_http_status(200)
               .and have_cacheable_headers.with_vary('Accept, Accept-Language, Cookie')
@@ -177,12 +224,14 @@ RSpec.describe 'Accounts show response' do
               )
 
             expect(response.parsed_body).to include(:id, :type, :preferredUsername, :inbox, :publicKey, :name, :summary)
+
+            expect(account.reload.reach_filter.present?).to be false
           end
 
           context 'with authorized fetch mode' do
             let(:authorized_fetch_mode) { true }
 
-            it 'returns a private signature JSON version of the account', :aggregate_failures do
+            it 'returns a private signature JSON version of the account and updates the reach filter', :aggregate_failures do
               expect(response)
                 .to have_http_status(200)
                 .and have_attributes(
@@ -193,6 +242,9 @@ RSpec.describe 'Accounts show response' do
               expect(response.headers['Vary']).to include 'Signature'
 
               expect(response.parsed_body).to include(:id, :type, :preferredUsername, :inbox, :publicKey, :name, :summary)
+
+              expect(account.reach_filter.reload.include?('example.com')).to be true
+              expect(account.reach_filter.reload.include?('bad.com')).to be false
             end
           end
         end

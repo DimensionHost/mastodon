@@ -20,8 +20,10 @@ import { CircularProgress } from 'flavours/glitch/components/circular_progress';
 import { Icon } from 'flavours/glitch/components/icon';
 import { IconButton } from 'flavours/glitch/components/icon_button';
 import { GifItem } from 'flavours/glitch/features/gif_modal/components/gif_item';
+import { useTimeout } from 'flavours/glitch/hooks/useTimeout';
 import type { GifResult } from 'flavours/glitch/models/gif';
 import { useAppDispatch, useAppSelector } from 'flavours/glitch/store';
+import { isDarkMode } from 'flavours/glitch/utils/theme';
 
 const messages = defineMessages({
   search: { id: 'gif_search.search', defaultMessage: 'Search for GIFs' },
@@ -51,39 +53,41 @@ export const GIFModal: React.FC<{
   const gifs = useAppSelector(
     (state) => state.compose.get('gifs') as ImmutableMap<string, unknown>,
   );
+  const provider = useAppSelector(
+    (state) => state.server.server.item?.configuration.gif_search.provider,
+  );
   const results = gifs.get('items') as ImmutableOrderedSet<GifResult>;
   const isLoading = gifs.get('isLoading') as boolean;
   const [value, setValue] = useState('');
-  const [sendTimeout, setSendTimeout] = useState<number>();
+  const [setSendTimeout, cancelSendTimeout] = useTimeout();
   const [disabled, setDisabled] = useState(false);
-  const hasValue = value.length > 0;
 
   useEffect(() => {
-    clearTimeout(sendTimeout);
+    cancelSendTimeout();
     void dispatch(resetGifs());
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Adding sendTimeout as suggested would result in this being called every time it changes
   }, [dispatch]);
 
-  useEffect(() => {
+  const [prevResults, setPrevResults] = useState(results);
+  if (results !== prevResults) {
+    setPrevResults(results);
     if (!isLoading) setDisabled(false);
-  }, [results, isLoading]);
+  }
 
   const handleChange = useCallback(
     ({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {
       setValue(value);
 
       if (value.length > 0) {
-        clearTimeout(sendTimeout);
-        setSendTimeout(
-          window.setTimeout(() => {
-            dispatch(gifSearch(value));
-          }, 500),
-        );
+        cancelSendTimeout();
+        setSendTimeout(() => {
+          dispatch(gifSearch(value));
+        }, 500);
       } else {
-        clearTimeout(sendTimeout);
+        cancelSendTimeout();
       }
     },
-    [dispatch, sendTimeout],
+    [dispatch, setSendTimeout, cancelSendTimeout],
   );
 
   const handleClear = useCallback(() => {
@@ -107,14 +111,14 @@ export const GIFModal: React.FC<{
           break;
         case 'Enter':
           e.preventDefault();
-          clearTimeout(sendTimeout);
+          cancelSendTimeout();
           setDisabled(true);
           dispatch(gifSearch(value));
 
           break;
       }
     },
-    [dispatch, sendTimeout, value],
+    [dispatch, cancelSendTimeout, value],
   );
 
   const handleSelect = useCallback(
@@ -125,7 +129,7 @@ export const GIFModal: React.FC<{
       fetch(url)
         .then((response) => response.blob())
         .then((blob) => {
-          dispatch(uploadCompose([blob], alt));
+          dispatch(uploadCompose([blob], alt ?? ''));
           onClose();
           return;
         })
@@ -136,6 +140,18 @@ export const GIFModal: React.FC<{
     },
     [dispatch, onClose],
   );
+
+  let logoPath;
+  let logoWidth = 48;
+  switch (provider) {
+    case 'Tenor':
+      logoPath = '/tenor.svg';
+      break;
+    case 'Klipy':
+      logoPath = isDarkMode() ? '/klipy-dark.svg' : '/klipy-light.svg';
+      logoWidth = 128;
+      break;
+  }
 
   return (
     <div className='modal-root__modal gif-modal'>
@@ -165,11 +181,11 @@ export const GIFModal: React.FC<{
           <button
             type='button'
             className='emoji-mart-search-icon'
-            disabled={!hasValue || disabled}
+            disabled={!value || disabled}
             aria-label={intl.formatMessage(messages.clear)}
             onClick={handleClear}
           >
-            <Icon id='' icon={!hasValue ? SearchIcon : CancelIcon} />
+            <Icon id='' icon={!value ? SearchIcon : CancelIcon} />
           </button>
         </div>
 
@@ -190,7 +206,9 @@ export const GIFModal: React.FC<{
           )
         )}
         <br />
-        <img src='/tenor.svg' alt='Tenor' />
+        {provider && logoPath && (
+          <img src={logoPath} alt={provider} width={logoWidth} />
+        )}
       </div>
     </div>
   );

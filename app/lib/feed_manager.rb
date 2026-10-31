@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'singleton'
-
 class FeedManager
   include Singleton
   include Redisable
@@ -12,7 +10,7 @@ class FeedManager
   # Number of items in the feed since last reblog of status
   # before the new reblog will be inserted. Must be <= MAX_ITEMS
   # or the tracking sets will grow forever
-  REBLOG_FALLOFF = 40
+  REBLOG_FALLOFF = 80
 
   # Execute block for every active account
   # @yield [Account]
@@ -77,6 +75,8 @@ class FeedManager
   # @return [Boolean]
   def push_to_home(account, status, update: false)
     return false unless account.user&.signed_in_recently?
+    return false if own_post?(account, status) && !account.user&.setting_display_own_posts
+    return false if own_boost?(account, status) && !account.user&.setting_display_own_boosts
     return false unless add_to_feed(:home, account.id, status, aggregate_reblogs: account.user&.aggregates_reblogs?)
 
     trim(:home, account.id)
@@ -92,7 +92,7 @@ class FeedManager
   def unpush_from_home(account, status, update: false)
     return false unless remove_from_feed(:home, account.id, status, aggregate_reblogs: account.user&.aggregates_reblogs?)
 
-    redis.publish("timeline:#{account.id}", Oj.dump(event: :delete, payload: status.id.to_s)) unless update
+    redis.publish("timeline:#{account.id}", { event: :delete, payload: status.id.to_s }.to_json) unless update
     true
   end
 
@@ -119,7 +119,7 @@ class FeedManager
   def unpush_from_list(list, status, update: false)
     return false unless remove_from_feed(:list, list.id, status, aggregate_reblogs: list.account.user&.aggregates_reblogs?)
 
-    redis.publish("timeline:list:#{list.id}", Oj.dump(event: :delete, payload: status.id.to_s)) unless update
+    redis.publish("timeline:list:#{list.id}", { event: :delete, payload: status.id.to_s }.to_json) unless update
     true
   end
 
@@ -142,7 +142,7 @@ class FeedManager
   def unpush_from_direct(account, status, update: false)
     return false unless remove_from_feed(:direct, account.id, status)
 
-    redis.publish("timeline:direct:#{account.id}", Oj.dump(event: :delete, payload: status.id.to_s)) unless update
+    redis.publish("timeline:direct:#{account.id}", { event: :delete, payload: status.id.to_s }.to_json) unless update
     true
   end
 
@@ -239,10 +239,10 @@ class FeedManager
     # This is a bit tricky because we need posts tagged with this hashtag that are not
     # also tagged with another followed hashtag or from a followed user
     scope = from_tag.statuses
-                    .where(id: timeline_status_ids)
-                    .where.not(account: into_account)
-                    .where.not(account: into_account.following)
-                    .tagged_with_none(TagFollow.where(account: into_account).pluck(:tag_id))
+      .where(id: timeline_status_ids)
+      .where.not(account: into_account)
+      .where.not(account: into_account.following)
+      .tagged_with_none(TagFollow.where(account: into_account).pluck(:tag_id))
 
     scope.select(:id, :reblog_of_id).reorder(nil).find_each do |status|
       remove_from_feed(:home, into_account.id, status, aggregate_reblogs: into_account.user&.aggregates_reblogs?)
@@ -500,6 +500,7 @@ class FeedManager
     return :filter    if status.reply? && (status.in_reply_to_id.nil? || status.in_reply_to_account_id.nil?)
     return :skip_home if timeline_type != :list && crutches[:exclusive_list_users][status.account_id].present?
     return :filter    if crutches[:languages][status.account_id].present? && status.language.present? && !crutches[:languages][status.account_id].include?(status.language)
+    return :filter    if status.reblog? && status.reblog.blank?
 
     check_for_blocks = crutches[:active_mentions][status.id] || []
     check_for_blocks.push(status.account_id)
@@ -731,5 +732,17 @@ class FeedManager
       .where(status_id: statuses.flat_map { |status| [status.id, status.reblog_of_id] }.compact)
       .pluck(:status_id, :account_id)
       .each_with_object({}) { |(id, account_id), mapping| (mapping[id] ||= []).push(account_id) }
+  end
+
+  def own_post?(account, status)
+    return false if status.reblog_of_id.present?
+
+    account.id == status.account_id
+  end
+
+  def own_boost?(account, status)
+    return false if status.reblog_of_id.blank?
+
+    account.id == status.account_id
   end
 end

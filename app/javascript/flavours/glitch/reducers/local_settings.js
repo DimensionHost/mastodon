@@ -9,7 +9,7 @@ const initialState = ImmutableMap({
   fullwidth_columns: false,
   stretch   : true,
   side_arm  : 'none',
-  side_arm_reply_mode : 'keep',
+  side_arm_reply_mode : 'restrict',
   show_reply_count : true,
   zoom_emojis_on_hover : true,
   always_show_spoilers_field: false,
@@ -50,6 +50,7 @@ const initialState = ImmutableMap({
 
 const hydrate = (state, localSettings) => state.mergeDeep(localSettings);
 
+/** @type {import('@reduxjs/toolkit').Reducer<ImmutableMap<string, unknown>>} */
 export default function localSettings(state = initialState, action) {
   switch(action.type) {
   case STORE_HYDRATE:

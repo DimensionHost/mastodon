@@ -11,24 +11,30 @@ import type {
 import type { ApiStatusReactionJSON } from 'flavours/glitch/api_types/reaction';
 import type { ApiReportJSON } from 'flavours/glitch/api_types/reports';
 
+import type { ApiCollectionJSON } from '../api_types/collections';
+
 // Maximum number of avatars displayed in a notification group
-// This corresponds to the max lenght of `group.sampleAccountIds`
+// This corresponds to the max length of `group.sampleAccountIds`
 export const NOTIFICATIONS_GROUP_MAX_AVATARS = 8;
 
-interface BaseNotificationGroup
-  extends Omit<BaseNotificationGroupJSON, 'sample_account_ids'> {
+interface BaseNotificationGroup extends Omit<
+  BaseNotificationGroupJSON,
+  'sample_account_ids'
+> {
   sampleAccountIds: string[];
   partial: boolean;
 }
 
-interface BaseNotificationWithStatus<Type extends NotificationWithStatusType>
-  extends BaseNotificationGroup {
+interface BaseNotificationWithStatus<
+  Type extends NotificationWithStatusType,
+> extends BaseNotificationGroup {
   type: Type;
   statusId: string | undefined;
 }
 
-interface BaseNotification<Type extends NotificationType>
-  extends BaseNotificationGroup {
+interface BaseNotification<
+  Type extends NotificationType,
+> extends BaseNotificationGroup {
   type: Type;
 }
 
@@ -54,26 +60,25 @@ export type AccountWarningAction =
   | 'sensitive'
   | 'silence'
   | 'suspend';
-export interface AccountWarning
-  extends Omit<ApiAccountWarningJSON, 'target_account'> {
+export interface AccountWarning extends Omit<
+  ApiAccountWarningJSON,
+  'target_account'
+> {
   targetAccountId: string;
 }
 
-export interface NotificationGroupModerationWarning
-  extends BaseNotification<'moderation_warning'> {
+export interface NotificationGroupModerationWarning extends BaseNotification<'moderation_warning'> {
   moderationWarning: AccountWarning;
 }
 
 type AccountRelationshipSeveranceEvent =
   ApiAccountRelationshipSeveranceEventJSON;
-export interface NotificationGroupSeveredRelationships
-  extends BaseNotification<'severed_relationships'> {
+export interface NotificationGroupSeveredRelationships extends BaseNotification<'severed_relationships'> {
   event: AccountRelationshipSeveranceEvent;
 }
 
 type AnnualReportEvent = ApiAnnualReportEventJSON;
-export interface NotificationGroupAnnualReport
-  extends BaseNotification<'annual_report'> {
+export interface NotificationGroupAnnualReport extends BaseNotification<'annual_report'> {
   annualReport: AnnualReportEvent;
 }
 
@@ -81,15 +86,22 @@ interface Report extends Omit<ApiReportJSON, 'target_account'> {
   targetAccountId: string;
 }
 
-export interface NotificationGroupAdminReport
-  extends BaseNotification<'admin.report'> {
+export interface NotificationGroupAdminReport extends BaseNotification<'admin.report'> {
   report: Report;
+}
+
+type Collection = ApiCollectionJSON;
+export interface NotificationGroupAddedToCollection extends BaseNotification<'added_to_collection'> {
+  collection: Collection | null;
+}
+
+export interface NotificationGroupCollectionUpdate extends BaseNotification<'collection_update'> {
+  collection: Collection | null;
 }
 
 type StatusReaction = Omit<Omit<ApiStatusReactionJSON, 'account'>, 'count'>;
 
-export interface NotificationGroupReaction
-  extends BaseNotification<'reaction'> {
+export interface NotificationGroupReaction extends BaseNotification<'reaction'> {
   statusId: string | undefined;
   reaction: StatusReaction | undefined;
 }
@@ -110,7 +122,9 @@ export type NotificationGroup =
   | NotificationGroupSeveredRelationships
   | NotificationGroupAdminSignUp
   | NotificationGroupAdminReport
-  | NotificationGroupAnnualReport;
+  | NotificationGroupAnnualReport
+  | NotificationGroupAddedToCollection
+  | NotificationGroupCollectionUpdate;
 
 function createReportFromJSON(reportJSON: ApiReportJSON): Report {
   const { target_account, ...report } = reportJSON;
@@ -277,6 +291,13 @@ export function createNotificationGroupFromNotificationJSON(
         moderationWarning: createAccountWarningFromJSON(
           notification.moderation_warning,
         ),
+      };
+    case 'added_to_collection':
+    case 'collection_update':
+      return {
+        ...group,
+        type: notification.type,
+        collection: notification.collection,
       };
     default:
       return {

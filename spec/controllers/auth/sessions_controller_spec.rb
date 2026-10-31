@@ -48,6 +48,19 @@ RSpec.describe Auth::SessionsController do
         expect(response).to redirect_to(new_user_session_path)
       end
     end
+
+    context 'with a deleted user' do
+      before do
+        user.account.mark_deleted!
+      end
+
+      it 'redirects to home after sign out' do
+        sign_in(user, scope: :user)
+        delete :destroy
+
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
   end
 
   describe 'POST #create' do
@@ -70,7 +83,7 @@ RSpec.describe Auth::SessionsController do
         end
 
         it 'shows a login error and does not log the user in' do
-          expect(flash[:alert]).to match I18n.t('devise.failure.invalid', authentication_keys: I18n.t('activerecord.attributes.user.email'))
+          expect(flash[:alert]).to match(/#{failure_message_invalid_email}/i)
 
           expect(controller.current_user).to be_nil
         end
@@ -163,7 +176,7 @@ RSpec.describe Auth::SessionsController do
         end
 
         it 'shows a login error and does not log the user in' do
-          expect(flash[:alert]).to match I18n.t('devise.failure.invalid', authentication_keys: I18n.t('activerecord.attributes.user.email'))
+          expect(flash[:alert]).to match(/#{failure_message_invalid_email}/i)
 
           expect(controller.current_user).to be_nil
         end
@@ -226,8 +239,8 @@ RSpec.describe Auth::SessionsController do
           end
 
           it 'renders two factor authentication page' do
-            expect(response.body)
-              .to include(I18n.t('simple_form.hints.sessions.otp'))
+            expect(response.parsed_body)
+              .to have_css('p.hint.authentication-hint', text: I18n.t('simple_form.hints.sessions.otp'))
           end
         end
 
@@ -242,8 +255,8 @@ RSpec.describe Auth::SessionsController do
           end
 
           it 'renders two factor authentication page' do
-            expect(response.body)
-              .to include(I18n.t('simple_form.hints.sessions.otp'))
+            expect(response.parsed_body)
+              .to have_css('p.hint.authentication-hint', text: I18n.t('simple_form.hints.sessions.otp'))
           end
         end
 
@@ -253,8 +266,8 @@ RSpec.describe Auth::SessionsController do
           end
 
           it 'renders two factor authentication page' do
-            expect(response.body)
-              .to include(I18n.t('simple_form.hints.sessions.otp'))
+            expect(response.parsed_body)
+              .to have_css('p.hint.authentication-hint', text: I18n.t('simple_form.hints.sessions.otp'))
           end
         end
 
@@ -387,8 +400,8 @@ RSpec.describe Auth::SessionsController do
           end
 
           it 'renders webauthn authentication page' do
-            expect(response.body)
-              .to include(I18n.t('simple_form.title.sessions.webauthn'))
+            expect(response.parsed_body)
+              .to have_css('h3.title', text: I18n.t('simple_form.title.sessions.webauthn'))
           end
         end
 
@@ -398,8 +411,8 @@ RSpec.describe Auth::SessionsController do
           end
 
           it 'renders webauthn authentication page' do
-            expect(response.body)
-              .to include(I18n.t('simple_form.title.sessions.webauthn'))
+            expect(response.parsed_body)
+              .to have_css('h3.title', text: I18n.t('simple_form.title.sessions.webauthn'))
           end
         end
 
@@ -419,6 +432,107 @@ RSpec.describe Auth::SessionsController do
           end
         end
       end
+    end
+
+    context 'when 2FA is disabled and inactive for long' do
+      let!(:user) { Fabricate(:user, email: 'x@y.com', password: 'abcdefgh', current_sign_in_at: 7.months.ago) }
+
+      before do
+        allow(UserMailer).to receive(:sign_in_token).and_return(instance_double(ActionMailer::MessageDelivery, deliver_later!: nil))
+      end
+
+      context 'when using email and password' do
+        before do
+          post :create, params: { user: { email: user.email, password: user.password } }
+        end
+
+        it 'renders sign in token authentication page' do
+          expect(response.parsed_body)
+            .to have_css('p.lead', text: I18n.t('users.inactive_sign_in_confirmation'))
+        end
+
+        it 'generates sign in token' do
+          expect(user.reload.sign_in_token).to_not be_nil
+        end
+
+        it 'sends sign in token e-mail' do
+          expect(UserMailer).to have_received(:sign_in_token)
+        end
+      end
+
+      context 'when using an invalid password' do
+        before do
+          post :create, params: { user: { email: user.email, password: 'wrongpw' } }
+        end
+
+        it 'shows a login error and does not log the user in' do
+          expect(flash[:alert]).to match(/#{failure_message_invalid_email}/i)
+
+          expect(controller.current_user).to be_nil
+        end
+      end
+
+      context 'when using a valid sign in token' do
+        before do
+          user.generate_sign_in_token
+          user.save
+          post :create, params: { user: { sign_in_token_attempt: user.sign_in_token } }, session: { attempt_user_id: user.id }
+        end
+
+        it 'redirects to home' do
+          expect(response).to redirect_to(root_path)
+        end
+
+        it 'logs the user in' do
+          expect(controller.current_user).to eq user
+        end
+      end
+
+      context 'when using an invalid sign in token' do
+        before do
+          post :create, params: { user: { sign_in_token_attempt: 'wrongotp' } }, session: { attempt_user_id: user.id }
+        end
+
+        it 'shows a login error' do
+          expect(flash[:alert]).to match I18n.t('users.invalid_sign_in_token')
+        end
+
+        it "doesn't log the user in" do
+          expect(controller.current_user).to be_nil
+        end
+      end
+
+      context 'when requesting a new sign in token' do
+        subject do
+          post :create, params: { sign_in_token_resend: '', user: { sign_in_token_attempt: '' } }, session: { attempt_user_id: user.id }
+        end
+
+        before do
+          user.generate_sign_in_token
+          user.save
+        end
+
+        it 'renders sign in token authentication page' do
+          subject
+
+          expect(response.parsed_body)
+            .to have_css('p.lead', text: I18n.t('users.inactive_sign_in_confirmation'))
+        end
+
+        it 'generates a new sign in token' do
+          expect { subject }.to(change { user.reload.sign_in_token })
+        end
+
+        it 'sends sign in token e-mail' do
+          subject
+
+          expect(UserMailer).to have_received(:sign_in_token)
+        end
+      end
+    end
+
+    def failure_message_invalid_email
+      I18n.t('devise.failure.invalid', authentication_keys: I18n.t('activerecord.attributes.user.email'))
     end
   end
 end

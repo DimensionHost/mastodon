@@ -1,21 +1,22 @@
 import PropTypes from 'prop-types';
 
-import { injectIntl, FormattedMessage, defineMessages } from 'react-intl';
+import { FormattedMessage, defineMessages } from 'react-intl';
 
 import classNames from 'classnames';
 import { withRouter } from 'react-router-dom';
 
 import ImmutablePropTypes from 'react-immutable-proptypes';
-import ImmutablePureComponent from 'react-immutable-pure-component';
+import { ImmutablePureComponent } from 'react-immutable-pure-component';
 
-import { LinkedDisplayName } from '@/flavours/glitch/components/display_name';
 import FlagIcon from '@/material-icons/400-24px/flag-fill.svg?react';
 import PersonIcon from '@/material-icons/400-24px/person-fill.svg?react';
 import PersonAddIcon from '@/material-icons/400-24px/person_add-fill.svg?react';
 import { Account } from 'flavours/glitch/components/account';
-import { Hotkeys } from 'flavours/glitch/components/hotkeys';
+import { LinkedDisplayName } from '@/flavours/glitch/components/display_name';
 import { Icon }  from 'flavours/glitch/components/icon';
-import { StatusQuoteManager } from 'flavours/glitch/components/status_quoted';
+import { injectIntl } from '@/flavours/glitch/components/intl';
+import { Hotkeys } from 'flavours/glitch/components/hotkeys';
+import { Status } from 'flavours/glitch/components/status';
 import { WithRouterPropTypes } from 'flavours/glitch/utils/react_router';
 
 import FollowRequestContainer from '../containers/follow_request_container';
@@ -144,7 +145,7 @@ class Notification extends ImmutablePureComponent {
 
   renderMention (notification) {
     return (
-      <StatusQuoteManager
+      <Status
         id={notification.get('status')}
         containerId={notification.get('id')}
         withDismiss
@@ -164,7 +165,7 @@ class Notification extends ImmutablePureComponent {
 
   renderFavourite (notification) {
     return (
-      <StatusQuoteManager
+      <Status
         containerId={notification.get('id')}
         hidden={!!this.props.hidden}
         id={notification.get('status')}
@@ -187,7 +188,7 @@ class Notification extends ImmutablePureComponent {
 
   renderReaction (notification) {
     return (
-      <StatusQuoteManager
+      <Status
         containerId={notification.get('id')}
         hidden={!!this.props.hidden}
         id={notification.get('status')}
@@ -212,7 +213,7 @@ class Notification extends ImmutablePureComponent {
 
   renderReblog (notification) {
     return (
-      <StatusQuoteManager
+      <Status
         containerId={notification.get('id')}
         hidden={!!this.props.hidden}
         id={notification.get('status')}
@@ -237,7 +238,7 @@ class Notification extends ImmutablePureComponent {
 
   renderQuote (notification) {
     return (
-      <StatusQuoteManager
+      <Status
         containerId={notification.get('id')}
         hidden={!!this.props.hidden}
         id={notification.get('status')}
@@ -262,7 +263,7 @@ class Notification extends ImmutablePureComponent {
 
   renderStatus (notification) {
     return (
-      <StatusQuoteManager
+      <Status
         containerId={notification.get('id')}
         hidden={!!this.props.hidden}
         id={notification.get('status')}
@@ -287,7 +288,7 @@ class Notification extends ImmutablePureComponent {
 
   renderUpdate (notification) {
     return (
-      <StatusQuoteManager
+      <Status
         containerId={notification.get('id')}
         hidden={!!this.props.hidden}
         id={notification.get('status')}
@@ -312,7 +313,7 @@ class Notification extends ImmutablePureComponent {
 
   renderQuotedUpdate (notification) {
     return (
-      <StatusQuoteManager
+      <Status
         containerId={notification.get('id')}
         hidden={!!this.props.hidden}
         id={notification.get('status')}
@@ -337,7 +338,7 @@ class Notification extends ImmutablePureComponent {
 
   renderPoll (notification) {
     return (
-      <StatusQuoteManager
+      <Status
         containerId={notification.get('id')}
         hidden={!!this.props.hidden}
         id={notification.get('status')}

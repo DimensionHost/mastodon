@@ -8,11 +8,12 @@ import type { List as ImmutableList, RecordOf } from 'immutable';
 
 import type { ApiMentionJSON } from '@/flavours/glitch/api_types/statuses';
 import { AnimateEmojiProvider } from '@/flavours/glitch/components/emoji/context';
+import { FOCUS_TARGET } from '@/flavours/glitch/components/navigation_focus_target';
+import { ContentWarning } from '@/flavours/glitch/components/status/legacy/content_warning';
 import BarChart4BarsIcon from '@/material-icons/400-24px/bar_chart_4_bars.svg?react';
 import PhotoLibraryIcon from '@/material-icons/400-24px/photo_library.svg?react';
 import { toggleStatusSpoilers } from 'flavours/glitch/actions/statuses';
 import { Avatar } from 'flavours/glitch/components/avatar';
-import { ContentWarning } from 'flavours/glitch/components/content_warning';
 import { DisplayName } from 'flavours/glitch/components/display_name';
 import { Icon } from 'flavours/glitch/components/icon';
 import { useAppSelector, useAppDispatch } from 'flavours/glitch/store';
@@ -25,7 +26,7 @@ export const EmbeddedStatus: React.FC<{ statusId: string }> = ({
   statusId,
 }) => {
   const history = useHistory();
-  const clickCoordinatesRef = useRef<[number, number] | null>();
+  const clickCoordinatesRef = useRef<[number, number]>(null);
   const dispatch = useAppDispatch();
 
   const status = useAppSelector((state) => state.statuses.get(statusId));
@@ -67,7 +68,7 @@ export const EmbeddedStatus: React.FC<{ statusId: string }> = ({
         const path = `/@${account.acct}/${statusId}`;
 
         if (button === 0 && !(ctrlKey || metaKey)) {
-          history.push(path);
+          history.push(path, { focusTarget: FOCUS_TARGET.POST });
         } else if (button === 1 || (button === 0 && (ctrlKey || metaKey))) {
           window.open(path, '_blank', 'noopener');
         }
@@ -108,7 +109,7 @@ export const EmbeddedStatus: React.FC<{ statusId: string }> = ({
       </div>
 
       <ContentWarning
-        status={status}
+        statusId={status.get('id') as string}
         onClick={handleContentWarningClick}
         expanded={expanded}
       />

@@ -29,6 +29,8 @@ class Auth::RegistrationsController < Devise::RegistrationsController
 
   def create
     super
+  rescue ActiveRecord::MultiparameterAssignmentErrors => e
+    handle_multiparameter_assignment_error(e.errors)
   end
 
   def update
@@ -89,7 +91,7 @@ class Auth::RegistrationsController < Devise::RegistrationsController
   end
 
   def check_enabled_registrations
-    redirect_to root_path unless allowed_registration?(request.remote_ip, @invite)
+    redirect_to new_user_session_path, alert: I18n.t('devise.failure.closed_registrations', email: Setting.site_contact_email) unless allowed_registration?(request.remote_ip, @invite)
   end
 
   def invite_code
@@ -106,6 +108,28 @@ class Auth::RegistrationsController < Devise::RegistrationsController
     @invite = begin
       invite = Invite.find_by(code: invite_code) if invite_code.present?
       invite if invite&.valid_for_use?
+    end
+  end
+
+  def handle_multiparameter_assignment_error(errors)
+    build_resource(sign_up_params_without_invalid_multiparameter_attributes(errors))
+
+    errors.each do |attribute_error|
+      resource.errors.add(attribute_error.attribute, :invalid)
+    end
+
+    clean_up_passwords resource
+    set_minimum_password_length
+    respond_with resource
+  end
+
+  def sign_up_params_without_invalid_multiparameter_attributes(errors)
+    invalid_attributes = errors.map { |attribute_error| attribute_error.attribute.to_s }
+
+    sign_up_params.to_h.reject do |key, _value|
+      invalid_attributes.any? do |attribute|
+        key.to_s == attribute || key.to_s.match?(/\A#{Regexp.escape(attribute)}\(\d+i\)\z/)
+      end
     end
   end
 
@@ -130,12 +154,17 @@ class Auth::RegistrationsController < Devise::RegistrationsController
   end
 
   def require_rules_acceptance!
-    return if @rules.empty? || (session[:accept_token].present? && params[:accept] == session[:accept_token])
+    return if @rules.empty? || validated_accept_token?
 
     @accept_token = session[:accept_token] = SecureRandom.hex
-    @invite_code  = invite_code
+    @invite_code = invite_code
+    @rule_translations = @rules.map { |rule| rule.translation_for(I18n.locale) }
 
-    set_locale { render :rules }
+    render :rules
+  end
+
+  def validated_accept_token?
+    session[:accept_token].present? && params[:accept] == session[:accept_token]
   end
 
   def is_flashing_format? # rubocop:disable Naming/PredicatePrefix

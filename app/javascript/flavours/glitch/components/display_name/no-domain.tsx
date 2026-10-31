@@ -9,9 +9,8 @@ import { Skeleton } from '../skeleton';
 import type { DisplayNameProps } from './index';
 
 export const DisplayNameWithoutDomain: FC<
-  Omit<DisplayNameProps, 'variant' | 'localDomain'> &
-    ComponentPropsWithoutRef<'span'>
-> = ({ account, className, children, ...props }) => {
+  Omit<DisplayNameProps, 'variant'> & ComponentPropsWithoutRef<'span'>
+> = ({ account, className, children, localDomain: _, ...props }) => {
   return (
     <AnimateEmojiProvider
       {...props}
@@ -22,9 +21,9 @@ export const DisplayNameWithoutDomain: FC<
         {account ? (
           <EmojiHTML
             className='display-name__html'
-            htmlString={account.get('display_name_html')}
+            htmlString={account.display_name_html}
             as='strong'
-            extraEmojis={account.get('emojis')}
+            extraEmojis={account.emojis}
           />
         ) : (
           <strong className='display-name__html'>

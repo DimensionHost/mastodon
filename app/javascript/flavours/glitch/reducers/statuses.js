@@ -29,6 +29,7 @@ import {
   STATUS_REVEAL,
   STATUS_HIDE,
   STATUS_COLLAPSE,
+  STATUS_TRANSLATE_REQUEST,
   STATUS_TRANSLATE_SUCCESS,
   STATUS_TRANSLATE_UNDO,
   STATUS_FETCH_REQUEST,
@@ -88,7 +89,7 @@ const removeReaction = (state, id, name) => updateReaction(
 
 const statusTranslateSuccess = (state, id, translation) => {
   return state.withMutations(map => {
-    map.setIn([id, 'translation'], fromJS(normalizeStatusTranslation(translation, map.get(id))));
+    map.setIn([id, 'translation'], fromJS(normalizeStatusTranslation(translation, map.get(id))).set('isLoading', false));
 
     const list = map.getIn([id, 'media_attachments']);
     if (translation.media_attachments && list) {
@@ -106,6 +107,10 @@ const statusTranslateUndo = (state, id) => {
     map.getIn([id, 'media_attachments']).forEach((item, index) => map.deleteIn([id, 'media_attachments', index, 'translation']));
   });
 };
+
+const removeStatusStub = (state, id) => {
+  return state.getIn([id, 'id']) ? state.deleteIn([id, 'isLoading']) : state.delete(id);
+}
 
 
 /** @type {ImmutableMap<string, import('flavours/glitch/models/status').Status>} */
@@ -134,11 +139,10 @@ export default function statuses(state = initialState, action) {
     return state.setIn([action.id, 'isLoading'], true);
   case STATUS_FETCH_FAIL: {
     if (action.parentQuotePostId && action.error.status === 404) {
-      return state
-        .delete(action.id)
+      return removeStatusStub(state, action.id)
         .setIn([action.parentQuotePostId, 'quote', 'state'], 'deleted')
     } else {
-      return state.delete(action.id);
+      return removeStatusStub(state, action.id);
     }
   }
   case STATUS_IMPORT:
@@ -193,6 +197,8 @@ export default function statuses(state = initialState, action) {
     return state.setIn([action.id, 'collapsed'], action.isCollapsed);
   case timelineDelete.type:
     return deleteStatus(state, action.payload.statusId, action.payload.references);
+  case STATUS_TRANSLATE_REQUEST:
+    return state.setIn([action.id, 'translation', 'isLoading'], true);
   case STATUS_TRANSLATE_SUCCESS:
     return statusTranslateSuccess(state, action.id, action.translation);
   case STATUS_TRANSLATE_UNDO:

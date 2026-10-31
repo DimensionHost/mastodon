@@ -25,13 +25,13 @@ class Form::AdminSettings
     hide_followers_count
     flavour_and_skin
     thumbnail
+    thumbnail_description
     mascot
     show_reblogs_in_local_timelines
     show_replies_in_local_timelines
     show_reblogs_in_federated_timelines
     show_replies_in_federated_timelines
     trends
-    trends_as_landing_page
     trendable_by_default
     trending_status_cw
     show_domain_blocks
@@ -53,9 +53,16 @@ class Form::AdminSettings
     reject_blurhash
     min_age
     local_live_feed_access
+    bubble_live_feed_access
     remote_live_feed_access
     local_topic_feed_access
+    bubble_topic_feed_access
     remote_topic_feed_access
+    landing_page
+    wrapstodon
+    email_footer_text
+    opt_in_server_directory
+    opt_in_server_recommendation
   ).freeze
 
   INTEGER_KEYS = %i(
@@ -78,13 +85,14 @@ class Form::AdminSettings
     show_reblogs_in_federated_timelines
     show_replies_in_federated_timelines
     trends
-    trends_as_landing_page
     trendable_by_default
     trending_status_cw
     noindex
     require_invite_text
     captcha_enabled
-    authorized_fetch
+    opt_in_server_directory
+    opt_in_server_recommendation
+    wrapstodon
   ).freeze
 
   UPLOAD_KEYS = %i(
@@ -102,15 +110,16 @@ class Form::AdminSettings
     custom_css
   ).freeze
 
-  OVERRIDEN_SETTINGS = {
-    authorized_fetch: :authorized_fetch_mode?,
-  }.freeze
+  UPLOAD_MIME_TYPES = %w(image/jpeg image/png image/gif image/webp).freeze
 
   DESCRIPTION_LIMIT = 200
   DOMAIN_BLOCK_AUDIENCES = %w(disabled users all).freeze
   BUBBLE_DOMAIN_AUDIENCES = %w(disabled users all).freeze
   REGISTRATION_MODES = %w(open approved none).freeze
-  FEED_ACCESS_MODES = %w(public authenticated).freeze
+  FEED_ACCESS_MODES = %w(public authenticated disabled).freeze
+  ALTERNATE_FEED_ACCESS_MODES = %w(public authenticated).freeze
+  LANDING_PAGE = %w(trends overview local_feed about).freeze
+  AUTHORIZED_FETCH_MODES = %w(none actors all).freeze
 
   attr_accessor(*KEYS)
 
@@ -122,15 +131,19 @@ class Form::AdminSettings
   validates :show_domain_blocks_rationale, inclusion: { in: DOMAIN_BLOCK_AUDIENCES }, if: -> { defined?(@show_domain_blocks_rationale) }
   validates :show_bubble_domains, inclusion: { in: BUBBLE_DOMAIN_AUDIENCES }, if: -> { defined?(@show_bubble_domains) }
   validates :local_live_feed_access, inclusion: { in: FEED_ACCESS_MODES }, if: -> { defined?(@local_live_feed_access) }
+  validates :bubble_live_feed_access, inclusion: { in: FEED_ACCESS_MODES }, if: -> { defined?(@bubble_live_feed_access) }
   validates :remote_live_feed_access, inclusion: { in: FEED_ACCESS_MODES }, if: -> { defined?(@remote_live_feed_access) }
-  validates :local_topic_feed_access, inclusion: { in: FEED_ACCESS_MODES }, if: -> { defined?(@local_topic_feed_access) }
+  validates :local_topic_feed_access, inclusion: { in: ALTERNATE_FEED_ACCESS_MODES }, if: -> { defined?(@local_topic_feed_access) }
+  validates :bubble_topic_feed_access, inclusion: { in: FEED_ACCESS_MODES }, if: -> { defined?(@bubble_topic_feed_access) }
   validates :remote_topic_feed_access, inclusion: { in: FEED_ACCESS_MODES }, if: -> { defined?(@remote_topic_feed_access) }
   validates :media_cache_retention_period, :content_cache_retention_period, :backups_retention_period, numericality: { only_integer: true }, allow_blank: true, if: -> { defined?(@media_cache_retention_period) || defined?(@content_cache_retention_period) || defined?(@backups_retention_period) }
   validates :min_age, numericality: { only_integer: true }, allow_blank: true, if: -> { defined?(@min_age) }
   validates :site_short_description, length: { maximum: DESCRIPTION_LIMIT }, if: -> { defined?(@site_short_description) }
+  validates :thumbnail_description, length: { maximum: DESCRIPTION_LIMIT }, if: -> { defined?(@thumbnail_description) }
   validates :reject_pattern, regexp_syntax: true, if: -> { defined?(@reject_pattern) }
   validates :status_page_url, url: true, allow_blank: true
   validate :validate_site_uploads
+  validates :landing_page, inclusion: { in: LANDING_PAGE }, if: -> { defined?(@landing_page) }
 
   KEYS.each do |key|
     define_method(key) do
@@ -138,8 +151,6 @@ class Form::AdminSettings
 
       stored_value = if UPLOAD_KEYS.include?(key)
                        SiteUpload.where(var: key).first_or_initialize(var: key)
-                     elsif OVERRIDEN_SETTINGS.include?(key)
-                       public_send(OVERRIDEN_SETTINGS[key])
                      else
                        Setting.public_send(key)
                      end
@@ -155,6 +166,10 @@ class Form::AdminSettings
     rescue Mastodon::DimensionsValidationError => e
       errors.add(key.to_sym, e.message)
     end
+  end
+
+  def authorized_fetch
+    authorized_fetch_mode
   end
 
   def save
@@ -183,6 +198,10 @@ class Form::AdminSettings
 
   def flavour_and_skin=(value)
     @flavour, @skin = value.split('/', 2)
+  end
+
+  def persisted?
+    true
   end
 
   private

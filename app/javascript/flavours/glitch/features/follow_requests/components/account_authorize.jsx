@@ -1,15 +1,16 @@
 import PropTypes from 'prop-types';
 
-import { defineMessages, injectIntl } from 'react-intl';
+import { defineMessages } from 'react-intl';
 
 import ImmutablePropTypes from 'react-immutable-proptypes';
-import ImmutablePureComponent from 'react-immutable-pure-component';
+import { ImmutablePureComponent } from 'react-immutable-pure-component';
 
 
+import { AccountBio } from '@/flavours/glitch/components/account_bio';
 import { Avatar } from '@/flavours/glitch/components/avatar';
 import { DisplayName } from '@/flavours/glitch/components/display_name';
-import { EmojiHTML } from '@/flavours/glitch/components/emoji/html';
 import { IconButton } from '@/flavours/glitch/components/icon_button';
+import { injectIntl } from '@/flavours/glitch/components/intl';
 import { Permalink } from '@/flavours/glitch/components/permalink';
 import CheckIcon from '@/material-icons/400-24px/check.svg?react';
 import CloseIcon from '@/material-icons/400-24px/close.svg?react';
@@ -39,11 +40,7 @@ class AccountAuthorize extends ImmutablePureComponent {
             <DisplayName account={account} />
           </Permalink>
 
-          <EmojiHTML
-            className='account__header__content translate'
-            htmlString={account.get('note_emojified')}
-            extraEmojis={account.get('emojis')}
-          />
+          <AccountBio accountId={account.id} />
         </div>
 
         <div className='account--panel'>

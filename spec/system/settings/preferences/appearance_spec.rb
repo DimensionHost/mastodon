@@ -13,16 +13,18 @@ RSpec.describe 'Settings preferences appearance page' do
     expect(page)
       .to have_private_cache_control
 
-    # TODO: glitch-soc's option is elsewhere
-    # select 'contrast', from: theme_selection_field
     check confirm_reblog_field
     uncheck confirm_delete_field
+    uncheck display_own_posts
+    check display_own_boosts
 
     check advanced_layout_field
 
     expect { save_changes }
       .to change { user.reload.settings['web.reblog_modal'] }.to(true)
       .and change { user.reload.settings['web.delete_modal'] }.to(false)
+      .and change { user.reload.settings['display_own_posts'] }.to(false)
+      .and change { user.reload.settings['display_own_boosts'] }.to(true)
       .and(change { user.reload.settings['web.advanced_layout'] }.to(true))
     expect(page)
       .to have_title(I18n.t('settings.appearance'))
@@ -40,11 +42,15 @@ RSpec.describe 'Settings preferences appearance page' do
     form_label('defaults.setting_boost_modal')
   end
 
-  def theme_selection_field
-    form_label('defaults.setting_theme')
-  end
-
   def advanced_layout_field
     form_label('defaults.setting_advanced_layout')
+  end
+
+  def display_own_posts
+    form_label('defaults.setting_display_own_posts')
+  end
+
+  def display_own_boosts
+    form_label('defaults.setting_display_own_boosts')
   end
 end

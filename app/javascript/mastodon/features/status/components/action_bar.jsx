@@ -1,27 +1,33 @@
 import PropTypes from 'prop-types';
 import { PureComponent } from 'react';
 
-import { defineMessages, injectIntl } from 'react-intl';
+import { defineMessages } from 'react-intl';
 
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import { connect } from 'react-redux';
 
-import { BoostButton } from '@/mastodon/components/status/boost_button';
-import BookmarkIcon from '@/material-icons/400-24px/bookmark-fill.svg?react';
-import BookmarkBorderIcon from '@/material-icons/400-24px/bookmark.svg?react';
 import MoreHorizIcon from '@/material-icons/400-24px/more_horiz.svg?react';
-import ReplyIcon from '@/material-icons/400-24px/reply.svg?react';
-import ReplyAllIcon from '@/material-icons/400-24px/reply_all.svg?react';
-import StarIcon from '@/material-icons/400-24px/star-fill.svg?react';
-import StarBorderIcon from '@/material-icons/400-24px/star.svg?react';
-import { Dropdown } from 'mastodon/components/dropdown_menu';
+import { injectIntl } from '@/mastodon/components/intl';
 import { identityContextPropShape, withIdentity } from 'mastodon/identity_context';
 import { PERMISSION_MANAGE_USERS, PERMISSION_MANAGE_FEDERATION } from 'mastodon/permissions';
 
-import { IconButton } from '../../../components/icon_button';
-import { me } from '../../../initial_state';
+import { IconButton } from '@/mastodon/components/icon_button';
+import { Dropdown } from 'mastodon/components/dropdown_menu';
+import { me, quickBoosting } from '@/mastodon/initial_state';
+import { BoostButton } from '@/mastodon/components/status/legacy/boost_button';
+import { quoteItemState } from '@/mastodon/components/status/boost_button_utils';
+import { selectStatusConditions } from '@/mastodon/selectors/statuses';
+import { isRedesignEnabled } from '@/mastodon/utils/environment';
+import {
+  StatusBookmarkActiveIcon,
+  StatusBookmarkIcon,
+  StatusLikeActiveIcon,
+  StatusLikeIcon,
+  StatusReplyAllIcon,
+  StatusReplyIcon,
+} from '@/mastodon/components/status/icons';
 
-const messages = defineMessages({
+const baseMessages = defineMessages({
   delete: { id: 'status.delete', defaultMessage: 'Delete' },
   redraft: { id: 'status.redraft', defaultMessage: 'Delete & re-draft' },
   edit: { id: 'status.edit', defaultMessage: 'Edit' },
@@ -55,11 +61,21 @@ const messages = defineMessages({
   quotePolicyChange: { id: 'status.quote_policy_change', defaultMessage: 'Change who can quote' },
 });
 
+const redesignMessages = defineMessages({
+  favourite: { id: 'status.like', defaultMessage: 'Like' },
+  removeFavourite: { id: 'status.unlike', defaultMessage: 'Unlike' },
+  bookmark: { id: 'status.save', defaultMessage: 'Save post' },
+  removeBookmark: { id: 'status.remove_from_saved', defaultMessage: 'Remove from Saved' },
+})
+
+const messages = isRedesignEnabled() ? {...baseMessages, ...redesignMessages} : baseMessages;
+
 const mapStateToProps = (state, { status }) => {
   const quotedStatusId = status.getIn(['quote', 'quoted_status']);
   return ({
     relationship: state.getIn(['relationships', status.getIn(['account', 'id'])]),
     quotedAccountId: quotedStatusId ? state.getIn(['statuses', quotedStatusId, 'account']) : null,
+    statusQuoteState: selectStatusConditions(state, status.get('id')),
   });
 };
 
@@ -68,6 +84,7 @@ class ActionBar extends PureComponent {
     identity: identityContextPropShape,
     status: ImmutablePropTypes.map.isRequired,
     relationship: ImmutablePropTypes.record,
+    statusQuoteState: PropTypes.object,
     quotedAccountId: ImmutablePropTypes.string,
     onReply: PropTypes.func.isRequired,
     onReblog: PropTypes.func.isRequired,
@@ -75,6 +92,7 @@ class ActionBar extends PureComponent {
     onBookmark: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
     onRevokeQuote: PropTypes.func,
+    onQuote: PropTypes.func,
     onQuotePolicyChange: PropTypes.func,
     onEdit: PropTypes.func.isRequired,
     onDirect: PropTypes.func.isRequired,
@@ -114,6 +132,10 @@ class ActionBar extends PureComponent {
 
   handleRevokeQuoteClick = () => {
     this.props.onRevokeQuote(this.props.status);
+  };
+
+  handleQuoteClick = () => {
+    this.props.onQuote(this.props.status);
   };
 
   handleQuotePolicyChange = () => {
@@ -200,7 +222,7 @@ class ActionBar extends PureComponent {
   };
 
   render () {
-    const { status, relationship, quotedAccountId, intl } = this.props;
+    const { status, relationship, statusQuoteState, quotedAccountId, intl } = this.props;
     const { signedIn, permissions } = this.props.identity;
 
     const publicStatus       = ['public', 'unlisted'].includes(status.get('visibility'));
@@ -226,6 +248,19 @@ class ActionBar extends PureComponent {
       menu.push({ text: intl.formatMessage(messages.embed), action: this.handleEmbed });
     }
 
+    if (quickBoosting && signedIn) {
+      const quoteItem = quoteItemState(statusQuoteState);
+      menu.push(null);
+      menu.push({
+        text: intl.formatMessage(quoteItem.title),
+        description: quoteItem.meta
+          ? intl.formatMessage(quoteItem.meta)
+          : undefined,
+        disabled: quoteItem.disabled,
+        action: this.handleQuoteClick,
+      });
+    }
+
     if (signedIn) {
       menu.push(null);
 
@@ -244,8 +279,10 @@ class ActionBar extends PureComponent {
         menu.push({ text: intl.formatMessage(messages.delete), action: this.handleDeleteClick, dangerous: true });
         menu.push({ text: intl.formatMessage(messages.redraft), action: this.handleRedraftClick, dangerous: true });
       } else {
-        menu.push({ text: intl.formatMessage(messages.mention, { name: status.getIn(['account', 'username']) }), action: this.handleMentionClick });
-        menu.push(null);
+        if (!account.get('invalid_handle')) {
+          menu.push({ text: intl.formatMessage(messages.mention, { name: status.getIn(['account', 'username']) }), action: this.handleMentionClick });
+          menu.push(null);
+        }
 
         if (quotedAccountId === me) {
           menu.push({ text: intl.formatMessage(messages.revokeQuote, { name: account.get('username') }), action: this.handleRevokeQuoteClick, dangerous: true });
@@ -265,7 +302,7 @@ class ActionBar extends PureComponent {
 
         menu.push({ text: intl.formatMessage(messages.report, { name: status.getIn(['account', 'username']) }), action: this.handleReport, dangerous: true });
 
-        if (account.get('acct') !== account.get('username')) {
+        if (account.get('acct') !== account.get('username') && !account.get('invalid_handle')) {
           const domain = account.get('acct').split('@')[1];
 
           menu.push(null);
@@ -285,6 +322,7 @@ class ActionBar extends PureComponent {
           }
           if (isRemote && (permissions & PERMISSION_MANAGE_FEDERATION) === PERMISSION_MANAGE_FEDERATION) {
             const domain = account.get('acct').split('@')[1];
+
             menu.push({ text: intl.formatMessage(messages.admin_domain, { domain: domain }), href: `/admin/instances/${domain}` });
           }
         }
@@ -296,10 +334,10 @@ class ActionBar extends PureComponent {
 
     if (status.get('in_reply_to_id', null) === null) {
       replyIcon = 'reply';
-      replyIconComponent = ReplyIcon;
+      replyIconComponent = StatusReplyIcon;
     } else {
       replyIcon = 'reply-all';
-      replyIconComponent = ReplyAllIcon;
+      replyIconComponent = StatusReplyAllIcon;
     }
 
     const bookmarkTitle = intl.formatMessage(status.get('bookmarked') ? messages.removeBookmark : messages.bookmark);
@@ -307,12 +345,18 @@ class ActionBar extends PureComponent {
 
     return (
       <div className='detailed-status__action-bar'>
-        <div className='detailed-status__button'><IconButton title={intl.formatMessage(messages.reply)} icon={status.get('in_reply_to_account_id') === status.getIn(['account', 'id']) ? 'reply' : replyIcon} iconComponent={status.get('in_reply_to_account_id') === status.getIn(['account', 'id']) ? ReplyIcon : replyIconComponent}  onClick={this.handleReplyClick} /></div>
         <div className='detailed-status__button'>
-          <BoostButton status={status} />
+          <IconButton title={intl.formatMessage(messages.reply)} icon={status.get('in_reply_to_account_id') === status.getIn(['account', 'id']) ? 'reply' : replyIcon} iconComponent={status.get('in_reply_to_account_id') === status.getIn(['account', 'id']) ? StatusReplyIcon : replyIconComponent}  onClick={this.handleReplyClick} />
         </div>
-        <div className='detailed-status__button'><IconButton className='star-icon' animate active={status.get('favourited')} title={favouriteTitle} icon='star' iconComponent={status.get('favourited') ? StarIcon : StarBorderIcon} onClick={this.handleFavouriteClick} /></div>
-        <div className='detailed-status__button'><IconButton className='bookmark-icon' disabled={!signedIn} active={status.get('bookmarked')} title={bookmarkTitle} icon='bookmark' iconComponent={status.get('bookmarked') ? BookmarkIcon : BookmarkBorderIcon} onClick={this.handleBookmarkClick} /></div>
+        <div className='detailed-status__button'>
+          <BoostButton statusId={status.get('id')} />
+        </div>
+        <div className='detailed-status__button'>
+          <IconButton className='star-icon' animate active={status.get('favourited')} title={favouriteTitle} icon='star' iconComponent={status.get('favourited') ? StatusLikeActiveIcon : StatusLikeIcon} onClick={this.handleFavouriteClick} />
+        </div>
+        <div className='detailed-status__button'>
+          <IconButton className='bookmark-icon' disabled={!signedIn} active={status.get('bookmarked')} title={bookmarkTitle} icon='bookmark' iconComponent={status.get('bookmarked') ? StatusBookmarkActiveIcon : StatusBookmarkIcon} onClick={this.handleBookmarkClick} />
+        </div>
 
         <div className='detailed-status__action-bar-dropdown'>
           <Dropdown icon='ellipsis-h' iconComponent={MoreHorizIcon} status={status} items={menu} direction='left' title={intl.formatMessage(messages.more)} />

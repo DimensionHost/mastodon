@@ -11,9 +11,10 @@ class ActivityPub::FetchAllRepliesWorker
 
   sidekiq_options queue: 'pull', retry: 3
 
-  # Global max replies to fetch per request (all replies, recursively)
-  MAX_REPLIES = (ENV['FETCH_REPLIES_MAX_GLOBAL'] || 1000).to_i
-  MAX_PAGES = (ENV['FETCH_REPLIES_MAX_PAGES'] || 500).to_i
+  # Max number of replies to fetch - total, recursively through a whole reply tree
+  MAX_REPLIES = 1000
+  # Max number of replies Collection pages to fetch - total
+  MAX_PAGES = 500
 
   def perform(root_status_id, options = {})
     @batch = WorkerBatch.new(options['batch_id'])
@@ -48,7 +49,7 @@ class ActivityPub::FetchAllRepliesWorker
     # Workers shouldn't be returning anything, but this is used in tests
     fetched_uris
   ensure
-    @batch.remove_job(jid)
+    @batch.remove_job(jid) if jid
   end
 
   private
@@ -68,7 +69,7 @@ class ActivityPub::FetchAllRepliesWorker
   # @param parent_status [String, Hash]
   #   status URI, or the prefetched body of the Note object
   def get_replies_uri(parent_status)
-    resource = parent_status.is_a?(Hash) ? parent_status : fetch_resource(parent_status, true)
+    resource = parent_status.is_a?(Hash) ? parent_status : fetch_resource(parent_status)
     resource&.fetch('replies', nil)
   rescue => e
     Rails.logger.info { "FetchAllRepliesWorker - #{@root_status.uri}: Caught exception while resolving replies URI #{parent_status}: #{e} - #{e.message}" }
@@ -82,7 +83,7 @@ class ActivityPub::FetchAllRepliesWorker
   #
   # @param root_status_uri [String]
   def get_root_replies(root_status_uri, options = {})
-    root_status_body = fetch_resource(root_status_uri, true)
+    root_status_body = fetch_resource(root_status_uri)
 
     return if root_status_body.nil?
 

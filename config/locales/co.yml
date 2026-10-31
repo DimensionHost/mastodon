@@ -9,7 +9,6 @@ co:
     followers:
       one: Abbunatu·a
       other: Abbunati
-    following: Abbunamenti
     instance_actor_flash: Stu contu virtuale riprisenta u servore stessu, micca un'utilizatore individuale. Hè utilizatu per scopi di federazione è ùn duveria mai esse suspesu.
     last_active: ultima attività
     link_verified_on: A pruprietà d'issu ligame hè stata verificata u %{date}
@@ -508,10 +507,7 @@ co:
     hint_html: Per traslucà da un altru contu à questu, quì pudete creà un pseudonimu o "alias", riquisitu per trasferì l'abbunati da u vechju contu à u novu. St'azzione sola <strong>ùn face nunda</strong> è pò esse <strong>annullata senza prublemi</strong>. <strong>A migrazione hè principiata dapoi u vechju contu</strong>.
     remove: Sguassà u pseudonimu
   appearance:
-    advanced_web_interface: Interfaccia web avanzata
-    advanced_web_interface_hint: 'S''è voi vulete fà usu di a larghezza sana di u vostru screnu, l''interfaccia web avanzata vi permette di cunfigurà parechje culonne sfarente per vede tutta l''infurmazione chì vulete vede in listessu tempu: Accolta, nutificazione, linea pubblica, è tutti l''hashtag è liste chì vulete.'
     animations_and_accessibility: Animazione è accessibilità
-    confirmation_dialogs: Pop-up di cunfirmazione
     discovery: Scuperta
     localization:
       body: Mastodon hè tradottu da una squadra di vuluntari.
@@ -589,7 +585,6 @@ co:
   deletes:
     challenge_not_passed: L'infurmazione entrata ùn era micca curretta
     confirm_password: Entrate a vostra chjave d’accessu attuale per verificà a vostra identità
-    confirm_username: Entrà u vostru cugnome per cunfirmà a prucedura
     proceed: Sguassà u contu
     success_msg: U vostru contu hè statu sguassatu
     warning:
@@ -633,9 +628,6 @@ co:
     lists: Liste
     mutes: Piattate
     storage: I vostri media
-  featured_tags:
-    add_new: Aghjunghje
-    hint_html: "<strong>Quale sò i hashtag in mostra?</strong> Sò messi in vista nant'à u vostru prufile pubblicu è permettenu à a ghjente di vede i vostri statuti ch'annu stu hashtag. Sò una bona manere di mustrà e vostre opere creative o i prughjetti à longu termine."
   filters:
     contexts:
       account: Prufili
@@ -664,8 +656,6 @@ co:
       one: Qualcosa ùn và bè! Verificate u prublemu quì sottu
       other: Qualcosa ùn và bè! Verificate %{count} prublemi quì sottu
   imports:
-    errors:
-      over_rows_processing_limit: cuntene più di %{count} filari
     modes:
       merge: Unisce
       merge_long: Cunservà i dati esistenti è aghjunghje i novi
@@ -728,7 +718,6 @@ co:
     incoming_migrations_html: Per spustà da stu contu à un'altru, primu duvete <a href="%{path}">creà un pseudonimu di contu</a>.
     moved_msg: Avà u vostru contu riindirizza versu %{acct} è i vostri abbunati sò in corsu di trasferimentu.
     not_redirecting: U vostru contu ùn riindirizza micca ancu versu un'altru contu.
-    on_cooldown: Avede digià migratu u vostru contu. Sta funzionne sarà torna dispunibule in %{count} ghjorni.
     past_migrations: Anziane migrazione
     proceed_with_move: Trasferì l'abbunati
     redirected_msg: Avà u vostru contu riindirizza versu à %{acct}.
@@ -741,7 +730,6 @@ co:
       disabled_account: U contu attuale ùn puderà più esse utilizatu dop'à st'azzione. Però, puderete accede à a spurtazione di dati o riattivà u contu.
       followers: St'azzione hà da spiazzà tutti l'abbunati di u contu attuale nant'à u novu contu
       only_redirect_html: Pudete ancu <a href="%{path}">mette solu una ridirezzione nant'à u vostru prufile</a>.
-      other_data: L'altri dati ùn saranu micca autumaticamente trasferiti
       redirect: U prufile di u vostru contu attuale sarà messu à ghjornu cù una nutificazione di ridirezzione è sarà sclusu di e ricerche
   moderation:
     title: Muderazione
@@ -801,7 +789,6 @@ co:
     next: Dopu
     older: Più vechju
     prev: Nanzu
-    truncate: "&hellip;"
   polls:
     errors:
       already_voted: Avete digià vutatu nant'à stu scandagliu
@@ -840,9 +827,6 @@ co:
     status: Statutu di u contu
   remote_follow:
     missing_resource: Ùn avemu pussutu à truvà l’indirizzu di ridirezzione
-  scheduled_statuses:
-    over_daily_limit: Avete trapassatu a limita di %{limit} statuti pianificati per stu ghjornu
-    over_total_limit: Avete trapassatu a limita di %{limit} statuti pianificati
   sessions:
     activity: Ultima attività
     browser: Navigatore
@@ -886,7 +870,6 @@ co:
     appearance: Apparenza
     authorized_apps: Applicazione auturizate
     back: Ritornu nant’à Mastodon
-    delete: Suppressione di u contu
     development: Sviluppu
     edit_profile: Mudificà u prufile
     featured_tags: Hashtag in vista
@@ -955,10 +938,6 @@ co:
     sensitive_content: Cuntenutu sensibile
   tags:
     does_not_match_previous_name: ùn currisponde micca à l'anzianu nome
-  themes:
-    contrast: Mastodon (Cuntrastu altu)
-    default: Mastodon (Scuru)
-    mastodon-light: Mastodon (Chjaru)
   time:
     formats:
       default: "%d %b %Y, %H:%M"

@@ -41,7 +41,7 @@ Mastodon Glitch Edition is a fork of [Mastodon](https://github.com/mastodon/mast
 
 <p align="center">
   <a style="text-decoration:none" href="https://www.youtube.com/watch?v=IPSbNdBmWKE">
-    <img alt="Mastodon hero image" src="https://github.com/user-attachments/assets/ef53f5e9-c0d8-484d-9f53-00efdebb92c3" />
+    <img alt="Mastodon hero image" src="./docs/hero-nodes.gif" />
   </a>
 </p>
 
@@ -52,6 +52,7 @@ Mastodon Glitch Edition is a fork of [Mastodon](https://github.com/mastodon/mast
     <img src="https://github.com/mastodon/mastodon/actions/workflows/test-ruby.yml/badge.svg" alt="Ruby Testing" /></a>
   <a style="text-decoration:none" href="https://crowdin.com/project/mastodon">
     <img src="https://d322cqt584bo4o.cloudfront.net/mastodon/localized.svg" alt="Crowdin" /></a>
+  <a href="https://digitalpublicgoods.net/r/mastodon"><img src="https://img.shields.io/badge/Verified-DPG-3333AB?logo=data:image/svg%2bxml;base64,PHN2ZyB3aWR0aD0iMzEiIGhlaWdodD0iMzMiIHZpZXdCb3g9IjAgMCAzMSAzMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE0LjIwMDggMjEuMzY3OEwxMC4xNzM2IDE4LjAxMjRMMTEuNTIxOSAxNi40MDAzTDEzLjk5MjggMTguNDU5TDE5LjYyNjkgMTIuMjExMUwyMS4xOTA5IDEzLjYxNkwxNC4yMDA4IDIxLjM2NzhaTTI0LjYyNDEgOS4zNTEyN0wyNC44MDcxIDMuMDcyOTdMMTguODgxIDUuMTg2NjJMMTUuMzMxNCAtMi4zMzA4MmUtMDVMMTEuNzgyMSA1LjE4NjYyTDUuODU2MDEgMy4wNzI5N0w2LjAzOTA2IDkuMzUxMjdMMCAxMS4xMTc3TDMuODQ1MjEgMTYuMDg5NUwwIDIxLjA2MTJMNi4wMzkwNiAyMi44Mjc3TDUuODU2MDEgMjkuMTA2TDExLjc4MjEgMjYuOTkyM0wxNS4zMzE0IDMyLjE3OUwxOC44ODEgMjYuOTkyM0wyNC44MDcxIDI5LjEwNkwyNC42MjQxIDIyLjgyNzdMMzAuNjYzMSAyMS4wNjEyTDI2LjgxNzYgMTYuMDg5NUwzMC42NjMxIDExLjExNzdMMjQuNjI0MSA5LjM1MTI3WiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+Cg==" alt="DPG Badge"/></a>
 </p>
 
 Mastodon is a **free, open-source social network server** based on [ActivityPub](https://www.w3.org/TR/activitypub/) where users can follow friends and discover new ones. On Mastodon, users can publish anything they want: links, pictures, text, and video. All Mastodon servers are interoperable as a federated network (users on one server can seamlessly communicate with users from another one, including non-Mastodon software that implements ActivityPub!)
@@ -93,10 +94,11 @@ Mastodon is a **free, open-source social network server** based on [ActivityPub]
 
 ### Requirements
 
-- **Ruby** 3.2+
-- **PostgreSQL** 13+
+- **Ruby** 3.3+
+- **PostgreSQL** 14+
 - **Redis** 7.0+
-- **Node.js** 20+
+- **Node.js** 22+
+- **FFmpeg** 5.1+
 
 This repository includes deployment configurations for **Docker and docker-compose**, as well as for other environments like Heroku and Scalingo. For Helm charts, reference the [mastodon/chart repository](https://github.com/mastodon/chart). A [**standalone** installation guide](https://docs.joinmastodon.org/admin/install/) is available in the main documentation.
 
@@ -114,12 +116,12 @@ If you would like to help with translations 🌐 you can do so on [Crowdin](http
 
 ## LICENSE
 
-Copyright (c) 2016-2025 Eugen Rochko (+ [`mastodon authors`](AUTHORS.md))
+Copyright (c) 2016-2026 Eugen Rochko (+ [`mastodon authors`](AUTHORS.md))
 
 Licensed under GNU Affero General Public License as stated in the [LICENSE](LICENSE):
 
 ```text
-Copyright (c) 2016-2025 Eugen Rochko & other Mastodon contributors
+Copyright (c) 2016-2026 Eugen Rochko & other Mastodon contributors
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU Affero General Public License as published by the Free

@@ -7,6 +7,10 @@ import classNames from 'classnames';
 import { useSpring, animated, config } from '@react-spring/web';
 import { throttle } from 'lodash';
 
+import type { DeployPictureInPictureCallback } from '@/flavours/glitch/actions/picture_in_picture';
+import { Button } from '@/flavours/glitch/components/button/redesign';
+import { useRevealedMedia } from '@/flavours/glitch/hooks/useRevealedMedia';
+import { isRedesignEnabled } from '@/flavours/glitch/utils/environment';
 import Forward5Icon from '@/material-icons/400-24px/forward_5-fill.svg?react';
 import FullscreenIcon from '@/material-icons/400-24px/fullscreen.svg?react';
 import FullscreenExitIcon from '@/material-icons/400-24px/fullscreen_exit.svg?react';
@@ -27,7 +31,7 @@ import {
   attachFullscreenListener,
   detachFullscreenListener,
 } from 'flavours/glitch/features/ui/util/fullscreen';
-import { displayMedia, useBlurhash } from 'flavours/glitch/initial_state';
+import { useBlurhash } from 'flavours/glitch/initial_state';
 import { playerSettings } from 'flavours/glitch/settings';
 
 import { HotkeyIndicator } from './components/hotkey_indicator';
@@ -139,8 +143,8 @@ const persistVolume = (volume: number, muted: boolean) => {
 };
 
 const restoreVolume = (video: HTMLVideoElement) => {
-  const volume = (playerSettings.get('volume') as number | undefined) ?? 0.5;
-  const muted = (playerSettings.get('muted') as boolean | undefined) ?? false;
+  const volume = playerSettings.get('volume') ?? 0.5;
+  const muted = playerSettings.get('muted') ?? false;
 
   video.volume = volume;
   video.muted = muted;
@@ -174,15 +178,7 @@ export const Video: React.FC<{
   alwaysVisible?: boolean;
   visible?: boolean;
   onToggleVisibility?: () => void;
-  deployPictureInPicture?: (
-    type: string,
-    mediaProps: {
-      src: string;
-      muted: boolean;
-      volume: number;
-      currentTime: number;
-    },
-  ) => void;
+  deployPictureInPicture?: DeployPictureInPictureCallback;
   blurhash?: string;
   startPlaying?: boolean;
   startTime?: number;
@@ -225,15 +221,15 @@ export const Video: React.FC<{
   const [fullscreen, setFullscreen] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [muted, setMuted] = useState(false);
-  const [revealed, setRevealed] = useState(false);
+  const [revealed, setRevealed] = useRevealedMedia({ visible, sensitive });
   const [hotkeyEvents, setHotkeyEvents] = useState<HotkeyEvent[]>([]);
 
   const playerRef = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const seekRef = useRef<HTMLDivElement>(null);
   const volumeRef = useRef<HTMLDivElement>(null);
-  const doubleClickTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>();
-  const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>();
+  const doubleClickTimeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
+  const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
 
   const [style, api] = useSpring(() => ({
     progress: '0%',
@@ -245,7 +241,7 @@ export const Video: React.FC<{
     (c: HTMLVideoElement | null) => {
       if (videoRef.current && !videoRef.current.paused && c === null) {
         deployPictureInPicture?.('video', {
-          src: src,
+          src,
           currentTime: videoRef.current.currentTime,
           muted: videoRef.current.muted,
           volume: videoRef.current.volume,
@@ -372,17 +368,6 @@ export const Video: React.FC<{
     videoRef.current.volume = volume;
     videoRef.current.muted = muted;
   }, [volume, muted]);
-
-  useEffect(() => {
-    if (typeof visible !== 'undefined') {
-      setRevealed(visible);
-    } else {
-      setRevealed(
-        displayMedia === 'show_all' ||
-          (displayMedia !== 'hide_all' && !sensitive),
-      );
-    }
-  }, [visible, sensitive]);
 
   useEffect(() => {
     if (!revealed && videoRef.current) {
@@ -801,6 +786,8 @@ export const Video: React.FC<{
     preload = 'none';
   }
 
+  const ButtonComp = isRedesignEnabled() ? Button : 'button';
+
   // The outer wrapper is necessary to avoid reflowing the layout when going into full screen
   return (
     <div>
@@ -834,7 +821,7 @@ export const Video: React.FC<{
         )}
 
         {(revealed || editable) && (
-          <video /* eslint-disable-line jsx-a11y/media-has-caption */
+          <video
             ref={handleVideoRef}
             src={src}
             poster={preview}
@@ -842,7 +829,7 @@ export const Video: React.FC<{
             role='button'
             tabIndex={0}
             aria-label={alt}
-            title={alt}
+            title={fullscreen ? undefined : alt}
             lang={lang}
             onClick={handleClick}
             onKeyDownCapture={handleVideoKeyDown}
@@ -878,15 +865,18 @@ export const Video: React.FC<{
                 active: paused || hovered,
               })}
             >
-              <button
+              <ButtonComp
+                size='xs'
+                variant='solid'
                 className='media-gallery__actions__pill'
                 onClick={toggleReveal}
+                type='button'
               >
                 <FormattedMessage
                   id='media_gallery.hide'
                   defaultMessage='Hide'
                 />
-              </button>
+              </ButtonComp>
             </div>
           )}
 

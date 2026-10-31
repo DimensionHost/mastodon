@@ -39,20 +39,53 @@ RSpec.describe Scheduler::SelfDestructScheduler do
       end
 
       context 'when sidekiq is operational' do
-        it 'suspends local non-suspended accounts' do
+        let!(:other_account) { Fabricate :account, inbox_url: 'https://host.example/inbox', domain: 'host.example', protocol: :activitypub }
+        let!(:another_account) { Fabricate :account, inbox_url: 'https://another-host.example/inbox', domain: 'another-host.example', protocol: :activitypub }
+
+        it 'deletes local non-deleted accounts' do
           worker.perform
 
-          expect(account.reload.suspended_at).to_not be_nil
+          expect(account.reload.requested_deletion_at).to_not be_nil
         end
 
-        it 'suspends local suspended accounts marked for deletion' do
-          account.update(suspended_at: 10.days.ago)
-          deletion_request = Fabricate(:account_deletion_request, account: account)
+        context 'without a reach filter' do
+          before { account.reach_filter&.destroy }
 
-          worker.perform
+          it 'deletes local accounts marked for deletion' do
+            account.update(requested_deletion_at: 10.days.ago)
+            deletion_request = Fabricate(:account_deletion_request, account: account)
 
-          expect(account.reload.suspended_at).to be > 1.day.ago
-          expect { deletion_request.reload }.to raise_error(ActiveRecord::RecordNotFound)
+            worker.perform
+
+            expect(ActivityPub::DeliveryWorker)
+              .to have_enqueued_sidekiq_job(match_json_values(type: 'Delete', signature: be_present), account.id, other_account.inbox_url)
+              .and have_enqueued_sidekiq_job(match_json_values(type: 'Delete', signature: be_present), account.id, another_account.inbox_url)
+
+            expect(account.reload.requested_deletion_at).to be > 1.day.ago
+            expect { deletion_request.reload }.to raise_error(ActiveRecord::RecordNotFound)
+          end
+        end
+
+        context 'with a reach filter' do
+          before do
+            account.reach_filter ||= account.create_reach_filter
+
+            account.reach_filter.add('host.example')
+            account.reach_filter.save!
+          end
+
+          it 'deletes local accounts marked for deletion' do
+            account.update(requested_deletion_at: 10.days.ago)
+            deletion_request = Fabricate(:account_deletion_request, account: account)
+
+            worker.perform
+
+            expect(ActivityPub::DeliveryWorker)
+              .to have_enqueued_sidekiq_job(match_json_values(type: 'Delete', signature: be_present), account.id, other_account.inbox_url)
+
+            expect(account.reload.requested_deletion_at).to be > 1.day.ago
+            expect { deletion_request.reload }.to raise_error(ActiveRecord::RecordNotFound)
+          end
         end
       end
     end

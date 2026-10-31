@@ -23,7 +23,7 @@ RSpec.describe ActivityPub::TagManager do
 
   describe '#url_for' do
     context 'with a local account' do
-      let(:account) { Fabricate(:account) }
+      let(:account) { Fabricate(:account, id_scheme: :username_ap_id) }
 
       it 'returns a string starting with web domain and with the expected path' do
         expect(subject.url_for(account))
@@ -49,7 +49,8 @@ RSpec.describe ActivityPub::TagManager do
     end
 
     context 'with a local status' do
-      let(:status) { Fabricate(:status) }
+      let(:account) { Fabricate(:account, id_scheme: :username_ap_id) }
+      let(:status) { Fabricate(:status, account: account) }
 
       it 'returns a string starting with web domain and with the expected path' do
         expect(subject.url_for(status))
@@ -58,7 +59,6 @@ RSpec.describe ActivityPub::TagManager do
 
       context 'when using a numeric ID based scheme' do
         let(:account) { Fabricate(:account, id_scheme: :numeric_ap_id) }
-        let(:status) { Fabricate(:status, account: account) }
 
         it 'returns a string starting with web domain and with the expected path' do
           expect(subject.url_for(status))
@@ -86,7 +86,7 @@ RSpec.describe ActivityPub::TagManager do
     end
 
     context 'with a local account' do
-      let(:account) { Fabricate(:account) }
+      let(:account) { Fabricate(:account, id_scheme: :username_ap_id) }
 
       it 'returns a string starting with web domain and with the expected path' do
         expect(subject.uri_for(account))
@@ -112,7 +112,8 @@ RSpec.describe ActivityPub::TagManager do
     end
 
     context 'with a local status' do
-      let(:status) { Fabricate(:status) }
+      let(:account) { Fabricate(:account, id_scheme: :username_ap_id) }
+      let(:status) { Fabricate(:status, account: account) }
 
       it 'returns a string starting with web domain and with the expected path' do
         expect(subject.uri_for(status))
@@ -121,11 +122,32 @@ RSpec.describe ActivityPub::TagManager do
 
       context 'when using a numeric ID based scheme' do
         let(:account) { Fabricate(:account, id_scheme: :numeric_ap_id) }
-        let(:status) { Fabricate(:status, account: account) }
 
         it 'returns a string starting with web domain and with the expected path' do
           expect(subject.uri_for(status))
             .to eq("#{host_prefix}/ap/users/#{status.account.id}/statuses/#{status.id}")
+        end
+      end
+
+      context 'with a reblog' do
+        let(:status) { Fabricate(:status, account:, reblog: Fabricate(:status)) }
+
+        context 'when using a numeric ID based scheme' do
+          let(:account) { Fabricate(:account, id_scheme: :numeric_ap_id) }
+
+          it 'returns a string starting with web domain and with the expected path' do
+            expect(subject.uri_for(status))
+              .to eq("#{host_prefix}/ap/users/#{status.account.id}/statuses/#{status.id}/activity")
+          end
+        end
+
+        context 'when using the legacy username based scheme' do
+          let(:account) { Fabricate(:account, id_scheme: :username_ap_id) }
+
+          it 'returns a string starting with web domain and with the expected path' do
+            expect(subject.uri_for(status))
+              .to eq("#{host_prefix}/users/#{status.account.username}/statuses/#{status.id}/activity")
+          end
         end
       end
     end
@@ -140,7 +162,8 @@ RSpec.describe ActivityPub::TagManager do
     end
 
     context 'with a local conversation' do
-      let(:status) { Fabricate(:status) }
+      let(:account) { Fabricate(:account, id_scheme: :username_ap_id) }
+      let(:status) { Fabricate(:status, account: account) }
 
       it 'returns a string starting with web domain and with the expected path' do
         expect(subject.uri_for(status.conversation))
@@ -149,7 +172,6 @@ RSpec.describe ActivityPub::TagManager do
 
       context 'when using a numeric ID based scheme' do
         let(:account) { Fabricate(:account, id_scheme: :numeric_ap_id) }
-        let(:status) { Fabricate(:status, account: account) }
 
         it 'returns a string starting with web domain and with the expected path' do
           expect(subject.uri_for(status.conversation))
@@ -170,6 +192,23 @@ RSpec.describe ActivityPub::TagManager do
         expect(subject.uri_for(status.conversation)).to eq status.conversation.uri
       end
     end
+
+    context 'with a local collection' do
+      let(:collection) { Fabricate(:collection) }
+
+      it 'returns a string starting with web domain and with the expected path' do
+        expect(subject.uri_for(collection))
+          .to eq("#{host_prefix}/ap/users/#{collection.account.id}/collections/#{collection.id}")
+      end
+    end
+
+    context 'with a remote collection' do
+      let(:collection) { Fabricate(:remote_collection) }
+
+      it 'returns the expected URL' do
+        expect(subject.uri_for(collection)).to eq collection.uri
+      end
+    end
   end
 
   describe '#key_uri_for' do
@@ -181,7 +220,7 @@ RSpec.describe ActivityPub::TagManager do
     end
 
     context 'with a local account' do
-      let(:account) { Fabricate(:account) }
+      let(:account) { Fabricate(:account, id_scheme: :username_ap_id) }
 
       it 'returns a string starting with web domain and with the expected path' do
         expect(subject.key_uri_for(account))
@@ -218,7 +257,9 @@ RSpec.describe ActivityPub::TagManager do
 
   describe '#approval_uri_for' do
     context 'with a valid local approval' do
-      let(:quote) { Fabricate(:quote, state: :accepted) }
+      let(:quoted_account) { Fabricate(:account, id_scheme: :username_ap_id) }
+      let(:quoted_status) { Fabricate(:status, account: quoted_account) }
+      let(:quote) { Fabricate(:quote, state: :accepted, quoted_status: quoted_status) }
 
       it 'returns a string with the web domain and expected path' do
         expect(subject.approval_uri_for(quote))
@@ -227,8 +268,6 @@ RSpec.describe ActivityPub::TagManager do
 
       context 'when using a numeric ID based scheme' do
         let(:quoted_account) { Fabricate(:account, id_scheme: :numeric_ap_id) }
-        let(:quoted_status) { Fabricate(:status, account: quoted_account) }
-        let(:quote) { Fabricate(:quote, state: :accepted, quoted_status: quoted_status) }
 
         it 'returns a string with the web domain and expected path' do
           expect(subject.approval_uri_for(quote))
@@ -238,7 +277,9 @@ RSpec.describe ActivityPub::TagManager do
     end
 
     context 'with an unapproved local quote' do
-      let(:quote) { Fabricate(:quote, state: :rejected) }
+      let(:quoted_account) { Fabricate(:account, id_scheme: :username_ap_id) }
+      let(:quoted_status) { Fabricate(:status, account: quoted_account) }
+      let(:quote) { Fabricate(:quote, state: :rejected, quoted_status: quoted_status) }
 
       it 'returns nil' do
         expect(subject.approval_uri_for(quote))
@@ -247,8 +288,6 @@ RSpec.describe ActivityPub::TagManager do
 
       context 'when using a numeric ID based scheme' do
         let(:quoted_account) { Fabricate(:account, id_scheme: :numeric_ap_id) }
-        let(:quoted_status) { Fabricate(:status, account: quoted_account) }
-        let(:quote) { Fabricate(:quote, state: :rejected, quoted_status: quoted_status) }
 
         it 'returns nil' do
           expect(subject.approval_uri_for(quote))
@@ -260,7 +299,7 @@ RSpec.describe ActivityPub::TagManager do
     context 'with a valid remote approval' do
       let(:quoted_account) { Fabricate(:account, domain: 'example.com') }
       let(:quoted_status) { Fabricate(:status, account: quoted_account) }
-      let(:quote) { Fabricate(:quote, state: :accepted, quoted_status: quoted_status, approval_uri: 'https://example.com/approvals/1') }
+      let(:quote) { Fabricate(:quote, status: Fabricate(:status), state: :accepted, quoted_status: quoted_status, approval_uri: 'https://example.com/approvals/1') }
 
       it 'returns the expected URI' do
         expect(subject.approval_uri_for(quote)).to eq quote.approval_uri
@@ -268,7 +307,9 @@ RSpec.describe ActivityPub::TagManager do
     end
 
     context 'with an unapproved local quote but check_approval override' do
-      let(:quote) { Fabricate(:quote, state: :rejected) }
+      let(:quoted_account) { Fabricate(:account, id_scheme: :username_ap_id) }
+      let(:quoted_status) { Fabricate(:status, account: quoted_account) }
+      let(:quote) { Fabricate(:quote, state: :rejected, quoted_status: quoted_status) }
 
       it 'returns a string with the web domain and expected path' do
         expect(subject.approval_uri_for(quote, check_approval: false))
@@ -277,8 +318,6 @@ RSpec.describe ActivityPub::TagManager do
 
       context 'when using a numeric ID based scheme' do
         let(:quoted_account) { Fabricate(:account, id_scheme: :numeric_ap_id) }
-        let(:quoted_status) { Fabricate(:status, account: quoted_account) }
-        let(:quote) { Fabricate(:quote, state: :rejected, quoted_status: quoted_status) }
 
         it 'returns a string with the web domain and expected path' do
           expect(subject.approval_uri_for(quote, check_approval: false))
@@ -290,7 +329,8 @@ RSpec.describe ActivityPub::TagManager do
 
   describe '#replies_uri_for' do
     context 'with a local status' do
-      let(:status) { Fabricate(:status) }
+      let(:account) { Fabricate(:account, id_scheme: :username_ap_id) }
+      let(:status) { Fabricate(:status, account: account) }
 
       it 'returns a string starting with web domain and with the expected path' do
         expect(subject.replies_uri_for(status))
@@ -299,7 +339,6 @@ RSpec.describe ActivityPub::TagManager do
 
       context 'when using a numeric ID based scheme' do
         let(:account) { Fabricate(:account, id_scheme: :numeric_ap_id) }
-        let(:status) { Fabricate(:status, account: account) }
 
         it 'returns a string starting with web domain and with the expected path' do
           expect(subject.replies_uri_for(status))
@@ -311,7 +350,8 @@ RSpec.describe ActivityPub::TagManager do
 
   describe '#likes_uri_for' do
     context 'with a local status' do
-      let(:status) { Fabricate(:status) }
+      let(:account) { Fabricate(:account, id_scheme: :username_ap_id) }
+      let(:status) { Fabricate(:status, account: account) }
 
       it 'returns a string starting with web domain and with the expected path' do
         expect(subject.likes_uri_for(status))
@@ -320,7 +360,6 @@ RSpec.describe ActivityPub::TagManager do
 
       context 'when using a numeric ID based scheme' do
         let(:account) { Fabricate(:account, id_scheme: :numeric_ap_id) }
-        let(:status) { Fabricate(:status, account: account) }
 
         it 'returns a string starting with web domain and with the expected path' do
           expect(subject.likes_uri_for(status))
@@ -332,7 +371,8 @@ RSpec.describe ActivityPub::TagManager do
 
   describe '#shares_uri_for' do
     context 'with a local status' do
-      let(:status) { Fabricate(:status) }
+      let(:account) { Fabricate(:account, id_scheme: :username_ap_id) }
+      let(:status) { Fabricate(:status, account: account) }
 
       it 'returns a string starting with web domain and with the expected path' do
         expect(subject.shares_uri_for(status))
@@ -341,7 +381,6 @@ RSpec.describe ActivityPub::TagManager do
 
       context 'when using a numeric ID based scheme' do
         let(:account) { Fabricate(:account, id_scheme: :numeric_ap_id) }
-        let(:status) { Fabricate(:status, account: account) }
 
         it 'returns a string starting with web domain and with the expected path' do
           expect(subject.shares_uri_for(status))
@@ -353,7 +392,7 @@ RSpec.describe ActivityPub::TagManager do
 
   describe '#following_uri_for' do
     context 'with a local account' do
-      let(:account) { Fabricate(:account) }
+      let(:account) { Fabricate(:account, id_scheme: :username_ap_id) }
 
       it 'returns a string starting with web domain and with the expected path' do
         expect(subject.following_uri_for(account))
@@ -373,7 +412,7 @@ RSpec.describe ActivityPub::TagManager do
 
   describe '#followers_uri_for' do
     context 'with a local account' do
-      let(:account) { Fabricate(:account) }
+      let(:account) { Fabricate(:account, id_scheme: :username_ap_id) }
 
       it 'returns a string starting with web domain and with the expected path' do
         expect(subject.followers_uri_for(account))
@@ -400,7 +439,7 @@ RSpec.describe ActivityPub::TagManager do
     end
 
     context 'with a local account' do
-      let(:account) { Fabricate(:account) }
+      let(:account) { Fabricate(:account, id_scheme: :username_ap_id) }
 
       it 'returns a string starting with web domain and with the expected path' do
         expect(subject.inbox_uri_for(account))
@@ -427,7 +466,7 @@ RSpec.describe ActivityPub::TagManager do
     end
 
     context 'with a local account' do
-      let(:account) { Fabricate(:account) }
+      let(:account) { Fabricate(:account, id_scheme: :username_ap_id) }
 
       it 'returns a string starting with web domain and with the expected path' do
         expect(subject.outbox_uri_for(account))
@@ -452,7 +491,7 @@ RSpec.describe ActivityPub::TagManager do
     end
 
     it 'returns followers collection for unlisted status' do
-      status = Fabricate(:status, visibility: :unlisted)
+      status = Fabricate(:status, visibility: :unlisted, account: Fabricate(:account, id_scheme: :username_ap_id))
       expect(subject.to(status)).to eq [account_followers_url(status.account)]
     end
 
@@ -462,7 +501,7 @@ RSpec.describe ActivityPub::TagManager do
     end
 
     it 'returns followers collection for private status' do
-      status = Fabricate(:status, visibility: :private)
+      status = Fabricate(:status, visibility: :private, account: Fabricate(:account, id_scheme: :username_ap_id))
       expect(subject.to(status)).to eq [account_followers_url(status.account)]
     end
 
@@ -514,7 +553,7 @@ RSpec.describe ActivityPub::TagManager do
 
   describe '#cc' do
     it 'returns followers collection for public status' do
-      status = Fabricate(:status, visibility: :public)
+      status = Fabricate(:status, visibility: :public, account: Fabricate(:account, id_scheme: :username_ap_id))
       expect(subject.cc(status)).to eq [account_followers_url(status.account)]
     end
 
@@ -590,13 +629,6 @@ RSpec.describe ActivityPub::TagManager do
     end
   end
 
-  describe '#uri_to_local_id' do
-    it 'returns the local ID' do
-      account = Fabricate(:account)
-      expect(subject.uri_to_local_id(subject.uri_for(account), :username)).to eq account.username
-    end
-  end
-
   describe '#uris_to_local_accounts' do
     it 'returns the expected local accounts' do
       account = Fabricate(:account)
@@ -638,6 +670,16 @@ RSpec.describe ActivityPub::TagManager do
     it 'returns the remote status by matching URI without fragment part' do
       status = Fabricate(:status, uri: 'https://example.com/123')
       expect(subject.uri_to_resource('https://example.com/123#456', Status)).to eq status
+    end
+
+    it 'returns the local featured collection' do
+      collection = Fabricate(:collection)
+      expect(subject.uri_to_resource(subject.uri_for(collection), Collection)).to eq collection
+    end
+
+    it 'returns the remote featured collection' do
+      collection = Fabricate(:remote_collection)
+      expect(subject.uri_to_resource(subject.uri_for(collection), Collection)).to eq collection
     end
   end
 end

@@ -5,7 +5,14 @@ import classNames from 'classnames';
 import { Link } from 'react-router-dom';
 
 import type { ApiMentionJSON } from '@/mastodon/api_types/statuses';
+import { getCollectionPath } from '@/mastodon/features/collections/utils';
+import { isRedesignEnabled } from '@/mastodon/utils/environment';
 import type { OnElementHandler } from '@/mastodon/utils/html';
+
+import { HashtagMenu } from '../hashtag_menu';
+import { MenuTriggerText } from '../menu';
+
+import classes from './handled_link.module.scss';
 
 export interface HandledLinkProps {
   href: string;
@@ -13,6 +20,7 @@ export interface HandledLinkProps {
   prevText?: string;
   hashtagAccountId?: string;
   mention?: Pick<ApiMentionJSON, 'id' | 'acct'>;
+  collectionId?: string;
 }
 
 export const HandledLink: FC<HandledLinkProps & ComponentProps<'a'>> = ({
@@ -21,31 +29,62 @@ export const HandledLink: FC<HandledLinkProps & ComponentProps<'a'>> = ({
   prevText,
   hashtagAccountId,
   mention,
+  collectionId,
   className,
   children,
   ...props
 }) => {
   // Handle hashtags
-  if (text.startsWith('#') || prevText?.endsWith('#')) {
+  if (
+    (text.startsWith('#') ||
+      prevText?.endsWith('#') ||
+      text.startsWith('＃') ||
+      prevText?.endsWith('＃')) &&
+    !text.includes('%')
+  ) {
     const hashtag = text.slice(1).trim();
+
+    if (isRedesignEnabled()) {
+      return (
+        <HashtagMenu tagId={hashtag} accountId={hashtagAccountId}>
+          <MenuTriggerText
+            className={classes.hashtag}
+            href={`/tags/${encodeURIComponent(hashtag)}`}
+          >
+            {children}
+          </MenuTriggerText>
+        </HashtagMenu>
+      );
+    }
+
     return (
       <Link
         className={classNames('mention hashtag', className)}
-        to={`/tags/${hashtag}`}
+        to={`/tags/${encodeURIComponent(hashtag)}`}
         rel='tag'
         data-menu-hashtag={hashtagAccountId}
       >
         {children}
       </Link>
     );
-  } else if ((text.startsWith('@') || prevText?.endsWith('@')) && mention) {
+  } else if (mention) {
     // Handle mentions
     return (
       <Link
         className={classNames('mention', className)}
-        to={`/@${mention.acct}`}
+        to={{ pathname: `/@${mention.acct}`, state: { reference: 'status' } }}
         title={`@${mention.acct}`}
         data-hover-card-account={mention.id}
+        data-hover-card-reference='status'
+      >
+        {children}
+      </Link>
+    );
+  } else if (collectionId) {
+    return (
+      <Link
+        className={classNames(className)}
+        to={getCollectionPath(collectionId)}
       >
         {children}
       </Link>
@@ -68,7 +107,7 @@ export const HandledLink: FC<HandledLinkProps & ComponentProps<'a'>> = ({
       title={href}
       className={classNames('unhandled-link', className)}
       target='_blank'
-      rel='noreferrer noopener'
+      rel='noopener'
       translate='no'
     >
       {children}
@@ -78,15 +117,18 @@ export const HandledLink: FC<HandledLinkProps & ComponentProps<'a'>> = ({
 
 export const useElementHandledLink = ({
   hashtagAccountId,
+  hrefToCollectionId: hrefToCollection,
   hrefToMention,
 }: {
   hashtagAccountId?: string;
+  hrefToCollectionId?: (href: string) => string | undefined;
   hrefToMention?: (href: string) => ApiMentionJSON | undefined;
 } = {}) => {
   const onElement = useCallback<OnElementHandler>(
     (element, { key, ...props }, children) => {
       if (element instanceof HTMLAnchorElement) {
         const mention = hrefToMention?.(element.href);
+        const collectionId = hrefToCollection?.(element.href);
         return (
           <HandledLink
             {...props}
@@ -96,6 +138,7 @@ export const useElementHandledLink = ({
             prevText={element.previousSibling?.textContent ?? undefined}
             hashtagAccountId={hashtagAccountId}
             mention={mention}
+            collectionId={collectionId}
           >
             {children}
           </HandledLink>
@@ -103,7 +146,7 @@ export const useElementHandledLink = ({
       }
       return undefined;
     },
-    [hashtagAccountId, hrefToMention],
+    [hashtagAccountId, hrefToCollection, hrefToMention],
   );
   return { onElement };
 };

@@ -2,8 +2,9 @@ import { useMemo } from 'react';
 
 import classNames from 'classnames';
 
+import { replyComposeById } from '@/flavours/glitch/actions/compose_typed';
 import { LinkedDisplayName } from '@/flavours/glitch/components/display_name';
-import { replyComposeById } from 'flavours/glitch/actions/compose';
+import { isRedesignEnabled } from '@/flavours/glitch/utils/environment';
 import {
   toggleReblog,
   toggleFavourite,
@@ -15,7 +16,7 @@ import {
 import { Hotkeys } from 'flavours/glitch/components/hotkeys';
 import type { IconProp } from 'flavours/glitch/components/icon';
 import { Icon } from 'flavours/glitch/components/icon';
-import { StatusQuoteManager } from 'flavours/glitch/components/status_quoted';
+import { Status } from 'flavours/glitch/components/status';
 import { getStatusHidden } from 'flavours/glitch/selectors/filters';
 import { useAppSelector, useAppDispatch } from 'flavours/glitch/store';
 
@@ -71,7 +72,7 @@ export const NotificationWithStatus: React.FC<{
       },
 
       reply: () => {
-        dispatch(replyComposeById(statusId));
+        dispatch(replyComposeById({ statusId }));
       },
 
       boost: () => {
@@ -101,18 +102,20 @@ export const NotificationWithStatus: React.FC<{
           {
             'notification-ungrouped--unread': unread,
             'notification-ungrouped--direct': isPrivateMention,
+            'notification-ungrouped--redesign':
+              isRedesignEnabled() && isRedesignEnabled(),
           },
         )}
         tabIndex={0}
       >
-        <div className='notification-ungrouped__header'>
+        <h2 className='notification-ungrouped__header'>
           <div className='notification-ungrouped__header__icon'>
             <Icon icon={icon} id={iconId} />
           </div>
-          {label}
-        </div>
+          <span>{label}</span>
+        </h2>
 
-        <StatusQuoteManager
+        <Status
           id={statusId}
           contextType='notifications'
           withDismiss

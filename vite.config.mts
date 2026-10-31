@@ -1,9 +1,12 @@
-import path from 'node:path';
 import { readdir } from 'node:fs/promises';
+import path from 'node:path';
 
+import formatjs from '@formatjs/unplugin/vite';
 import { optimizeLodashImports } from '@optimize-lodash/rollup-plugin';
+import babel, { defineRolldownBabelPreset } from '@rolldown/plugin-babel';
 import legacy from '@vitejs/plugin-legacy';
 import react from '@vitejs/plugin-react';
+import browserslist from 'browserslist';
 import postcssPresetEnv from 'postcss-preset-env';
 import Compress from 'rollup-plugin-gzip';
 import { visualizer } from 'rollup-plugin-visualizer';
@@ -14,26 +17,32 @@ import {
   UserConfig,
 } from 'vite';
 import manifestSRI from 'vite-plugin-manifest-sri';
-import { VitePWA } from 'vite-plugin-pwa';
-import { viteStaticCopy } from 'vite-plugin-static-copy';
 import svgr from 'vite-plugin-svgr';
-import tsconfigPaths from 'vite-tsconfig-paths';
 
-import { MastodonServiceWorkerLocales } from './config/vite/plugin-sw-locales';
-import { MastodonEmojiCompressed } from './config/vite/plugin-emoji-compressed';
-import { GlitchThemes as MastodonThemes } from './config/vite/plugin-glitch-themes';
-import { MastodonNameLookup } from './config/vite/plugin-name-lookup';
-import { MastodonAssetsManifest } from './config/vite/plugin-assets-manifest';
+import { MastodonAssetsManifest } from './config/vite/plugin-assets-manifest.mts';
+import { GlitchThemes as MastodonThemes } from './config/vite/plugin-glitch-themes.mts';
+import { MastodonServiceWorkerChunkPaths } from './config/vite/plugin-sw-chunk-paths.mts';
+import { MastodonServiceWorkerLocales } from './config/vite/plugin-sw-locales.mts';
 
-const jsRoot = path.resolve(__dirname, 'app/javascript');
+const jsRoot = path.resolve(import.meta.dirname, 'app/javascript');
+
+const cssAliasClasses: ReadonlyArray<string> = ['components', 'features'];
+
+// Avoid parsing files which don't reference `propTypes`
+const removePropTypesPreset = defineRolldownBabelPreset({
+  preset: () => ({ plugins: ['transform-react-remove-prop-types'] }),
+  rolldown: {
+    filter: {
+      code: /propTypes/i,
+    },
+  },
+});
 
 export const config: UserConfigFnPromise = async ({ mode, command }) => {
   const isProdBuild = mode === 'production' && command === 'build';
 
   let outDirName = 'packs-dev';
-  if (mode === 'test') {
-    outDirName = 'packs-test';
-  } else if (mode === 'production') {
+  if (mode === 'test' || mode === 'production') {
     outDirName = 'packs';
   }
   const outDir = path.resolve('public', outDirName);
@@ -41,14 +50,54 @@ export const config: UserConfigFnPromise = async ({ mode, command }) => {
   return {
     root: jsRoot,
     base: `/${outDirName}/`,
-    envDir: __dirname,
+    envDir: import.meta.dirname,
     resolve: {
+      tsconfigPaths: true,
       alias: {
         '~/': `${jsRoot}/`,
         '@/': `${jsRoot}/`,
       },
     },
     css: {
+      modules: {
+        generateScopedName(name, filename) {
+          let prefix = '';
+
+          // Use the top two segments of the path as the prefix.
+          const [parentDirName, dirName] = path
+            .dirname(filename)
+            .split(path.sep)
+            .slice(-2)
+            .map((dir) => dir.toLowerCase());
+
+          // If the parent directory is in the cssAliasClasses list, use
+          // the first four letters of it as the prefix, otherwise use the full name.
+          if (parentDirName) {
+            if (cssAliasClasses.includes(parentDirName)) {
+              prefix = parentDirName.slice(0, 4);
+            } else {
+              prefix = parentDirName;
+            }
+          }
+
+          // If we have a directory name, append it to the prefix.
+          if (dirName) {
+            prefix = `${prefix}_${dirName}`;
+          }
+
+          // If the file is not styles.module.scss or style.module.scss,
+          // append the file base name to the prefix.
+          const baseName = path.basename(
+            filename,
+            `.module${path.extname(filename)}`,
+          );
+          if (baseName !== 'styles' && baseName !== 'style') {
+            prefix = `${prefix}_${baseName}`;
+          }
+
+          return `_${prefix}__${name}`;
+        },
+      },
       postcss: {
         plugins: [
           postcssPresetEnv({
@@ -65,15 +114,18 @@ export const config: UserConfigFnPromise = async ({ mode, command }) => {
         // but it needs to be scoped to the whole domain
         'Service-Worker-Allowed': '/',
       },
-      hmr: {
+      hmr: true,
+      ws: {
         // Forcing the protocol to be insecure helps if you are proxying your dev server with SSL,
         // because Vite still tries to connect to localhost.
         protocol: 'ws',
+        // The client can't connect through the main Rails app proxy since it doesn't support
+        // WebSockets. It needs to connect directly to Vite's server, that's why we set the port again
+        clientPort: 3036,
       },
       port: 3036,
     },
     build: {
-      target: 'modules',
       commonjsOptions: { transformMixedEsModules: true },
       chunkSizeWarningLimit: 1 * 1024 * 1024, // 1MB
       sourcemap: true,
@@ -81,7 +133,9 @@ export const config: UserConfigFnPromise = async ({ mode, command }) => {
       manifest: true,
       outDir,
       assetsDir: 'assets',
-      rollupOptions: {
+      assetsInlineLimit: (filePath, _) =>
+        /\.woff2?$/.exec(filePath) ? false : undefined,
+      rolldownOptions: {
         input: await findEntrypoints(),
         output: {
           chunkFileNames({ facadeModuleId, name }) {
@@ -112,97 +166,68 @@ export const config: UserConfigFnPromise = async ({ mode, command }) => {
             }
             return '[name]-[hash].js';
           },
+          entryFileNames({ name }) {
+            // If this is the service worker, don't add the hash to the name.
+            if (name === 'sw') {
+              return '[name].js';
+            }
+            // Otherwise, use the same value as chunkFileNames.
+            return '[name]-[hash].js';
+          },
         },
       },
+    },
+    experimental: {
+      /**
+       * Setting this causes Vite to not rely on the base config for import URLs,
+       * and instead uses import.meta.url, which is what we want for proper CDN support.
+       * @see https://github.com/mastodon/mastodon/pull/37310
+       */
+      renderBuiltUrl: () => undefined,
     },
     worker: {
       format: 'es',
     },
     plugins: [
-      tsconfigPaths({ projects: [path.resolve(__dirname, 'tsconfig.json')] }),
-      react({
-        babel: {
-          plugins: ['formatjs', 'transform-react-remove-prop-types'],
-        },
+      react(),
+      babel({
+        presets: [removePropTypesPreset],
       }),
+      formatjs(),
       MastodonThemes(),
       MastodonAssetsManifest(),
-      viteStaticCopy({
-        targets: [
-          {
-            src: path.resolve(
-              __dirname,
-              'node_modules/emojibase-data/**/compact.json',
-            ),
-            dest: 'emoji',
-            rename(_name, ext, dir) {
-              const locale = path.basename(path.dirname(dir));
-              return `${locale}.${ext}`;
-            },
-          },
-        ],
-      }),
       MastodonServiceWorkerLocales(),
-      MastodonEmojiCompressed(),
+      MastodonServiceWorkerChunkPaths(),
       legacy({
         renderLegacyChunks: false,
         modernPolyfills: true,
+        modernTargets: browserslist.loadConfig({ path: process.cwd() }),
       }),
       isProdBuild && (Compress() as PluginOption),
       command === 'build' &&
         manifestSRI({
           manifestPaths: ['.vite/manifest.json'],
         }),
-      VitePWA({
-        srcDir: path.resolve(jsRoot, 'mastodon/service_worker'),
-        // We need to use injectManifest because we use our own service worker
-        strategies: 'injectManifest',
-        manifest: false,
-        injectRegister: false,
-        injectManifest: {
-          // Do not inject a manifest, we don't use precache
-          injectionPoint: undefined,
-          buildPlugins: {
-            vite: [
-              // Provide a virtual import with only the locales used in the ServiceWorker
-              MastodonServiceWorkerLocales(),
-              MastodonEmojiCompressed(),
-            ],
-          },
-        },
-        // Force the output location, because we have a symlink in `public/sw.js`
-        outDir: path.resolve(__dirname, 'public/packs'),
-        devOptions: {
-          enabled: true,
-          type: 'module',
-        },
-      }),
       svgr(),
       // Old library types need to be converted
       optimizeLodashImports() as PluginOption,
-      !!process.env.ANALYZE_BUNDLE_SIZE && (visualizer() as PluginOption),
-      MastodonNameLookup(),
+      !!process.env.ANALYZE_BUNDLE_SIZE &&
+        (visualizer({
+          template: process.env.CI ? 'raw-data' : 'treemap',
+        }) as PluginOption),
     ],
   } satisfies UserConfig;
 };
 
 async function findEntrypoints() {
-  const entrypoints: Record<string, string> = {};
+  const entrypoints: Record<string, string> = {
+    sw: path.resolve(jsRoot, 'mastodon/service_worker/sw.ts'),
+  };
 
-  // First, JS entrypoints
-  const jsEntrypointsDir = path.resolve(jsRoot, 'entrypoints');
-  const jsEntrypoints = await readdir(jsEntrypointsDir, {
-    withFileTypes: true,
-  });
-  const jsExtTest = /\.[jt]sx?$/;
-  for (const file of jsEntrypoints) {
-    if (file.isFile() && jsExtTest.test(file.name)) {
-      entrypoints[file.name.replace(jsExtTest, '')] = path.resolve(
-        jsEntrypointsDir,
-        file.name,
-      );
-    }
-  }
+  // Upstream adds files from `app/javascript/entrypoints` in there.
+  // In glitch-soc, `GlitchThemes` is taking care of that, so remove the
+  // upstream code to prevent processing the same file twice, which results
+  // in weird import cycles in the manifest.
 
   // Next, SCSS entrypoints
   const scssEntrypointsDir = path.resolve(jsRoot, 'styles/entrypoints');

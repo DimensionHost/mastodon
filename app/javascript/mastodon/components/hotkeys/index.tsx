@@ -1,6 +1,8 @@
 import { useEffect, useRef } from 'react';
 
-import { normalizeKey, isKeyboardEvent } from './utils';
+import type { PolymorphicProps } from '@/types/polymorphic';
+
+import { normalizeKey, isKeyboardEvent, matchesKeyCode } from './utils';
 
 /**
  * In case of multiple hotkeys matching the pressed key(s),
@@ -56,13 +58,37 @@ function any(...keys: string[]): KeyMatcher {
 }
 
 /**
+ * Matches any matcher function out of those provided
+ */
+function anyMatcher(...matchers: KeyMatcher[]): KeyMatcher {
+  return (event) => {
+    let match: ReturnType<KeyMatcher> | undefined;
+
+    for (const matcher of matchers) {
+      const matcherResult = matcher(event);
+      if (matcherResult.isMatch) {
+        match = matcherResult;
+        break;
+      }
+    }
+
+    return (
+      match ?? {
+        isMatch: false,
+        priority: hotkeyPriority.singleKey,
+      }
+    );
+  };
+}
+
+/**
  * Matches a single key combined with the option/alt modifier
  */
 function optionPlus(key: string): KeyMatcher {
   return (event) => ({
     // Matching against event.code here as alt combos are often
     // mapped to other characters
-    isMatch: event.altKey && event.code === `Key${key.toUpperCase()}`,
+    isMatch: event.altKey && matchesKeyCode(key, event.code),
     priority: hotkeyPriority.combo,
   });
 }
@@ -100,6 +126,7 @@ const hotkeyMatcherMap = {
   back: just('backspace'),
   new: just('n'),
   forceNew: optionPlus('n'),
+  newMessage: optionPlus('m'),
   focusColumn: any('1', '2', '3', '4', '5', '6', '7', '8', '9'),
   focusLoadMore: just('l'),
   reply: just('r'),
@@ -109,21 +136,22 @@ const hotkeyMatcherMap = {
   mention: just('m'),
   open: any('enter', 'o'),
   openProfile: just('p'),
-  moveDown: just('j'),
-  moveUp: just('k'),
+  moveDown: anyMatcher(just('j'), optionPlus('pagedown')),
+  moveUp: anyMatcher(just('k'), optionPlus('pageup')),
+  moveToTop: just('0'),
   toggleHidden: just('x'),
   toggleSensitive: just('h'),
   toggleComposeSpoilers: optionPlus('x'),
   openMedia: just('e'),
   onTranslate: just('t'),
   goToHome: sequence('g', 'h'),
+  goToExplore: sequence('g', 'e'),
   goToNotifications: sequence('g', 'n'),
   goToLocal: sequence('g', 'l'),
   goToFederated: sequence('g', 't'),
   goToDirect: sequence('g', 'd'),
   goToStart: sequence('g', 's'),
   goToFavourites: sequence('g', 'f'),
-  goToPinned: sequence('g', 'p'),
   goToProfile: sequence('g', 'u'),
   goToBlocked: sequence('g', 'b'),
   goToMuted: sequence('g', 'm'),
@@ -143,16 +171,24 @@ const hotkeyMatcherMap = {
   ),
 } as const;
 
-type HotkeyName = keyof typeof hotkeyMatcherMap;
+export type HotkeyName = keyof typeof hotkeyMatcherMap;
 
-export type HandlerMap = Partial<
-  Record<HotkeyName, (event: KeyboardEvent) => void>
+export type HotkeyHandlerFunction =
+  // When a handler returns a boolean, it should indicate whether the
+  // hotkey was handled (i.e. it resulted in an action).
+  // If `false` is returned, `preventDefault` and `stopPropagation`
+  // will not be called on the keyboard event, restoring the key's
+  // native behaviour.
+  ((event: KeyboardEvent) => boolean) | ((event: KeyboardEvent) => void);
+
+export type HotkeyHandlerMap = Partial<
+  Record<HotkeyName, HotkeyHandlerFunction>
 >;
 
-export function useHotkeys<T extends HTMLElement>(handlers: HandlerMap) {
+export function useHotkeys<T extends HTMLElement>(handlers: HotkeyHandlerMap) {
   const ref = useRef<T>(null);
   const bufferedKeys = useRef<string[]>([]);
-  const sequenceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const sequenceTimer = useRef<ReturnType<typeof setTimeout>>(null);
 
   /**
    * Store the latest handlers object in a ref so we don't need to
@@ -180,25 +216,24 @@ export function useHotkeys<T extends HTMLElement>(handlers: HandlerMap) {
 
       if (shouldHandleEvent) {
         const matchCandidates: {
-          handler: (event: KeyboardEvent) => void;
+          // A candidate can have an undefined handler if it's matched,
+          // but handled in a parent component rather than this one.
+          handler: HotkeyHandlerFunction | undefined;
           priority: number;
         }[] = [];
 
         (Object.keys(hotkeyMatcherMap) as HotkeyName[]).forEach(
           (handlerName) => {
             const handler = handlersRef.current[handlerName];
+            const hotkeyMatcher = hotkeyMatcherMap[handlerName];
 
-            if (handler) {
-              const hotkeyMatcher = hotkeyMatcherMap[handlerName];
+            const { isMatch, priority } = hotkeyMatcher(
+              event,
+              bufferedKeys.current,
+            );
 
-              const { isMatch, priority } = hotkeyMatcher(
-                event,
-                bufferedKeys.current,
-              );
-
-              if (isMatch) {
-                matchCandidates.push({ handler, priority });
-              }
+            if (isMatch) {
+              matchCandidates.push({ handler, priority });
             }
           },
         );
@@ -208,9 +243,11 @@ export function useHotkeys<T extends HTMLElement>(handlers: HandlerMap) {
 
         const bestMatchingHandler = matchCandidates.at(0)?.handler;
         if (bestMatchingHandler) {
-          bestMatchingHandler(event);
-          event.stopPropagation();
-          event.preventDefault();
+          const wasHandled = bestMatchingHandler(event);
+          if (wasHandled !== false) {
+            event.stopPropagation();
+            event.preventDefault();
+          }
         }
 
         // Add last keypress to buffer
@@ -238,6 +275,24 @@ export function useHotkeys<T extends HTMLElement>(handlers: HandlerMap) {
   return ref;
 }
 
+interface HotkeysProps {
+  /**
+   * An object containing functions to be run when a hotkey is pressed.
+   * The key must be the name of a registered hotkey, e.g. "help" or "search"
+   */
+  handlers: HotkeyHandlerMap;
+  /**
+   * When enabled, hotkeys will be matched against the document root
+   * rather than only inside of this component's DOM node.
+   */
+  global?: boolean;
+  /**
+   * Allow the rendered `div` to be focused
+   */
+  focusable?: boolean;
+  children: React.ReactNode;
+}
+
 /**
  * The Hotkeys component allows us to globally register keyboard combinations
  * under a name and assign actions to them, either globally or scoped to a portion
@@ -257,28 +312,24 @@ export function useHotkeys<T extends HTMLElement>(handlers: HandlerMap) {
  *
  * Now this function will be called when the 'open' hotkey is pressed by the user.
  */
-export const Hotkeys: React.FC<{
-  /**
-   * An object containing functions to be run when a hotkey is pressed.
-   * The key must be the name of a registered hotkey, e.g. "help" or "search"
-   */
-  handlers: HandlerMap;
-  /**
-   * When enabled, hotkeys will be matched against the document root
-   * rather than only inside of this component's DOM node.
-   */
-  global?: boolean;
-  /**
-   * Allow the rendered `div` to be focused
-   */
-  focusable?: boolean;
-  children: React.ReactNode;
-}> = ({ handlers, global, focusable = true, children }) => {
+export const Hotkeys = <As extends React.ElementType = 'div'>({
+  as: asComp,
+  handlers,
+  global,
+  focusable = true,
+  children,
+  ...props
+}: PolymorphicProps<HotkeysProps, As>) => {
   const ref = useHotkeys<HTMLDivElement>(handlers);
+  const Comp = asComp ?? 'div';
 
   return (
-    <div ref={global ? undefined : ref} tabIndex={focusable ? -1 : undefined}>
+    <Comp
+      {...props}
+      ref={global ? undefined : ref}
+      tabIndex={focusable ? -1 : undefined}
+    >
       {children}
-    </div>
+    </Comp>
   );
 };

@@ -1,12 +1,18 @@
-import { useEffect, useCallback, useState } from 'react';
+import { useEffect, useCallback, useState, Suspense, lazy } from 'react';
 
 import { useIntl, defineMessages } from 'react-intl';
 
-import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 
 import type { Map as ImmutableMap, List as ImmutableList } from 'immutable';
 
+import { Helmet } from '@unhead/react/helmet';
+
+import { Column } from '@/flavours/glitch/components/column';
+import { ColumnHeader as LegacyColumnHeader } from '@/flavours/glitch/components/column/header';
+import { ColumnHeader } from '@/flavours/glitch/components/column_header';
+import { LoadingIndicator } from '@/flavours/glitch/components/loading_indicator';
+import { isRedesignEnabled } from '@/flavours/glitch/utils/environment';
 import elephantUIPlane from '@/images/elephant_ui_plane.svg';
 import BubbleChartIcon from '@/material-icons/400-24px/bubble_chart.svg?react';
 import EditIcon from '@/material-icons/400-24px/edit_square.svg?react';
@@ -19,8 +25,6 @@ import NotificationsIcon from '@/material-icons/400-24px/notifications-fill.svg?
 import PublicIcon from '@/material-icons/400-24px/public.svg?react';
 import { mountCompose, unmountCompose } from 'flavours/glitch/actions/compose';
 import { openModal } from 'flavours/glitch/actions/modal';
-import { Column } from 'flavours/glitch/components/column';
-import { ColumnHeader } from 'flavours/glitch/components/column_header';
 import { Icon } from 'flavours/glitch/components/icon';
 import glitchedElephant1 from 'flavours/glitch/images/mbstobon-ui-0.png';
 import glitchedElephant2 from 'flavours/glitch/images/mbstobon-ui-1.png';
@@ -60,31 +64,28 @@ type ColumnMap = ImmutableMap<'id' | 'uuid' | 'params', string>;
 const glitchProbability = 1 - 0.0420215528;
 const totalElefriends = 3;
 
+const pickRandomFriend = () =>
+  Math.random() < glitchProbability
+    ? Math.floor(Math.random() * totalElefriends)
+    : totalElefriends;
+
 const Compose: React.FC<{ multiColumn: boolean }> = ({ multiColumn }) => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
   const columns = useAppSelector(
-    (state) =>
-      (state.settings as ImmutableMap<string, unknown>).get(
-        'columns',
-      ) as ImmutableList<ColumnMap>,
+    (state) => state.settings.get('columns') as ImmutableList<ColumnMap>,
   );
   const unreadNotifications = useAppSelector(
     (state) => state.notifications.get('unread', 0) as number,
   );
   const showNotificationsBadge = useAppSelector(
     (state) =>
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
       state.local_settings.getIn(
         ['notifications', 'tab_badge'],
         false,
       ) as boolean,
   );
-  const [elefriend, setElefriend] = useState(
-    Math.random() < glitchProbability
-      ? Math.floor(Math.random() * totalElefriends)
-      : totalElefriends,
-  );
+  const [elefriend, setElefriend] = useState(pickRandomFriend());
 
   useEffect(() => {
     dispatch(mountCompose());
@@ -136,12 +137,11 @@ const Compose: React.FC<{ multiColumn: boolean }> = ({ multiColumn }) => {
 
   if (multiColumn) {
     return (
-      <div
-        className='drawer'
-        role='region'
-        aria-label={intl.formatMessage(navbarMessages.publish)}
-      >
-        <nav className='drawer__header'>
+      <div className='drawer'>
+        <nav
+          className='drawer__header'
+          aria-label={intl.formatMessage(navbarMessages.advancedUiQuickLinks)}
+        >
           <Link
             to='/getting-started'
             className='drawer__tab'
@@ -228,13 +228,17 @@ const Compose: React.FC<{ multiColumn: boolean }> = ({ multiColumn }) => {
 
         <Search singleColumn={false} />
 
-        <div className='drawer__pager'>
+        <div
+          className='drawer__pager'
+          role='region'
+          aria-label={intl.formatMessage(navbarMessages.publish)}
+        >
           <div className='drawer__inner'>
             <ComposeFormContainer />
 
             {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events -- this is not a feature but a visual easter egg */}
             <div
-              className='drawer__inner__mastodon'
+              className='drawer__inner__mastodon with-zig-zag-decoration'
               onClick={handleCycleElefriend}
             >
               <img alt='' draggable='false' src={mascot ?? elephant} />
@@ -250,16 +254,29 @@ const Compose: React.FC<{ multiColumn: boolean }> = ({ multiColumn }) => {
       bindToDocument={!multiColumn}
       label={intl.formatMessage(navbarMessages.publish)}
     >
-      <ColumnHeader
-        icon='pencil'
-        iconComponent={EditIcon}
-        title={intl.formatMessage(navbarMessages.publish)}
-        multiColumn={multiColumn}
-        showBackButton
-      />
+      {isRedesignEnabled() ? (
+        <ColumnHeader
+          withBackButton
+          title={intl.formatMessage(navbarMessages.publish)}
+        />
+      ) : (
+        <LegacyColumnHeader
+          icon='pencil'
+          iconComponent={EditIcon}
+          title={intl.formatMessage(navbarMessages.publish)}
+          multiColumn={multiColumn}
+          showBackButton
+        />
+      )}
 
-      <div className='scrollable'>
-        <ComposeFormContainer />
+      <div className='scrollable scrollable--flex'>
+        {isRedesignEnabled() ? (
+          <Suspense fallback={<LoadingIndicator />}>
+            <ComposeLazyForm autoFocus headless />
+          </Suspense>
+        ) : (
+          <ComposeFormContainer autoFocus />
+        )}
       </div>
 
       <Helmet>
@@ -268,6 +285,12 @@ const Compose: React.FC<{ multiColumn: boolean }> = ({ multiColumn }) => {
     </Column>
   );
 };
+
+const ComposeLazyForm = lazy(() =>
+  import('./redesign/index').then(({ RedesignComposeForm }) => ({
+    default: RedesignComposeForm,
+  })),
+);
 
 // eslint-disable-next-line import/no-default-export
 export default Compose;

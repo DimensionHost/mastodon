@@ -8,14 +8,15 @@ RSpec.describe Fasp::AnnounceTrendWorker do
   subject { described_class.new.perform(status.id, 'favourite') }
 
   let(:status) { Fabricate(:status) }
+  let(:provider) { Fabricate(:data_sharing_fasp) }
   let(:subscription) do
     Fabricate(:fasp_subscription,
+              fasp_provider: provider,
               category: 'content',
               subscription_type: 'trends',
               threshold_timeframe: 15,
               threshold_likes: 2)
   end
-  let(:provider) { subscription.fasp_provider }
   let(:path) { '/data_sharing/v0/announcements' }
 
   let!(:stubbed_request) do
@@ -51,6 +52,18 @@ RSpec.describe Fasp::AnnounceTrendWorker do
       end
 
       it_behaves_like('worker handling fasp delivery failures')
+    end
+
+    context 'when `data_sharing` is disabled for provider' do
+      before do
+        provider.fasp_capabilities.where(name: 'data_sharing').update_all(enabled: false)
+      end
+
+      it 'does not send anything to the provider' do
+        subject
+
+        expect(stubbed_request).to_not have_been_made
+      end
     end
   end
 

@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 
-import { defineMessages, FormattedMessage, injectIntl } from 'react-intl';
+import { defineMessages, FormattedMessage } from 'react-intl';
 
 import { OrderedSet } from 'immutable';
 import ImmutablePropTypes from 'react-immutable-proptypes';
-import ImmutablePureComponent from 'react-immutable-pure-component';
+import { ImmutablePureComponent } from 'react-immutable-pure-component';
 import { connect } from 'react-redux';
 
 import CloseIcon from '@/material-icons/400-24px/close.svg?react';
@@ -13,6 +13,7 @@ import { submitReport } from 'flavours/glitch/actions/reports';
 import { fetchServer } from 'flavours/glitch/actions/server';
 import { expandAccountTimeline } from 'flavours/glitch/actions/timelines';
 import { IconButton } from 'flavours/glitch/components/icon_button';
+import { injectIntl } from '@/flavours/glitch/components/intl';
 import Category from 'flavours/glitch/features/report/category';
 import Comment from 'flavours/glitch/features/report/comment';
 import Rules from 'flavours/glitch/features/report/rules';

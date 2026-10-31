@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 
 const normalizeFrequencies = (arr: Float32Array): number[] => {
-  return new Array(...arr).map((value: number) => {
+  return [...arr].map((value: number) => {
     if (value === -Infinity) {
       return 0;
     }
@@ -11,8 +11,8 @@ const normalizeFrequencies = (arr: Float32Array): number[] => {
 };
 
 interface AudioVisualiserOptions {
-  audioContextRef: React.MutableRefObject<AudioContext | undefined>;
-  sourceRef: React.MutableRefObject<MediaElementAudioSourceNode | undefined>;
+  audioContextRef: React.RefObject<AudioContext | null>;
+  sourceRef: React.RefObject<MediaElementAudioSourceNode | null>;
   numBands: number;
 }
 
@@ -21,7 +21,7 @@ export const useAudioVisualizer = ({
   sourceRef,
   numBands,
 }: AudioVisualiserOptions) => {
-  const analyzerRef = useRef<AnalyserNode>();
+  const analyzerRef = useRef<AnalyserNode>(null);
 
   const [frequencyBands, setFrequencyBands] = useState<number[]>(
     new Array(numBands).fill(0),

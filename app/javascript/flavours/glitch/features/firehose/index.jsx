@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
-import { useRef, useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import { useIntl, defineMessages, FormattedMessage } from 'react-intl';
 
-import { Helmet } from 'react-helmet';
+import { Helmet } from '@unhead/react/helmet';
 import { NavLink } from 'react-router-dom';
 
 import { useIdentity } from '@/flavours/glitch/identity_context';
@@ -12,18 +12,32 @@ import { addColumn } from 'flavours/glitch/actions/columns';
 import { changeSetting } from 'flavours/glitch/actions/settings';
 import { connectPublicStream, connectCommunityStream, connectBubbleStream } from 'flavours/glitch/actions/streaming';
 import { expandPublicTimeline, expandCommunityTimeline, expandBubbleTimeline } from 'flavours/glitch/actions/timelines';
+import { Column } from '@/flavours/glitch/components/column';
+import { ColumnHeader as LegacyColumnHeader } from '@/flavours/glitch/components/column/header';
 import { DismissableBanner } from 'flavours/glitch/components/dismissable_banner';
 import SettingText from 'flavours/glitch/components/setting_text';
-import { localLiveFeedAccess, remoteLiveFeedAccess, me, domain } from 'flavours/glitch/initial_state';
+import { localLiveFeedAccess, bubbleLiveFeedAccess, remoteLiveFeedAccess, domain } from 'flavours/glitch/initial_state';
+import { canViewFeed } from 'flavours/glitch/permissions';
 import { useAppDispatch, useAppSelector } from 'flavours/glitch/store';
 
-import Column from '../../components/column';
-import ColumnHeader from '../../components/column_header';
 import SettingToggle from '../notifications/components/setting_toggle';
 import StatusListContainer from '../ui/containers/status_list_container';
+import { isRedesignEnabled } from '@/flavours/glitch/utils/environment';
+import { ColumnHeader, ColumnSettingsMenu } from '@/flavours/glitch/components/column_header';
+import { MultiColumnMenuItems } from '@/flavours/glitch/components/column_header/multicolumn_settings';
 
 const messages = defineMessages({
   title: { id: 'column.firehose', defaultMessage: 'Live feeds' },
+  title_local: {
+    id: 'column.firehose_local',
+    defaultMessage: 'Live feed for this server',
+  },
+  title_singular: {
+    id: 'column.firehose_singular',
+    defaultMessage: 'Live feed',
+  },
+  title_redesign: { id: 'tabs_bar.public_feeds', defaultMessage: 'Public Feeds' },
+  title_singular_redesign: { id: 'tabs_bar.public_feed', defaultMessage: 'Public Feed' },
   filter_regex: { id: 'home.column_settings.filter_regex', defaultMessage: 'Filter out by regular expressions' },
 });
 
@@ -75,8 +89,7 @@ const ColumnSettings = () => {
 const Firehose = ({ feedType, multiColumn }) => {
   const dispatch = useAppDispatch();
   const intl = useIntl();
-  const { signedIn } = useIdentity();
-  const columnRef = useRef(null);
+  const { signedIn, permissions } = useIdentity();
 
   const allowLocalOnly = useAppSelector((state) => state.getIn(['settings', 'firehose', 'allowLocalOnly']));
   const regex = useAppSelector((state) => state.getIn(['settings', 'firehose', 'regex', 'body']));
@@ -123,8 +136,6 @@ const Firehose = ({ feedType, multiColumn }) => {
     },
     [dispatch, onlyMedia, allowLocalOnly, feedType],
   );
-
-  const handleHeaderClick = useCallback(() => columnRef.current?.scrollTop(), []);
 
   useEffect(() => {
     let disconnect;
@@ -212,37 +223,88 @@ const Firehose = ({ feedType, multiColumn }) => {
     );
   }
 
+  const canViewSelectedFeed = canViewFeed(signedIn, permissions, feedType === 'community' ? localLiveFeedAccess : feedType === 'bubble' ? bubbleLiveFeedAccess : remoteLiveFeedAccess);
+
+  const disabledTimelineMessage = (
+    <FormattedMessage
+      id='empty_column.disabled_feed'
+      defaultMessage='This feed has been disabled by your server administrators.'
+    />
+  );
+
+  const canViewLocalFeed = canViewFeed(signedIn, permissions, localLiveFeedAccess);
+  const canViewRemoteFeed = canViewFeed(signedIn, permissions, remoteLiveFeedAccess);
+  const canViewBubble = canViewFeed(signedIn, permissions, bubbleLiveFeedAccess);
+
+  let title;
+  if (canViewLocalFeed && canViewRemoteFeed) {
+    title = messages.title;
+  } else if (canViewLocalFeed) {
+    title = messages.title_local;
+  } else {
+    title = messages.title_singular;
+  }
+
+  if (isRedesignEnabled()) {
+    const canOnlyViewSingleFeed = canViewLocalFeed !== canViewRemoteFeed;
+
+    title = canOnlyViewSingleFeed
+      ? intl.formatMessage(messages.title_singular_redesign)
+      : intl.formatMessage(messages.title_redesign);
+  }
+
   return (
-    <Column bindToDocument={!multiColumn} ref={columnRef} label={intl.formatMessage(messages.title)}>
-      <ColumnHeader
-        icon='globe'
-        iconComponent={PublicIcon}
-        active={hasUnread}
-        title={intl.formatMessage(messages.title)}
-        onPin={handlePin}
-        onClick={handleHeaderClick}
-        multiColumn={multiColumn}
-      >
-        <ColumnSettings />
-      </ColumnHeader>
+    <Column bindToDocument={!multiColumn} label={intl.formatMessage(messages.title)}>
+      {isRedesignEnabled() ? (
+        <ColumnHeader
+          title={title}
+          withBackButton={multiColumn && 'auto'}
+          withUnreadMarker={hasUnread}
+          extraButtons={multiColumn &&
+            <ColumnSettingsMenu labelPrefix={intl.formatMessage(messages.title_redesign)}>
+              <MultiColumnMenuItems onPin={handlePin} />
+            </ColumnSettingsMenu>
+          }
+        />
+      ) : (
+        <LegacyColumnHeader
+          icon='globe'
+          iconComponent={PublicIcon}
+          active={hasUnread}
+          title={intl.formatMessage(title)}
+          onPin={handlePin}
+          multiColumn={multiColumn}
+          scrollTopOnClick
+        >
+          <ColumnSettings />
+        </LegacyColumnHeader>
+      )}
 
-      {(signedIn || (localLiveFeedAccess === 'public' && remoteLiveFeedAccess === 'public')) && (
+      {((canViewFeed(signedIn, permissions, localLiveFeedAccess) + canViewFeed(signedIn, permissions, bubbleLiveFeedAccess) + canViewFeed(signedIn, permissions, remoteLiveFeedAccess)) > 1) && (
         <div className='account__section-headline'>
-          <NavLink exact to='/public/local'>
-            <FormattedMessage tagName='div' id='firehose.local' defaultMessage='This server' />
-          </NavLink>
+          {(signedIn || localLiveFeedAccess === 'public') && (
+            <NavLink exact to='/public/local'>
+              <FormattedMessage tagName='div' id='firehose.local' defaultMessage='This server' />
+            </NavLink>
+          )}
 
-          <NavLink exact to='/public/bubble'>
-            <FormattedMessage tagName='div' id='firehose.bubble' defaultMessage='Bubble servers' />
-          </NavLink>
+          {(signedIn || bubbleLiveFeedAccess === 'public') && (
+            <NavLink exact to='/public/bubble'>
+              <FormattedMessage tagName='div' id='firehose.bubble' defaultMessage='Bubble servers' />
+            </NavLink>
+          )}
 
-          <NavLink exact to='/public/remote'>
-            <FormattedMessage tagName='div' id='firehose.remote' defaultMessage='Other servers' />
-          </NavLink>
+          {(signedIn || remoteLiveFeedAccess === 'public') && (
+            <NavLink exact to='/public/remote'>
+              <FormattedMessage tagName='div' id='firehose.remote' defaultMessage='Other servers' />
+            </NavLink>
+          )}
 
-          <NavLink exact to='/public'>
-            <FormattedMessage tagName='div' id='firehose.all' defaultMessage='All' />
-          </NavLink>
+          {(signedIn || (localLiveFeedAccess === 'public' && bubbleLiveFeedAccess === 'public' && remoteLiveFeedAccess === 'public')) && (
+            <NavLink exact to='/public'>
+              <FormattedMessage tagName='div' id='firehose.all' defaultMessage='All' />
+            </NavLink>
+          )}
         </div>
       )}
 
@@ -252,7 +314,7 @@ const Firehose = ({ feedType, multiColumn }) => {
         onLoadMore={handleLoadMore}
         trackScroll
         scrollKey='firehose'
-        emptyMessage={emptyMessage}
+        emptyMessage={canViewSelectedFeed ? emptyMessage : disabledTimelineMessage}
         bindToDocument={!multiColumn}
         regex={regex}
       />

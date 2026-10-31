@@ -243,7 +243,6 @@ ast:
       category_description_html: El motivu pol que s'informó d'esta cuenta y/o conteníu cítase na comunicación cola cuenta de la que s'informó
       comment_description_html: 'Pa fornir más información, %{name} escribió:'
       created_at: Data del informe
-      delete_and_resolve: Desaniciar los artículos
       mark_as_resolved: Marcar como resueltu
       mark_as_sensitive: Marcar como sensible
       mark_as_unresolved: Marcar como ensin resolver
@@ -261,7 +260,6 @@ ast:
       resolved_msg: "¡L'informe resolvióse correutamente!"
       skip_to_actions: Saltar a les aiciones
       status: Estáu
-      statuses: Conteníu del que s'informó
       statuses_description_html: El conteníu ofensivu cítase na comunicación cola cuenta de la que s'informó
       target_origin: Orixe de la cuenta de la que s'infomó
       title: Informes
@@ -316,10 +314,8 @@ ast:
         title: Retención del conteníu
       discovery:
         follow_recommendations: Recomendación de cuentes
-        preamble: L'apaición de conteníu interesante ye fundamental p'atrayer persones nueves que nun conozan nada de Mastodon. Controla'l funcionamientu de delles funciones de descubrimientu d'esti sirvidor.
         profile_directory: Direutoriu de perfiles
         public_timelines: Llinies de tiempu públiques
-        publish_statistics: Espublizamientu d'estadístiques
         title: Descubrimientu
         trends: Tendencies
       domain_blocks:
@@ -432,10 +428,7 @@ ast:
   aliases:
     empty: Nun tienes nengún nomatu.
   appearance:
-    advanced_web_interface: Interfaz web avanzada
-    advanced_web_interface_hint: 'Si quies asegúrate de que s''use tol llargor de la pantalla, la interfaz web avanzada permítete configurar columnes estremaes pa ver muncha más información al empar: Aniciu, avisos, llinia de tiempu federada y cualesquier cantidá de llistes y etiquetes.'
     animations_and_accessibility: Animaciones y accesibilidá
-    confirmation_dialogs: Diálogos de confirmación
     discovery: Descubrimientu
     localization:
       body: Mastodon tradúcenlu voluntarios,
@@ -529,7 +522,6 @@ ast:
       your_appeal_pending: Unviesti una apellación
       your_appeal_rejected: Refugóse la to apellación
   edit_profile:
-    basic_information: Información básica
     other: Otres preferencies
   errors:
     '400': La solicitú qu'unviesti nun yera válida o yera incorreuta.
@@ -559,8 +551,6 @@ ast:
     domain_blocks: Dominios bloquiaos
     lists: Llistes
     storage: Almacenamientu multimedia
-  featured_tags:
-    add_new: Amestar
   filters:
     contexts:
       account: Perfiles
@@ -601,8 +591,6 @@ ast:
     save_changes: Guardar los cambeos
     today: güei
   imports:
-    errors:
-      over_rows_processing_limit: contién más de %{count} fileres
     modes:
       merge: Mecíu
       merge_long: Caltién los rexistros esistentes y amiesta otros nuevos
@@ -699,7 +687,6 @@ ast:
     wrong_code: "¡El códigu introducíu nun yera válidu! ¿La hora del sirvidor y la del preséu son correutes?"
   pagination:
     next: Siguiente
-    truncate: "&hellip;"
   polls:
     errors:
       already_voted: Yá votesti nesta encuesta
@@ -729,9 +716,6 @@ ast:
     primary: Principal
     relationship: Rellación
     remove_selected_follows: Dexar de siguir a los perfiles seleicionaos
-  scheduled_statuses:
-    over_daily_limit: Superesti la llende de %{limit} artículos programaos pa güei
-    over_total_limit: Superesti la llende de %{limit} artículos programaos
   sessions:
     activity: Última actividá
     browser: Restolador
@@ -838,10 +822,6 @@ ast:
     sensitive_content: Conteníu sensible
   tags:
     does_not_match_previous_name: nun concasa col nome anterior
-  themes:
-    contrast: Mastodon (contraste altu)
-    default: Mastodon (escuridá)
-    mastodon-light: Mastodon (claridá)
   two_factor_authentication:
     enabled: L'autenticación en dos pasos ta activada
     enabled_success: L'autenticación en dos pasos activóse correutamente

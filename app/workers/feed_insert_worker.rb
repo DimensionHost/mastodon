@@ -17,7 +17,7 @@ class FeedInsertWorker
         @list     = List.find(id)
         @follower = @list.account
       when :direct
-        @account  = Account.find(id)
+        @account = Account.find(id)
       end
     end
 
@@ -57,7 +57,7 @@ class FeedInsertWorker
 
   def notify?(filter_result)
     return false if @type != :home || @status.reblog? || (@status.reply? && @status.in_reply_to_account_id != @status.account_id) ||
-                    filter_result == :filter
+                    update? || filter_result == :filter
 
     Follow.find_by(account: @follower, target_account: @status.account)&.notify?
   end

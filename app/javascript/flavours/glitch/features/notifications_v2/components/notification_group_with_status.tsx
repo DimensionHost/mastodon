@@ -3,8 +3,8 @@ import type { JSX } from 'react';
 
 import classNames from 'classnames';
 
+import { replyComposeById } from '@/flavours/glitch/actions/compose_typed';
 import { LinkedDisplayName } from '@/flavours/glitch/components/display_name';
-import { replyComposeById } from 'flavours/glitch/actions/compose';
 import { navigateToStatus } from 'flavours/glitch/actions/statuses';
 import { Avatar } from 'flavours/glitch/components/avatar';
 import { AvatarGroup } from 'flavours/glitch/components/avatar_group';
@@ -86,7 +86,7 @@ export const NotificationGroupWithStatus: React.FC<{
       },
 
       reply: () => {
-        dispatch(replyComposeById(statusId));
+        dispatch(replyComposeById({ statusId }));
       },
     }),
     [dispatch, statusId],
@@ -125,8 +125,8 @@ export const NotificationGroupWithStatus: React.FC<{
               )}
             </div>
 
-            <div className='notification-group__main__header__label'>
-              {label}
+            <h2 className='notification-group__main__header__label'>
+              <span>{label}</span>
               {timestamp && (
                 <>
                   <span className='notification-group__main__header__label-separator'>
@@ -135,7 +135,7 @@ export const NotificationGroupWithStatus: React.FC<{
                   <RelativeTimestamp timestamp={timestamp} />
                 </>
               )}
-            </div>
+            </h2>
           </div>
 
           {statusId && (

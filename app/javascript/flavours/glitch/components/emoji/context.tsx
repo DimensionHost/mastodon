@@ -1,4 +1,9 @@
-import type { MouseEventHandler, PropsWithChildren } from 'react';
+import type {
+  FC,
+  MouseEventHandler,
+  PropsWithChildren,
+  ReactNode,
+} from 'react';
 import {
   createContext,
   useCallback,
@@ -7,9 +12,8 @@ import {
   useState,
 } from 'react';
 
-import classNames from 'classnames';
-
 import { cleanExtraEmojis } from '@/flavours/glitch/features/emoji/normalize';
+import { useCustomEmojis } from '@/flavours/glitch/hooks/useCustomEmojis';
 import { autoPlayGif } from '@/flavours/glitch/initial_state';
 import { polymorphicForwardRef } from '@/types/polymorphic';
 import type {
@@ -63,13 +67,9 @@ export const AnimateEmojiProvider = polymorphicForwardRef<
 
     // If there's a parent context or GIFs autoplay, we don't need handlers.
     const parentContext = useContext(AnimateEmojiContext);
-    if (parentContext !== null || autoPlayGif === true) {
+    if (parentContext !== null) {
       return (
-        <Wrapper
-          {...props}
-          className={classNames(className, 'animate-parent')}
-          ref={ref}
-        >
+        <Wrapper {...props} className={className} ref={ref}>
           {children}
         </Wrapper>
       );
@@ -78,7 +78,7 @@ export const AnimateEmojiProvider = polymorphicForwardRef<
     return (
       <Wrapper
         {...props}
-        className={classNames(className, 'animate-parent')}
+        className={className}
         onMouseEnter={handleEnter}
         onMouseLeave={handleLeave}
         ref={ref}
@@ -98,11 +98,21 @@ export const CustomEmojiContext = createContext<ExtraCustomEmojiMap>({});
 export const CustomEmojiProvider = ({
   children,
   emojis: rawEmojis,
-}: PropsWithChildren<{ emojis?: CustomEmojiMapArg }>) => {
-  const emojis = useMemo(() => cleanExtraEmojis(rawEmojis) ?? {}, [rawEmojis]);
+}: PropsWithChildren<{ emojis?: CustomEmojiMapArg | null }>) => {
+  const emojis = useMemo(() => cleanExtraEmojis(rawEmojis), [rawEmojis]);
+  if (!emojis) {
+    return children;
+  }
   return (
     <CustomEmojiContext.Provider value={emojis}>
       {children}
     </CustomEmojiContext.Provider>
   );
+};
+
+export const LocalCustomEmojiProvider: FC<{ children: ReactNode }> = ({
+  children,
+}) => {
+  const emojis = useCustomEmojis();
+  return <CustomEmojiProvider emojis={emojis}>{children}</CustomEmojiProvider>;
 };
