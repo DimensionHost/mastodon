@@ -1,6 +1,6 @@
-@use 'mastodon-gekka/variables';
-@use 'application';
-@use 'mastodon-gekka/diff';
+@use 'custom_common';
+@use 'mastodon-gekka-modern/theme';
+@use 'mastodon-gekka-modern/diff';
 @use 'modern';
 @use 'modern-glitch-fixes';
 @use 'modern-urusai-fixes';

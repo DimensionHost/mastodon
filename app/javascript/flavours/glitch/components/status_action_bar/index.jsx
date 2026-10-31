@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 
-import { defineMessages, injectIntl } from 'react-intl';
+import { defineMessages } from 'react-intl';
 
 import { withRouter } from 'react-router-dom';
 
@@ -24,13 +24,15 @@ import { accountAdminLink, statusAdminLink } from 'flavours/glitch/utils/backend
 import { WithRouterPropTypes } from 'flavours/glitch/utils/react_router';
 
 import EmojiPickerDropdown from '../../features/compose/containers/emoji_picker_dropdown_container';
-import { me, maxReactions } from '../../initial_state';
+import { me, maxReactions, quickBoosting } from '../../initial_state';
+
 import { IconButton } from '../icon_button';
+import { injectIntl } from '../intl';
 import { RelativeTimestamp } from '../relative_timestamp';
 import { BoostButton } from '../status/boost_button';
+import { quoteItemState, selectStatusState } from '../status/boost_button_utils';
 
 import { RemoveQuoteHint } from './remove_quote_hint';
-
 
 const messages = defineMessages({
   delete: { id: 'status.delete', defaultMessage: 'Delete' },
@@ -72,6 +74,7 @@ const mapStateToProps = (state, { status }) => {
   const quotedStatusId = status.getIn(['quote', 'quoted_status']);
   return ({
     quotedAccountId: quotedStatusId ? state.getIn(['statuses', quotedStatusId, 'account']) : null,
+    statusQuoteState: selectStatusState(state, status),
   });
 };
 
@@ -79,6 +82,7 @@ class StatusActionBar extends ImmutablePureComponent {
   static propTypes = {
     identity: identityContextPropShape,
     status: ImmutablePropTypes.map.isRequired,
+    statusQuoteState: PropTypes.object,
     quotedAccountId: PropTypes.string,
     contextType: PropTypes.string,
     onReply: PropTypes.func,
@@ -123,8 +127,12 @@ class StatusActionBar extends ImmutablePureComponent {
     if (signedIn) {
       this.props.onReply(this.props.status);
     } else {
-      this.props.onInteractionModal(this.props.status);
+      this.props.onInteractionModal(this.props.status, 'reply');
     }
+  };
+
+  handleQuoteClick = () => {
+    this.props.onQuote(this.props.status);
   };
 
   handleShareClick = () => {
@@ -141,7 +149,7 @@ class StatusActionBar extends ImmutablePureComponent {
     if (signedIn) {
       this.props.onFavourite(this.props.status, e);
     } else {
-      this.props.onInteractionModal(this.props.status);
+      this.props.onInteractionModal(this.props.status, 'favourite');
     }
   };
 
@@ -223,7 +231,7 @@ class StatusActionBar extends ImmutablePureComponent {
   };
 
   render () {
-    const { status, quotedAccountId, contextType, intl, withDismiss, withCounters, showReplyCount, scrollKey } = this.props;
+    const { status, statusQuoteState, quotedAccountId, contextType, intl, withDismiss, withCounters, showReplyCount, scrollKey } = this.props;
     const { signedIn, permissions } = this.props.identity;
 
     const publicStatus       = ['public', 'unlisted'].includes(status.get('visibility'));
@@ -250,6 +258,19 @@ class StatusActionBar extends ImmutablePureComponent {
 
     if (publicStatus && !isRemote) {
       menu.push({ text: intl.formatMessage(messages.embed), action: this.handleEmbed });
+    }
+
+    if (quickBoosting && signedIn) {
+      const quoteItem = quoteItemState(statusQuoteState);
+      menu.push(null);
+      menu.push({
+        text: intl.formatMessage(quoteItem.title),
+        description: quoteItem.meta
+          ? intl.formatMessage(quoteItem.meta)
+          : undefined,
+        disabled: quoteItem.disabled,
+        action: this.handleQuoteClick,
+      });
     }
 
     if (signedIn) {
@@ -354,7 +375,7 @@ class StatusActionBar extends ImmutablePureComponent {
           <IconButton className='status__action-bar-button star-icon' animate active={status.get('favourited')} title={favouriteTitle} icon='star' iconComponent={status.get('favourited') ? StarIcon : StarBorderIcon} onClick={this.handleFavouriteClick} counter={withCounters ? status.get('favourites_count') : undefined} />
         </div>
         <div className='status__action-bar__button-wrapper'>
-          <EmojiPickerDropdown className='status__action-bar-button' onPickEmoji={this.handleEmojiPick} title={intl.formatMessage(messages.react)} icon={AddReactionIcon} disabled={!canReact} counter={withCounters ? status.get('reactions_count') : undefined} />
+          <EmojiPickerDropdown className='status__action-bar-button' onPickEmoji={this.handleEmojiPick} react disabled={!canReact} counter={withCounters ? status.get('reactions_count') : undefined} />
         </div>
         <div className='status__action-bar__button-wrapper'>
           <IconButton className='status__action-bar-button bookmark-icon' disabled={!signedIn} active={status.get('bookmarked')} title={bookmarkTitle} icon='bookmark' iconComponent={status.get('bookmarked') ? BookmarkIcon : BookmarkBorderIcon} onClick={this.handleBookmarkClick} />
@@ -367,10 +388,9 @@ class StatusActionBar extends ImmutablePureComponent {
             <Dropdown
               scrollKey={scrollKey}
               status={status}
+              needsStatusRefresh={quickBoosting && status.get('quote_approval') === null}
               items={menu}
-              icon='ellipsis-h'
               size={18}
-              iconComponent={MoreHorizIcon}
               direction='right'
               ariaLabel={intl.formatMessage(messages.more)}
               // eslint-disable-next-line react/jsx-no-bind
@@ -378,7 +398,14 @@ class StatusActionBar extends ImmutablePureComponent {
                 dismissQuoteHint();
                 return true;
               }}
-            />
+            >
+              <IconButton
+                className='status__action-bar__button'
+                icon='ellipsis-h'
+                iconComponent={MoreHorizIcon}
+                title={intl.formatMessage(messages.more)}
+              />
+            </Dropdown>
           )}
         </RemoveQuoteHint>
 

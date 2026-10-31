@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { PureComponent } from 'react';
 
-import { FormattedMessage, injectIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 import classnames from 'classnames';
 import { withRouter } from 'react-router-dom';
@@ -15,9 +15,8 @@ import { Poll } from 'mastodon/components/poll';
 import { identityContextPropShape, withIdentity } from 'mastodon/identity_context';
 import { languages as preloadedLanguages } from 'mastodon/initial_state';
 
-import { isModernEmojiEnabled } from '../utils/environment';
-
 import { EmojiHTML } from './emoji/html';
+import { injectIntl } from './intl';
 import { HandledLink } from './status/handled_link';
 
 const MAX_HEIGHT = 706; // 22px * 32 (+ 2px padding at the top)
@@ -48,7 +47,7 @@ class TranslateButton extends PureComponent {
 
       return (
         <div className='translate-button'>
-          <button className='link-button' onClick={onClick}>
+          <button type='button' className='link-button' onClick={onClick}>
             <FormattedMessage id='status.show_original' defaultMessage='Show original' />
           </button>
 
@@ -60,7 +59,7 @@ class TranslateButton extends PureComponent {
     }
 
     return (
-      <button className='status__content__translate-button' onClick={onClick}>
+      <button type='button' className='status__content__translate-button' onClick={onClick}>
         <FormattedMessage id='status.translate' defaultMessage='Translate' />
       </button>
     );
@@ -71,6 +70,17 @@ class TranslateButton extends PureComponent {
 const mapStateToProps = state => ({
   languages: state.getIn(['server', 'translationLanguages', 'items']),
 });
+
+const compareUrls = (href1, href2) => {
+  try {
+    const url1 = new URL(href1);
+    const url2 = new URL(href2);
+
+    return url1.origin === url2.origin && url1.pathname === url2.pathname && url1.search === url2.search;
+  } catch {
+    return false;
+  }
+};
 
 class StatusContent extends PureComponent {
   static propTypes = {
@@ -99,49 +109,15 @@ class StatusContent extends PureComponent {
     const { status, onCollapsedToggle } = this.props;
     if (status.get('collapsed', null) === null && onCollapsedToggle) {
       const { collapsible, onClick } = this.props;
+      const text = node.querySelector(':scope > .status__content__text');
 
       const collapsed =
           collapsible
           && onClick
-          && node.clientHeight > MAX_HEIGHT
+          && (node.clientHeight > MAX_HEIGHT || (text !== null && text.scrollWidth > text.clientWidth))
           && status.get('spoiler_text').length === 0;
 
       onCollapsedToggle(collapsed);
-    }
-
-    // Exit if modern emoji is enabled, as it handles links using the HandledLink component.
-    if (isModernEmojiEnabled()) {
-      return;
-    }
-
-    const links = node.querySelectorAll('a');
-
-    let link, mention;
-
-    for (var i = 0; i < links.length; ++i) {
-      link = links[i];
-
-      if (link.classList.contains('status-link')) {
-        continue;
-      }
-
-      link.classList.add('status-link');
-
-      mention = this.props.status.get('mentions').find(item => link.href === item.get('url'));
-
-      if (mention) {
-        link.addEventListener('click', this.onMentionClick.bind(this, mention), false);
-        link.setAttribute('title', `@${mention.get('acct')}`);
-        link.setAttribute('href', `/@${mention.get('acct')}`);
-        link.setAttribute('data-hover-card-account', mention.get('id'));
-      } else if (link.textContent[0] === '#' || (link.previousSibling && link.previousSibling.textContent && link.previousSibling.textContent[link.previousSibling.textContent.length - 1] === '#')) {
-        link.addEventListener('click', this.onHashtagClick.bind(this, link.text), false);
-        link.setAttribute('href', `/tags/${link.text.replace(/^#/, '')}`);
-        link.setAttribute('data-menu-hashtag', this.props.status.getIn(['account', 'id']));
-      } else {
-        link.setAttribute('title', link.href);
-        link.classList.add('unhandled-link');
-      }
     }
   }
 
@@ -152,22 +128,6 @@ class StatusContent extends PureComponent {
   componentDidUpdate () {
     this._updateStatusLinks();
   }
-
-  onMentionClick = (mention, e) => {
-    if (this.props.history && e.button === 0 && !(e.ctrlKey || e.metaKey)) {
-      e.preventDefault();
-      this.props.history.push(`/@${mention.get('acct')}`);
-    }
-  };
-
-  onHashtagClick = (hashtag, e) => {
-    hashtag = hashtag.replace(/^#/, '');
-
-    if (this.props.history && e.button === 0 && !(e.ctrlKey || e.metaKey)) {
-      e.preventDefault();
-      this.props.history.push(`/tags/${hashtag}`);
-    }
-  };
 
   handleMouseDown = (e) => {
     this.startXY = [e.clientX, e.clientY];
@@ -206,7 +166,7 @@ class StatusContent extends PureComponent {
 
   handleElement = (element, { key, ...props }, children) => {
     if (element instanceof HTMLAnchorElement) {
-      const mention = this.props.status.get('mentions').find(item => element.href === item.get('url'));
+      const mention = this.props.status.get('mentions').find(item => compareUrls(element.href, item.get('url')));
       return (
         <HandledLink
           {...props}
@@ -219,7 +179,7 @@ class StatusContent extends PureComponent {
           {children}
         </HandledLink>
       );
-    } else if (element instanceof HTMLParagraphElement && element.classList.contains('quote-inline')) {
+    } else if (element.classList.contains('quote-inline') && this.props.status.get('quote')) {
       return null;
     }
     return undefined;
@@ -241,7 +201,7 @@ class StatusContent extends PureComponent {
     });
 
     const readMoreButton = renderReadMore && (
-      <button className='status__content__read-more-button' onClick={this.props.onClick} key='read-more'>
+      <button type='button' className='status__content__read-more-button' onClick={this.props.onClick} key='read-more'>
         <FormattedMessage id='status.read_more' defaultMessage='Read more' /><Icon id='angle-right' icon={ChevronRightIcon} />
       </button>
     );
@@ -269,8 +229,7 @@ class StatusContent extends PureComponent {
               lang={language}
               htmlString={content}
               extraEmojis={status.get('emojis')}
-              // eslint-disable-next-line react/jsx-no-bind
-              onElement={this.handleElement.bind(this)}
+              onElement={this.handleElement}
             />
 
             {poll}
@@ -288,8 +247,7 @@ class StatusContent extends PureComponent {
             lang={language}
             htmlString={content}
             extraEmojis={status.get('emojis')}
-            // eslint-disable-next-line react/jsx-no-bind
-            onElement={this.handleElement.bind(this)}
+            onElement={this.handleElement}
           />
 
           {poll}

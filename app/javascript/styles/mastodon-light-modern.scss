@@ -1,6 +1,5 @@
-@use 'mastodon-light/variables';
-@use 'mastodon-light/css_variables';
-@use 'application';
+@use 'custom_common';
+@use 'mastodon-light-modern/theme/index';
 @use 'modern';
-@use 'mastodon-light/diff';
+@use 'mastodon-light-modern/diff';
 @use 'modern-urusai-fixes';
